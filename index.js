@@ -27,8 +27,10 @@ const CONFIG_FILE = path.join(__dirname, 'config.json');
 
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
-  if (!fs.existsSync(DATA_FILE)) return { sent: [], failed: [], retryQueue: [] };
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  if (!fs.existsSync(DATA_FILE)) return { sent: [], failed: [], retryQueue: [], replyCounters: {} };
+  const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+  if (!data.replyCounters) data.replyCounters = {};
+  return data;
 }
 function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
@@ -133,7 +135,43 @@ async function handleComment(value) {
   const message = postConfig.replyMessage ||
     `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${postConfig.link}`;
 
-  await attemptSend(commentId, message, { ...record, postTitle: postConfig.title || '' });
+  await attemptSend(commentId, message, { ...record, postTitle: postConfig.title || '', mediaId });
+
+  // Herkese açık yorum cevabı da gönder (varsa) - dönüşümlü, hep aynısı olmasın
+  if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
+    const publicText = pickNextPublicReply(mediaId, postConfig.publicReplies);
+    await sendPublicReply(commentId, publicText);
+  }
+}
+
+// Sırayla, hep aynı cevabı art arda kullanmadan bir sonraki metni seç
+function pickNextPublicReply(mediaId, replies) {
+  const data = loadData();
+  const currentIndex = data.replyCounters[mediaId] || 0;
+  const nextIndex = (currentIndex + 1) % replies.length;
+  data.replyCounters[mediaId] = nextIndex;
+  saveData(data);
+  return replies[currentIndex % replies.length];
+}
+
+// Yorumun altına herkese görünecek şekilde cevap yaz
+async function sendPublicReply(commentId, text) {
+  try {
+    const response = await fetch(
+      `https://graph.instagram.com/v23.0/${commentId}/replies`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, access_token: ACCESS_TOKEN }),
+      }
+    );
+    const result = await response.json();
+    if (!response.ok || result.error) {
+      console.error('Herkese açık cevap gönderilemedi:', result.error ? result.error.message : 'bilinmeyen hata');
+    }
+  } catch (err) {
+    console.error('Herkese açık cevap bağlantı hatası:', err.message);
+  }
 }
 
 async function attemptSend(commentId, message, record) {
@@ -238,7 +276,7 @@ app.get('/admin/api/posts', async (req, res) => {
 
 // Bir gönderi için otomasyon kaydet/güncelle
 app.post('/admin/api/posts', async (req, res) => {
-  const { mediaId, title, keyword, link, replyMessage } = req.body;
+  const { mediaId, title, keyword, link, replyMessage, publicReplies } = req.body;
   if (!mediaId || !keyword || !link) {
     return res.status(400).json({ error: 'mediaId, keyword ve link zorunlu' });
   }
@@ -248,6 +286,7 @@ app.post('/admin/api/posts', async (req, res) => {
     keyword,
     link,
     replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
+    publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
   };
   saveConfigLocal(config);
   await saveConfigToGithub(config);
@@ -275,6 +314,35 @@ app.get('/admin/api/status', (req, res) => {
     gonderilenler: data.sent.slice(-50).reverse(),
     basarisizOlanlar: data.failed.slice(-50).reverse(),
   });
+});
+
+app.get('/privacy', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head><meta charset="UTF-8"><title>Gizlilik Politikası - HakanHoca Otomasyon</title>
+    <style>body{font-family:sans-serif;max-width:700px;margin:40px auto;padding:0 20px;line-height:1.6;color:#222}</style>
+    </head>
+    <body>
+      <h1>Gizlilik Politikası</h1>
+      <p>HakanHoca Otomasyon, Instagram gönderilerine yapılan yorumları belirli anahtar kelimelere göre
+      tespit ederek, ilgili kullanıcıya otomatik bir özel mesaj (DM) göndermek amacıyla çalışan bir
+      otomasyon sistemidir.</p>
+
+      <h2>Toplanan Veriler</h2>
+      <p>Sistem yalnızca; yorum yapan kullanıcının Instagram kullanıcı adını, yorum metnini ve ilgili
+      gönderi bilgisini işler. Bu veriler yalnızca otomatik yanıt gönderme amacıyla, geçici olarak
+      sistem kayıtlarında (log) tutulur.</p>
+
+      <h2>Verilerin Kullanımı</h2>
+      <p>Toplanan veriler üçüncü taraflarla paylaşılmaz, satılmaz veya pazarlama amacıyla kullanılmaz.
+      Sadece talep edilen materyalin ilgili kullanıcıya iletilmesi amacıyla kullanılır.</p>
+
+      <h2>İletişim</h2>
+      <p>Bu sistemle ilgili sorularınız için Instagram üzerinden hesap sahibiyle iletişime geçebilirsiniz.</p>
+    </body>
+    </html>
+  `);
 });
 
 app.get('/', (req, res) => {

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HakanHoca Otomasyon Paneli</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, Roboto, sans-serif;
+    background: #0f0f0f;
+    color: #eee;
+    margin: 0;
+    padding: 16px;
+  }
+  h1 { font-size: 20px; margin-bottom: 4px; }
+  .sub { color: #999; font-size: 13px; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab {
+    flex: 1; text-align: center; padding: 10px;
+    background: #1c1c1c; border-radius: 10px; cursor: pointer;
+    font-size: 14px; border: 1px solid #2a2a2a;
+  }
+  .tab.active { background: #405de6; border-color: #405de6; }
+  .card {
+    background: #1a1a1a; border-radius: 14px; padding: 14px;
+    margin-bottom: 12px; border: 1px solid #262626;
+  }
+  .card img { width: 100%; border-radius: 10px; margin-bottom: 8px; max-height: 220px; object-fit: cover; }
+  .caption { font-size: 13px; color: #ccc; margin-bottom: 10px; max-height: 40px; overflow: hidden; }
+  .badge {
+    display: inline-block; padding: 3px 8px; border-radius: 20px;
+    font-size: 11px; margin-bottom: 8px;
+  }
+  .badge.on { background: #1f4d2e; color: #6fdb8f; }
+  .badge.off { background: #3a2a1a; color: #e0a05a; }
+  label { font-size: 12px; color: #999; display: block; margin: 8px 0 4px; }
+  input, textarea {
+    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333;
+    background: #0f0f0f; color: #fff; font-size: 14px;
+  }
+  textarea { resize: vertical; min-height: 50px; }
+  button {
+    width: 100%; padding: 12px; border-radius: 10px; border: none;
+    background: #405de6; color: white; font-size: 14px; font-weight: 600;
+    margin-top: 10px;
+  }
+  button.danger { background: #a02020; margin-top: 6px; }
+  .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .stat { flex: 1; background: #1a1a1a; border-radius: 12px; padding: 12px; text-align: center; }
+  .stat .num { font-size: 22px; font-weight: 700; }
+  .stat.green .num { color: #6fdb8f; }
+  .stat.red .num { color: #e05a5a; }
+  .stat.yellow .num { color: #e0c05a; }
+  .log-item { background: #1a1a1a; border-radius: 10px; padding: 10px; margin-bottom: 8px; font-size: 13px; }
+  .log-item .user { font-weight: 600; }
+  .log-item .reason { color: #e05a5a; font-size: 12px; margin-top: 4px; }
+  .loading { text-align: center; color: #666; padding: 40px 0; }
+  #saveMsg { text-align: center; font-size: 13px; margin-top: 8px; min-height: 18px; }
+</style>
+</head>
+<body>
+
+<h1>📸 HakanHoca Otomasyon</h1>
+<div class="sub">Gönderiye yorum yazana otomatik özel mesaj gönder</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('posts')">Gönderiler</div>
+  <div class="tab" onclick="showTab('status')">Durum</div>
+</div>
+
+<div id="postsTab">
+  <div id="postsList" class="loading">Gönderiler yükleniyor...</div>
+</div>
+
+<div id="statusTab" style="display:none">
+  <div id="statusContent" class="loading">Durum yükleniyor...</div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.getElementById('postsTab').style.display = tab === 'posts' ? 'block' : 'none';
+  document.getElementById('statusTab').style.display = tab === 'status' ? 'block' : 'none';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  if (tab === 'status') loadStatus();
+}
+
+async function loadPosts() {
+  const res = await fetch('/admin/api/posts');
+  const data = await res.json();
+  const container = document.getElementById('postsList');
+
+  if (data.error) {
+    container.innerHTML = '<div class="loading">Hata: ' + data.error + '</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  data.posts.forEach(post => {
+    const auto = post.automation;
+    const img = post.thumbnail_url || post.media_url || '';
+    const caption = (post.caption || '(açıklama yok)').slice(0, 80);
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      ${img ? `<img src="${img}">` : ''}
+      <div class="badge ${auto ? 'on' : 'off'}">${auto ? '✅ Otomasyon aktif' : '⚪ Otomasyon yok'}</div>
+      <div class="caption">${caption}</div>
+
+      <label>Başlık (senin için not)</label>
+      <input type="text" id="title-${post.id}" value="${auto ? auto.title || '' : ''}" placeholder="Örn: Ritmik Sayma Kartları">
+
+      <label>Anahtar kelime</label>
+      <input type="text" id="keyword-${post.id}" value="${auto ? auto.keyword : 'PDF'}" placeholder="PDF">
+
+      <label>Gönderilecek link</label>
+      <input type="text" id="link-${post.id}" value="${auto ? auto.link : ''}" placeholder="https://hakanhoca.net/...">
+
+      <label>Mesaj metni (özel mesaj / DM - boş bırakırsan otomatik oluşur)</label>
+      <textarea id="msg-${post.id}" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ...">${auto && auto.replyMessage ? auto.replyMessage : ''}</textarea>
+
+      <label style="margin-top:14px;">Herkese açık yorum cevapları (dönüşümlü kullanılır, hep aynısı olmaz)</label>
+      <div id="publicReplies-${post.id}"></div>
+      <button type="button" onclick="addPublicReplyField('${post.id}')" style="background:#2a2a2a;">+ Cevap Ekle</button>
+
+      <button onclick="savePost('${post.id}')">Kaydet</button>
+      ${auto ? `<button class="danger" onclick="deletePost('${post.id}')">Otomasyonu Kaldır</button>` : ''}
+      <div id="saveMsg-${post.id}"></div>
+    `;
+    container.appendChild(card);
+
+    const existingReplies = (auto && auto.publicReplies && auto.publicReplies.length > 0)
+      ? auto.publicReplies
+      : [''];
+    existingReplies.forEach((text) => addPublicReplyField(post.id, text));
+  });
+
+  if (data.posts.length === 0) {
+    container.innerHTML = '<div class="loading">Henüz gönderi bulunamadı.</div>';
+  }
+}
+
+function addPublicReplyField(postId, value = '') {
+  const container = document.getElementById('publicReplies-' + postId);
+  const row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.gap = '6px';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <textarea class="public-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩" style="flex:1; min-height:40px;">${value}</textarea>
+    <button type="button" onclick="this.parentElement.remove()" style="width:40px; background:#a02020; margin-top:0;">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+async function savePost(mediaId) {
+  const title = document.getElementById('title-' + mediaId).value;
+  const keyword = document.getElementById('keyword-' + mediaId).value;
+  const link = document.getElementById('link-' + mediaId).value;
+  const replyMessage = document.getElementById('msg-' + mediaId).value;
+  const msgEl = document.getElementById('saveMsg-' + mediaId);
+
+  const publicReplies = Array.from(
+    document.querySelectorAll('#publicReplies-' + mediaId + ' .public-reply-input')
+  ).map(el => el.value.trim()).filter(v => v);
+
+  if (!keyword || !link) {
+    msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
+    msgEl.style.color = '#e05a5a';
+    return;
+  }
+
+  msgEl.textContent = 'Kaydediliyor...';
+  msgEl.style.color = '#999';
+
+  const res = await fetch('/admin/api/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mediaId, title, keyword, link, replyMessage, publicReplies }),
+  });
+  const result = await res.json();
+
+  if (result.ok) {
+    msgEl.textContent = '✅ Kaydedildi!';
+    msgEl.style.color = '#6fdb8f';
+    setTimeout(loadPosts, 1000);
+  } else {
+    msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
+    msgEl.style.color = '#e05a5a';
+  }
+}
+
+async function deletePost(mediaId) {
+  if (!confirm('Bu gönderinin otomasyonunu kaldırmak istediğine emin misin?')) return;
+  await fetch('/admin/api/posts/' + mediaId, { method: 'DELETE' });
+  loadPosts();
+}
+
+async function loadStatus() {
+  const res = await fetch('/admin/api/status');
+  const data = await res.json();
+  const container = document.getElementById('statusContent');
+
+  let html = `
+    <div class="stat-row">
+      <div class="stat green"><div class="num">${data.ozet.basariylaGonderilen}</div><div>Gönderildi</div></div>
+      <div class="stat red"><div class="num">${data.ozet.basarisizOlan}</div><div>Başarısız</div></div>
+      <div class="stat yellow"><div class="num">${data.ozet.tekrarDenenecek}</div><div>Bekliyor</div></div>
+    </div>
+  `;
+
+  if (data.basarisizOlanlar.length > 0) {
+    html += '<h3 style="font-size:15px;margin-bottom:8px;">Başarısız Olanlar</h3>';
+    data.basarisizOlanlar.forEach(item => {
+      html += `<div class="log-item">
+        <span class="user">@${item.fromUsername}</span> — "${item.commentText}"
+        <div class="reason">${item.reason}</div>
+      </div>`;
+    });
+  }
+
+  if (data.gonderilenler.length > 0) {
+    html += '<h3 style="font-size:15px;margin:16px 0 8px;">Son Gönderilenler</h3>';
+    data.gonderilenler.forEach(item => {
+      html += `<div class="log-item">
+        <span class="user">@${item.fromUsername}</span> — "${item.commentText}"
+      </div>`;
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+loadPosts();
+</script>
+
+</body>
+</html>
