@@ -125,7 +125,8 @@ async function handleComment(value) {
   };
 
   if (!postConfig) {
-    logFailed({ ...record, reason: 'Bu gönderi için otomasyon tanımlanmamış' });
+    // Bu gönderi için otomasyon tanımlı değil - bu normal, hesaptaki her yorumu görüyoruz.
+    // Hata olarak loglamaya gerek yok, sessizce geç.
     return;
   }
 
