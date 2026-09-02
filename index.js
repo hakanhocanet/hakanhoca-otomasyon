@@ -139,7 +139,7 @@ async function handleComment(value) {
 async function attemptSend(commentId, message, record) {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v23.0/${commentId}/private_replies`,
+      `https://graph.instagram.com/v23.0/${commentId}/private_replies`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -220,7 +220,7 @@ app.get('/admin', (req, res) => {
 app.get('/admin/api/posts', async (req, res) => {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v23.0/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=20&access_token=${ACCESS_TOKEN}`
+      `https://graph.instagram.com/v23.0/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=20&access_token=${ACCESS_TOKEN}`
     );
     const result = await response.json();
     if (result.error) return res.status(500).json({ error: result.error.message });
