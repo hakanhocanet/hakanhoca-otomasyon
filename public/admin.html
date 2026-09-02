@@ -118,19 +118,41 @@ async function loadPosts() {
       <label>Gönderilecek link</label>
       <input type="text" id="link-${post.id}" value="${auto ? auto.link : ''}" placeholder="https://hakanhoca.net/...">
 
-      <label>Mesaj metni (boş bırakırsan otomatik oluşur)</label>
+      <label>Mesaj metni (özel mesaj / DM - boş bırakırsan otomatik oluşur)</label>
       <textarea id="msg-${post.id}" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ...">${auto && auto.replyMessage ? auto.replyMessage : ''}</textarea>
+
+      <label style="margin-top:14px;">Herkese açık yorum cevapları (dönüşümlü kullanılır, hep aynısı olmaz)</label>
+      <div id="publicReplies-${post.id}"></div>
+      <button type="button" onclick="addPublicReplyField('${post.id}')" style="background:#2a2a2a;">+ Cevap Ekle</button>
 
       <button onclick="savePost('${post.id}')">Kaydet</button>
       ${auto ? `<button class="danger" onclick="deletePost('${post.id}')">Otomasyonu Kaldır</button>` : ''}
       <div id="saveMsg-${post.id}"></div>
     `;
     container.appendChild(card);
+
+    const existingReplies = (auto && auto.publicReplies && auto.publicReplies.length > 0)
+      ? auto.publicReplies
+      : [''];
+    existingReplies.forEach((text) => addPublicReplyField(post.id, text));
   });
 
   if (data.posts.length === 0) {
     container.innerHTML = '<div class="loading">Henüz gönderi bulunamadı.</div>';
   }
+}
+
+function addPublicReplyField(postId, value = '') {
+  const container = document.getElementById('publicReplies-' + postId);
+  const row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.gap = '6px';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <textarea class="public-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩" style="flex:1; min-height:40px;">${value}</textarea>
+    <button type="button" onclick="this.parentElement.remove()" style="width:40px; background:#a02020; margin-top:0;">✕</button>
+  `;
+  container.appendChild(row);
 }
 
 async function savePost(mediaId) {
@@ -139,6 +161,10 @@ async function savePost(mediaId) {
   const link = document.getElementById('link-' + mediaId).value;
   const replyMessage = document.getElementById('msg-' + mediaId).value;
   const msgEl = document.getElementById('saveMsg-' + mediaId);
+
+  const publicReplies = Array.from(
+    document.querySelectorAll('#publicReplies-' + mediaId + ' .public-reply-input')
+  ).map(el => el.value.trim()).filter(v => v);
 
   if (!keyword || !link) {
     msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
@@ -152,7 +178,7 @@ async function savePost(mediaId) {
   const res = await fetch('/admin/api/posts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mediaId, title, keyword, link, replyMessage }),
+    body: JSON.stringify({ mediaId, title, keyword, link, replyMessage, publicReplies }),
   });
   const result = await res.json();
 
