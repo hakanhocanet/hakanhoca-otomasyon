@@ -178,7 +178,7 @@ async function sendPublicReply(commentId, text) {
 async function attemptSend(commentId, message, record) {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v23.0/${commentId}/private_replies`,
+      `https://graph.instagram.com/v21.0/${commentId}/private_replies`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
