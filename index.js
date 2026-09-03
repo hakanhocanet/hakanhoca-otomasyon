@@ -13,6 +13,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'hakanhoca_dogrulama_kelimesi';
 const ACCESS_TOKEN = process.env.IG_ACCESS_TOKEN;
+const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN || process.env.IG_ACCESS_TOKEN; // DM gönderme için Facebook Sayfa token'ı
 const IG_USER_ID = process.env.IG_USER_ID; // Instagram business hesabının ID'si
 const ADMIN_USER = process.env.ADMIN_USER || 'hakanhoca';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'degistir123';
@@ -159,11 +160,11 @@ function pickNextPublicReply(mediaId, replies) {
 async function sendPublicReply(commentId, text) {
   try {
     const response = await fetch(
-      `https://graph.instagram.com/v23.0/${commentId}/replies`,
+      `https://graph.facebook.com/v21.0/${commentId}/replies`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, access_token: ACCESS_TOKEN }),
+        body: JSON.stringify({ message: text, access_token: PAGE_ACCESS_TOKEN }),
       }
     );
     const result = await response.json();
@@ -178,11 +179,11 @@ async function sendPublicReply(commentId, text) {
 async function attemptSend(commentId, message, record) {
   try {
     const response = await fetch(
-      `https://graph.instagram.com/v21.0/${commentId}/private_replies`,
+      `https://graph.facebook.com/v21.0/${commentId}/private_replies`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, access_token: ACCESS_TOKEN }),
+        body: JSON.stringify({ message, access_token: PAGE_ACCESS_TOKEN }),
       }
     );
     const result = await response.json();
