@@ -34,6 +34,7 @@
   }
   .badge.on { background: #1f4d2e; color: #6fdb8f; }
   .badge.off { background: #3a2a1a; color: #e0a05a; }
+  .hint { font-size: 13px; color: #999; margin-bottom: 10px; line-height: 1.4; }
   label { font-size: 12px; color: #999; display: block; margin: 8px 0 4px; }
   input, textarea {
     width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333;
@@ -66,11 +67,43 @@
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('posts')">Gönderiler</div>
+  <div class="tab" onclick="showTab('pending')">Planlanan</div>
   <div class="tab" onclick="showTab('status')">Durum</div>
 </div>
 
 <div id="postsTab">
   <div id="postsList" class="loading">Gönderiler yükleniyor...</div>
+</div>
+
+<div id="pendingTab" style="display:none">
+  <div class="card" style="border-color:#405de6;">
+    <div class="hint">
+      Henüz paylaşmadığın bir gönderi için otomasyonu şimdiden hazırla. Gönderiyi paylaşıp
+      bu anahtar kelimeyle ilk yorum geldiğinde, otomasyon otomatik olarak o gönderiye bağlanır
+      ve tekrar buraya girmene gerek kalmaz.
+    </div>
+
+    <label>Başlık (senin için not)</label>
+    <input type="text" id="new-pending-title" placeholder="Örn: Ritmik Sayma Kartları">
+
+    <label>Anahtar kelime</label>
+    <input type="text" id="new-pending-keyword" placeholder="PDF">
+
+    <label>Gönderilecek link</label>
+    <input type="text" id="new-pending-link" placeholder="https://hakanhoca.net/...">
+
+    <label>Mesaj metni (özel mesaj / DM - boş bırakırsan otomatik oluşur)</label>
+    <textarea id="new-pending-msg" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ..."></textarea>
+
+    <label style="margin-top:14px;">Herkese açık yorum cevapları (dönüşümlü kullanılır, hep aynısı olmaz)</label>
+    <div id="new-pending-replies"></div>
+    <button type="button" onclick="addPendingReplyField()" style="background:#2a2a2a;">+ Cevap Ekle</button>
+
+    <button onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
+    <div id="newPendingMsg"></div>
+  </div>
+
+  <div id="pendingList"></div>
 </div>
 
 <div id="statusTab" style="display:none">
@@ -80,10 +113,12 @@
 <script>
 function showTab(tab) {
   document.getElementById('postsTab').style.display = tab === 'posts' ? 'block' : 'none';
+  document.getElementById('pendingTab').style.display = tab === 'pending' ? 'block' : 'none';
   document.getElementById('statusTab').style.display = tab === 'status' ? 'block' : 'none';
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   event.target.classList.add('active');
   if (tab === 'status') loadStatus();
+  if (tab === 'pending') loadPending();
 }
 
 async function loadPosts() {
@@ -196,6 +231,95 @@ async function deletePost(mediaId) {
   if (!confirm('Bu gönderinin otomasyonunu kaldırmak istediğine emin misin?')) return;
   await fetch('/admin/api/posts/' + mediaId, { method: 'DELETE' });
   loadPosts();
+}
+
+function addPendingReplyField(value = '') {
+  const container = document.getElementById('new-pending-replies');
+  const row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.gap = '6px';
+  row.style.marginBottom = '6px';
+  row.innerHTML = `
+    <textarea class="pending-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩" style="flex:1; min-height:40px;">${value}</textarea>
+    <button type="button" onclick="this.parentElement.remove()" style="width:40px; background:#a02020; margin-top:0;">✕</button>
+  `;
+  container.appendChild(row);
+}
+addPendingReplyField();
+
+async function addPendingTemplate() {
+  const title = document.getElementById('new-pending-title').value;
+  const keyword = document.getElementById('new-pending-keyword').value;
+  const link = document.getElementById('new-pending-link').value;
+  const replyMessage = document.getElementById('new-pending-msg').value;
+  const msgEl = document.getElementById('newPendingMsg');
+
+  const publicReplies = Array.from(
+    document.querySelectorAll('#new-pending-replies .pending-reply-input')
+  ).map(el => el.value.trim()).filter(v => v);
+
+  if (!keyword || !link) {
+    msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
+    msgEl.style.color = '#e05a5a';
+    return;
+  }
+
+  msgEl.textContent = 'Kaydediliyor...';
+  msgEl.style.color = '#999';
+
+  const res = await fetch('/admin/api/pending', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, keyword, link, replyMessage, publicReplies }),
+  });
+  const result = await res.json();
+
+  if (result.ok) {
+    msgEl.textContent = '✅ Kaydedildi! Gönderiyi paylaşınca otomatik bağlanacak.';
+    msgEl.style.color = '#6fdb8f';
+    document.getElementById('new-pending-title').value = '';
+    document.getElementById('new-pending-keyword').value = '';
+    document.getElementById('new-pending-link').value = '';
+    document.getElementById('new-pending-msg').value = '';
+    document.getElementById('new-pending-replies').innerHTML = '';
+    addPendingReplyField();
+    loadPending();
+  } else {
+    msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
+    msgEl.style.color = '#e05a5a';
+  }
+}
+
+async function loadPending() {
+  const res = await fetch('/admin/api/pending');
+  const data = await res.json();
+  const container = document.getElementById('pendingList');
+  const ids = Object.keys(data.pending || {});
+
+  if (ids.length === 0) {
+    container.innerHTML = '<div class="loading">Bekleyen planlanan otomasyon yok.</div>';
+    return;
+  }
+
+  container.innerHTML = '<h3 style="font-size:15px;margin:16px 0 8px;">Bekleyen Planlanan Otomasyonlar</h3>';
+  ids.forEach(id => {
+    const t = data.pending[id];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="badge off">⏳ Bekliyor — anahtar kelime: "${t.keyword}"</div>
+      <div class="caption">${t.title || '(başlıksız)'}</div>
+      <div style="font-size:12px;color:#999;margin-bottom:8px;">${t.link}</div>
+      <button class="danger" onclick="deletePending('${id}')">Sil</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function deletePending(id) {
+  if (!confirm('Bu planlanan otomasyonu silmek istediğine emin misin?')) return;
+  await fetch('/admin/api/pending/' + id, { method: 'DELETE' });
+  loadPending();
 }
 
 async function loadStatus() {
