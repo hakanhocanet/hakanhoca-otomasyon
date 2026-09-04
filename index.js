@@ -100,8 +100,16 @@ async function saveConfigToGithub(config) {
 
 // ================== ACCESS TOKEN OTOMATİK YENİLEME ==================
 // Instagram Login token'ları 60 gün geçerli. Süresi dolmadan önce (ve en az
-// 24 saat kullanıldıktan sonra) yenilenebilir. Burada 45 günde bir otomatik
-// yenileme deneniyor, böylece token hiçbir zaman süresi dolmadan tazeleniyor.
+// 24 saat kullanıldıktan sonra) yenilenebilir.
+//
+// ÖNEMLİ: setInterval'a doğrudan "45 gün" gibi büyük bir milisaniye değeri
+// VERİLEMEZ - Node.js/JavaScript'in zamanlayıcıları 32-bit sayı ile sınırlı
+// (maksimum ~24.8 gün). Daha büyük bir değer verilirse, sistem bunu "1 milisaniye"
+// olarak yorumlar ve fonksiyon saniyede binlerce kez tetiklenir! Bu yüzden burada
+// GÜVENLİ bir şekilde her 24 saatte bir "vakti geldi mi" diye kontrol ediyoruz,
+// gerçek yenileme sadece 45 gün dolduğunda tetikleniyor.
+
+let sonTokenYenilemeZamani = Date.now(); // az önce taze bir token aldık, şimdiden say
 
 async function refreshAccessToken() {
   if (!igAccessToken) {
@@ -116,6 +124,7 @@ async function refreshAccessToken() {
 
     if (result.access_token) {
       igAccessToken = result.access_token;
+      sonTokenYenilemeZamani = Date.now();
       const gunSayisi = Math.round((result.expires_in || 0) / 86400);
       console.log(`✅ Instagram access token yenilendi. Yeni geçerlilik: ~${gunSayisi} gün.`);
       await persistTokenToRender(igAccessToken);
@@ -159,10 +168,25 @@ async function persistTokenToRender(token) {
   }
 }
 
-// Sunucu açılışında bir kere dene (token zaten tazeyse Meta reddedebilir, sorun değil,
-// 45 gün sonra tekrar denenecek). Sonra her 45 günde bir otomatik tekrar dene.
-refreshAccessToken();
-setInterval(refreshAccessToken, 45 * 24 * 60 * 60 * 1000);
+// Gerçek yenileme zamanı gelip gelmediğini kontrol eder. Bu fonksiyon her gün
+// (24 saatte bir) çalışır ama Meta'ya sadece 45 gün dolduğunda istek atar -
+// böylece sunucu her yeniden başladığında (Render sık sık redeploy ediyor)
+// Meta'nın API'sine gereksiz/aşırı istek gitmez.
+const YENILEME_ARALIGI_MS = 45 * 24 * 60 * 60 * 1000; // 45 gün (sadece karşılaştırma için, setInterval'a VERİLMİYOR)
+
+function refreshAccessTokenIfDue() {
+  const gecenSure = Date.now() - sonTokenYenilemeZamani;
+  if (gecenSure >= YENILEME_ARALIGI_MS) {
+    refreshAccessToken();
+  } else {
+    const kalanGun = Math.ceil((YENILEME_ARALIGI_MS - gecenSure) / (24 * 60 * 60 * 1000));
+    console.log(`Token yenileme vakti henüz gelmedi (~${kalanGun} gün kaldı).`);
+  }
+}
+
+// Her 24 saatte bir "vakti geldi mi" diye kontrol et (24 saat = 86.400.000 ms,
+// 32-bit zamanlayıcı sınırının çok altında, bu yüzden güvenli).
+setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
 
 // ================== WEBHOOK (Instagram tarafı) ==================
 
