@@ -4,71 +4,246 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HakanHoca Otomasyon Paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #0b0b10;
+    --bg-elevated: #15151d;
+    --bg-card: #1a1a24;
+    --bg-card-2: #20202c;
+    --border: #2a2a38;
+    --text: #f3f3f7;
+    --text-dim: #9797a8;
+    --text-dimmer: #6c6c7c;
+    --ig1: #f9ce34;
+    --ig2: #ee2a7b;
+    --ig3: #6228d7;
+    --gradient: linear-gradient(135deg, #f9ce34 0%, #ee2a7b 55%, #6228d7 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(249,206,52,0.15), rgba(238,42,123,0.15) 55%, rgba(98,40,215,0.15));
+    --success: #34d399;
+    --success-bg: rgba(52,211,153,0.14);
+    --danger: #fb5479;
+    --danger-bg: rgba(251,84,121,0.14);
+    --warning: #fbbf24;
+    --warning-bg: rgba(251,191,36,0.14);
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+  }
   * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, Roboto, sans-serif;
-    background: #0f0f0f;
-    color: #eee;
+    font-family: 'Poppins', -apple-system, Roboto, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(238,42,123,0.10), transparent 40%),
+      radial-gradient(circle at 90% 15%, rgba(98,40,215,0.12), transparent 45%);
+    background-attachment: fixed;
+    color: var(--text);
     margin: 0;
-    padding: 16px;
+    padding: 18px;
+    padding-bottom: 60px;
   }
-  h1 { font-size: 20px; margin-bottom: 4px; }
-  .sub { color: #999; font-size: 13px; margin-bottom: 16px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .header .logo {
+    width: 44px; height: 44px;
+    border-radius: 13px;
+    background: var(--gradient);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(238,42,123,0.25);
+  }
+  h1 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .sub { color: var(--text-dim); font-size: 12.5px; margin-top: 2px; }
+
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    background: var(--bg-elevated);
+    padding: 6px; border-radius: 16px;
+    border: 1px solid var(--border);
+  }
   .tab {
-    flex: 1; text-align: center; padding: 10px;
-    background: #1c1c1c; border-radius: 10px; cursor: pointer;
-    font-size: 14px; border: 1px solid #2a2a2a;
+    flex: 1; text-align: center; padding: 11px 6px;
+    border-radius: 12px; cursor: pointer;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--text-dim);
+    transition: all .15s ease;
+    user-select: none;
   }
-  .tab.active { background: #405de6; border-color: #405de6; }
+  .tab .tab-icon { margin-right: 5px; }
+  .tab.active {
+    background: var(--gradient);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(238,42,123,0.30);
+  }
+
+  .section-title {
+    font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--text-dim); margin: 22px 0 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
   .card {
-    background: #1a1a1a; border-radius: 14px; padding: 14px;
-    margin-bottom: 12px; border: 1px solid #262626;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+    position: relative;
+    overflow: hidden;
   }
-  .card img { width: 100%; border-radius: 10px; margin-bottom: 8px; max-height: 220px; object-fit: cover; }
-  .caption { font-size: 13px; color: #ccc; margin-bottom: 10px; max-height: 40px; overflow: hidden; }
+  .card.accent::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--gradient);
+  }
+  .card img { width: 100%; border-radius: var(--radius-md); margin-bottom: 10px; max-height: 220px; object-fit: cover; display: block; }
+  .caption { font-size: 13.5px; color: #d5d5df; margin-bottom: 12px; line-height: 1.4; }
+
   .badge {
-    display: inline-block; padding: 3px 8px; border-radius: 20px;
-    font-size: 11px; margin-bottom: 8px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 11.5px; font-weight: 600; margin-bottom: 10px;
   }
-  .badge.on { background: #1f4d2e; color: #6fdb8f; }
-  .badge.off { background: #3a2a1a; color: #e0a05a; }
-  .hint { font-size: 13px; color: #999; margin-bottom: 10px; line-height: 1.4; }
-  label { font-size: 12px; color: #999; display: block; margin: 8px 0 4px; }
+  .badge.on { background: var(--success-bg); color: var(--success); }
+  .badge.off { background: var(--warning-bg); color: var(--warning); }
+  .badge.wait { background: rgba(238,42,123,0.14); color: #f472b6; }
+
+  .hint {
+    font-size: 13px; color: var(--text-dim); margin-bottom: 14px; line-height: 1.55;
+    background: var(--gradient-soft);
+    border: 1px solid rgba(238,42,123,0.25);
+    padding: 12px 14px; border-radius: var(--radius-md);
+  }
+
+  label {
+    font-size: 11.5px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: .03em;
+    display: block; margin: 14px 0 6px;
+  }
+  label:first-of-type { margin-top: 0; }
+
   input, textarea {
-    width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #333;
-    background: #0f0f0f; color: #fff; font-size: 14px;
+    width: 100%; padding: 12px 13px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--text); font-size: 14px;
+    font-family: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
   }
-  textarea { resize: vertical; min-height: 50px; }
+  input::placeholder, textarea::placeholder { color: var(--text-dimmer); }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #ee2a7b;
+    box-shadow: 0 0 0 3px rgba(238,42,123,0.15);
+  }
+  textarea { resize: vertical; min-height: 54px; }
+
   button {
-    width: 100%; padding: 12px; border-radius: 10px; border: none;
-    background: #405de6; color: white; font-size: 14px; font-weight: 600;
-    margin-top: 10px;
+    width: 100%; padding: 13px; border-radius: var(--radius-sm); border: none;
+    color: white; font-size: 14px; font-weight: 700;
+    margin-top: 12px; cursor: pointer;
+    font-family: inherit;
+    transition: transform .12s ease, filter .12s ease;
   }
-  button.danger { background: #a02020; margin-top: 6px; }
-  .stat-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .stat { flex: 1; background: #1a1a1a; border-radius: 12px; padding: 12px; text-align: center; }
-  .stat .num { font-size: 22px; font-weight: 700; }
-  .stat.green .num { color: #6fdb8f; }
-  .stat.red .num { color: #e05a5a; }
-  .stat.yellow .num { color: #e0c05a; }
-  .log-item { background: #1a1a1a; border-radius: 10px; padding: 10px; margin-bottom: 8px; font-size: 13px; }
-  .log-item .user { font-weight: 600; }
-  .log-item .reason { color: #e05a5a; font-size: 12px; margin-top: 4px; }
-  .loading { text-align: center; color: #666; padding: 40px 0; }
-  #saveMsg { text-align: center; font-size: 13px; margin-top: 8px; min-height: 18px; }
+  button:active { transform: scale(0.98); }
+  button.primary { background: var(--gradient); box-shadow: 0 6px 16px rgba(238,42,123,0.28); }
+  button.primary:hover { filter: brightness(1.08); }
+  button.ghost {
+    background: var(--bg-card-2); color: var(--text-dim);
+    border: 1px dashed var(--border);
+  }
+  button.ghost:hover { color: var(--text); border-color: #ee2a7b; }
+  button.danger { background: var(--danger-bg); color: var(--danger); margin-top: 8px; }
+  button.danger:hover { background: rgba(251,84,121,0.22); }
+
+  .reply-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px; margin-bottom: 8px;
+  }
+  .reply-number {
+    flex-shrink: 0;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--gradient);
+    color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 4px;
+  }
+  .reply-item textarea {
+    flex: 1; min-height: 42px; border: none; background: transparent; padding: 6px 4px;
+  }
+  .reply-item textarea:focus { box-shadow: none; }
+  .reply-remove {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+    background: var(--danger-bg); color: var(--danger);
+    border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 0; padding: 0;
+  }
+  .reply-remove:hover { background: rgba(251,84,121,0.25); }
+
+  .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .stat {
+    flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 16px 10px; text-align: center;
+  }
+  .stat .stat-icon { font-size: 18px; margin-bottom: 4px; }
+  .stat .num { font-size: 24px; font-weight: 800; line-height: 1.1; }
+  .stat .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; font-weight: 600; }
+  .stat.green .num { color: var(--success); }
+  .stat.red .num { color: var(--danger); }
+  .stat.yellow .num { color: var(--warning); }
+
+  .log-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 9px; font-size: 13.5px;
+  }
+  .log-item .user { font-weight: 700; color: #fff; }
+  .log-item .comment-text { color: var(--text-dim); }
+  .log-item .reason { color: var(--danger); font-size: 12px; margin-top: 5px; }
+
+  .loading, .empty-state {
+    text-align: center; color: var(--text-dimmer); padding: 44px 20px;
+    font-size: 13.5px;
+  }
+  .empty-state .icon { font-size: 30px; display: block; margin-bottom: 10px; }
+
+  #saveMsg, #newPendingMsg { text-align: center; font-size: 13px; margin-top: 10px; min-height: 18px; font-weight: 600; }
 </style>
 </head>
 <body>
 
-<h1>📸 HakanHoca Otomasyon</h1>
-<div class="sub">Gönderiye yorum yazana otomatik özel mesaj gönder</div>
+<div class="header">
+  <div class="logo">📸</div>
+  <div>
+    <h1>HakanHoca Otomasyon</h1>
+    <div class="sub">Gönderiye yorum yazana otomatik özel mesaj gönder</div>
+  </div>
+</div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('posts')">Gönderiler</div>
-  <div class="tab" onclick="showTab('pending')">Planlanan</div>
-  <div class="tab" onclick="showTab('status')">Durum</div>
+  <div class="tab active" onclick="showTab('posts')"><span class="tab-icon">🖼️</span>Gönderiler</div>
+  <div class="tab" onclick="showTab('pending')"><span class="tab-icon">🗓️</span>Planlanan</div>
+  <div class="tab" onclick="showTab('status')"><span class="tab-icon">📊</span>Durum</div>
 </div>
 
 <div id="postsTab">
@@ -76,11 +251,11 @@
 </div>
 
 <div id="pendingTab" style="display:none">
-  <div class="card" style="border-color:#405de6;">
+  <div class="card accent">
     <div class="hint">
-      Henüz paylaşmadığın bir gönderi için otomasyonu şimdiden hazırla. Gönderiyi paylaşıp
-      bu anahtar kelimeyle ilk yorum geldiğinde, otomasyon otomatik olarak o gönderiye bağlanır
-      ve tekrar buraya girmene gerek kalmaz.
+      🗓️ Henüz paylaşmadığın bir gönderi için otomasyonu şimdiden hazırla. Gönderiyi paylaşıp
+      bu anahtar kelimeyle ilk yorum geldiğinde, otomasyon otomatik olarak o gönderiye bağlanır —
+      birden çok tanesini eklersen, hangi sırayla eklediysen o sırayla kullanılır.
     </div>
 
     <label>Başlık (senin için not)</label>
@@ -92,14 +267,14 @@
     <label>Gönderilecek link</label>
     <input type="text" id="new-pending-link" placeholder="https://hakanhoca.net/...">
 
-    <label>Mesaj metni (özel mesaj / DM - boş bırakırsan otomatik oluşur)</label>
+    <label>Mesaj metni (özel mesaj / DM — boş bırakırsan otomatik oluşur)</label>
     <textarea id="new-pending-msg" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ..."></textarea>
 
-    <label style="margin-top:14px;">Herkese açık yorum cevapları (dönüşümlü kullanılır, hep aynısı olmaz)</label>
+    <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
     <div id="new-pending-replies"></div>
-    <button type="button" onclick="addPendingReplyField()" style="background:#2a2a2a;">+ Cevap Ekle</button>
+    <button type="button" class="ghost" onclick="addPendingReplyField()">+ Cevap Ekle</button>
 
-    <button onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
+    <button class="primary" onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
     <div id="newPendingMsg"></div>
   </div>
 
@@ -116,7 +291,7 @@ function showTab(tab) {
   document.getElementById('pendingTab').style.display = tab === 'pending' ? 'block' : 'none';
   document.getElementById('statusTab').style.display = tab === 'status' ? 'block' : 'none';
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  event.target.closest('.tab').classList.add('active');
   if (tab === 'status') loadStatus();
   if (tab === 'pending') loadPending();
 }
@@ -127,7 +302,7 @@ async function loadPosts() {
   const container = document.getElementById('postsList');
 
   if (data.error) {
-    container.innerHTML = '<div class="loading">Hata: ' + data.error + '</div>';
+    container.innerHTML = '<div class="empty-state"><span class="icon">⚠️</span>Hata: ' + data.error + '</div>';
     return;
   }
 
@@ -138,7 +313,7 @@ async function loadPosts() {
     const caption = (post.caption || '(açıklama yok)').slice(0, 80);
 
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'card' + (auto ? ' accent' : '');
     card.innerHTML = `
       ${img ? `<img src="${img}">` : ''}
       <div class="badge ${auto ? 'on' : 'off'}">${auto ? '✅ Otomasyon aktif' : '⚪ Otomasyon yok'}</div>
@@ -153,14 +328,14 @@ async function loadPosts() {
       <label>Gönderilecek link</label>
       <input type="text" id="link-${post.id}" value="${auto ? auto.link : ''}" placeholder="https://hakanhoca.net/...">
 
-      <label>Mesaj metni (özel mesaj / DM - boş bırakırsan otomatik oluşur)</label>
+      <label>Mesaj metni (özel mesaj / DM — boş bırakırsan otomatik oluşur)</label>
       <textarea id="msg-${post.id}" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ...">${auto && auto.replyMessage ? auto.replyMessage : ''}</textarea>
 
-      <label style="margin-top:14px;">Herkese açık yorum cevapları (dönüşümlü kullanılır, hep aynısı olmaz)</label>
+      <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
       <div id="publicReplies-${post.id}"></div>
-      <button type="button" onclick="addPublicReplyField('${post.id}')" style="background:#2a2a2a;">+ Cevap Ekle</button>
+      <button type="button" class="ghost" onclick="addPublicReplyField('${post.id}')">+ Cevap Ekle</button>
 
-      <button onclick="savePost('${post.id}')">Kaydet</button>
+      <button class="primary" onclick="savePost('${post.id}')">Kaydet</button>
       ${auto ? `<button class="danger" onclick="deletePost('${post.id}')">Otomasyonu Kaldır</button>` : ''}
       <div id="saveMsg-${post.id}"></div>
     `;
@@ -173,19 +348,19 @@ async function loadPosts() {
   });
 
   if (data.posts.length === 0) {
-    container.innerHTML = '<div class="loading">Henüz gönderi bulunamadı.</div>';
+    container.innerHTML = '<div class="empty-state"><span class="icon">🖼️</span>Henüz gönderi bulunamadı.</div>';
   }
 }
 
 function addPublicReplyField(postId, value = '') {
   const container = document.getElementById('publicReplies-' + postId);
+  const index = container.children.length + 1;
   const row = document.createElement('div');
-  row.style.display = 'flex';
-  row.style.gap = '6px';
-  row.style.marginBottom = '6px';
+  row.className = 'reply-item';
   row.innerHTML = `
-    <textarea class="public-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩" style="flex:1; min-height:40px;">${value}</textarea>
-    <button type="button" onclick="this.parentElement.remove()" style="width:40px; background:#a02020; margin-top:0;">✕</button>
+    <div class="reply-number">${index}</div>
+    <textarea class="public-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩">${value}</textarea>
+    <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
   `;
   container.appendChild(row);
 }
@@ -203,12 +378,12 @@ async function savePost(mediaId) {
 
   if (!keyword || !link) {
     msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
-    msgEl.style.color = '#e05a5a';
+    msgEl.style.color = 'var(--danger)';
     return;
   }
 
   msgEl.textContent = 'Kaydediliyor...';
-  msgEl.style.color = '#999';
+  msgEl.style.color = 'var(--text-dim)';
 
   const res = await fetch('/admin/api/posts', {
     method: 'POST',
@@ -219,11 +394,11 @@ async function savePost(mediaId) {
 
   if (result.ok) {
     msgEl.textContent = '✅ Kaydedildi!';
-    msgEl.style.color = '#6fdb8f';
+    msgEl.style.color = 'var(--success)';
     setTimeout(loadPosts, 1000);
   } else {
     msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
-    msgEl.style.color = '#e05a5a';
+    msgEl.style.color = 'var(--danger)';
   }
 }
 
@@ -235,13 +410,13 @@ async function deletePost(mediaId) {
 
 function addPendingReplyField(value = '') {
   const container = document.getElementById('new-pending-replies');
+  const index = container.children.length + 1;
   const row = document.createElement('div');
-  row.style.display = 'flex';
-  row.style.gap = '6px';
-  row.style.marginBottom = '6px';
+  row.className = 'reply-item';
   row.innerHTML = `
-    <textarea class="pending-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩" style="flex:1; min-height:40px;">${value}</textarea>
-    <button type="button" onclick="this.parentElement.remove()" style="width:40px; background:#a02020; margin-top:0;">✕</button>
+    <div class="reply-number">${index}</div>
+    <textarea class="pending-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩">${value}</textarea>
+    <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
   `;
   container.appendChild(row);
 }
@@ -260,12 +435,12 @@ async function addPendingTemplate() {
 
   if (!keyword || !link) {
     msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
-    msgEl.style.color = '#e05a5a';
+    msgEl.style.color = 'var(--danger)';
     return;
   }
 
   msgEl.textContent = 'Kaydediliyor...';
-  msgEl.style.color = '#999';
+  msgEl.style.color = 'var(--text-dim)';
 
   const res = await fetch('/admin/api/pending', {
     method: 'POST',
@@ -276,7 +451,7 @@ async function addPendingTemplate() {
 
   if (result.ok) {
     msgEl.textContent = '✅ Kaydedildi! Gönderiyi paylaşınca otomatik bağlanacak.';
-    msgEl.style.color = '#6fdb8f';
+    msgEl.style.color = 'var(--success)';
     document.getElementById('new-pending-title').value = '';
     document.getElementById('new-pending-keyword').value = '';
     document.getElementById('new-pending-link').value = '';
@@ -286,7 +461,7 @@ async function addPendingTemplate() {
     loadPending();
   } else {
     msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
-    msgEl.style.color = '#e05a5a';
+    msgEl.style.color = 'var(--danger)';
   }
 }
 
@@ -297,19 +472,19 @@ async function loadPending() {
   const ids = Object.keys(data.pending || {});
 
   if (ids.length === 0) {
-    container.innerHTML = '<div class="loading">Bekleyen planlanan otomasyon yok.</div>';
+    container.innerHTML = '<div class="empty-state"><span class="icon">🗓️</span>Bekleyen planlanan otomasyon yok.</div>';
     return;
   }
 
-  container.innerHTML = '<h3 style="font-size:15px;margin:16px 0 8px;">Bekleyen Planlanan Otomasyonlar</h3>';
-  ids.forEach(id => {
+  container.innerHTML = '<div class="section-title">⏳ Bekleyen Planlanan Otomasyonlar (kullanım sırası yukarıdan aşağı)</div>';
+  ids.forEach((id, i) => {
     const t = data.pending[id];
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="badge off">⏳ Bekliyor — anahtar kelime: "${t.keyword}"</div>
-      <div class="caption">${t.title || '(başlıksız)'}</div>
-      <div style="font-size:12px;color:#999;margin-bottom:8px;">${t.link}</div>
+      <div class="badge wait">⏳ ${i + 1}. sırada — anahtar kelime: "${t.keyword}"</div>
+      <div class="caption" style="font-weight:600;color:#fff;">${t.title || '(başlıksız)'}</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;word-break:break-all;">${t.link}</div>
       <button class="danger" onclick="deletePending('${id}')">Sil</button>
     `;
     container.appendChild(card);
@@ -329,29 +504,33 @@ async function loadStatus() {
 
   let html = `
     <div class="stat-row">
-      <div class="stat green"><div class="num">${data.ozet.basariylaGonderilen}</div><div>Gönderildi</div></div>
-      <div class="stat red"><div class="num">${data.ozet.basarisizOlan}</div><div>Başarısız</div></div>
-      <div class="stat yellow"><div class="num">${data.ozet.tekrarDenenecek}</div><div>Bekliyor</div></div>
+      <div class="stat green"><div class="stat-icon">✅</div><div class="num">${data.ozet.basariylaGonderilen}</div><div class="stat-label">Gönderildi</div></div>
+      <div class="stat red"><div class="stat-icon">⚠️</div><div class="num">${data.ozet.basarisizOlan}</div><div class="stat-label">Başarısız</div></div>
+      <div class="stat yellow"><div class="stat-icon">⏳</div><div class="num">${data.ozet.tekrarDenenecek}</div><div class="stat-label">Bekliyor</div></div>
     </div>
   `;
 
   if (data.basarisizOlanlar.length > 0) {
-    html += '<h3 style="font-size:15px;margin-bottom:8px;">Başarısız Olanlar</h3>';
+    html += '<div class="section-title">⚠️ Başarısız Olanlar</div>';
     data.basarisizOlanlar.forEach(item => {
       html += `<div class="log-item">
-        <span class="user">@${item.fromUsername}</span> — "${item.commentText}"
+        <span class="user">@${item.fromUsername}</span> <span class="comment-text">— "${item.commentText}"</span>
         <div class="reason">${item.reason}</div>
       </div>`;
     });
   }
 
   if (data.gonderilenler.length > 0) {
-    html += '<h3 style="font-size:15px;margin:16px 0 8px;">Son Gönderilenler</h3>';
+    html += '<div class="section-title">✅ Son Gönderilenler</div>';
     data.gonderilenler.forEach(item => {
       html += `<div class="log-item">
-        <span class="user">@${item.fromUsername}</span> — "${item.commentText}"
+        <span class="user">@${item.fromUsername}</span> <span class="comment-text">— "${item.commentText}"</span>
       </div>`;
     });
+  }
+
+  if (data.basarisizOlanlar.length === 0 && data.gonderilenler.length === 0) {
+    html += '<div class="empty-state"><span class="icon">📭</span>Henüz kayıt yok.</div>';
   }
 
   container.innerHTML = html;
