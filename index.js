@@ -54,8 +54,10 @@ function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) return { posts: {} };
-  return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+  if (!fs.existsSync(CONFIG_FILE)) return { posts: {}, pendingTemplates: {} };
+  const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
+  if (!config.pendingTemplates) config.pendingTemplates = {};
+  return config;
 }
 function saveConfigLocal(config) {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
@@ -224,13 +226,34 @@ async function handleComment(value) {
   const fromUsername = value.from ? value.from.username : 'bilinmiyor';
 
   const config = loadConfig();
-  const postConfig = mediaId ? config.posts[mediaId] : null;
+  let postConfig = mediaId ? config.posts[mediaId] : null;
 
   const record = {
     commentId, mediaId, fromUsername,
     commentText: value.text || '',
     timestamp: new Date().toISOString(),
   };
+
+  // Bu gönderi için henüz özel bir otomasyon yoksa, "Planlanan" (henüz paylaşılmamışken
+  // hazırlanmış) otomasyonlardan anahtar kelimesi bu yorumla eşleşen var mı diye bak.
+  // Eşleşme bulunursa, o taslak artık kalıcı olarak bu gerçek gönderiye bağlanır.
+  if (!postConfig && mediaId) {
+    const pending = config.pendingTemplates || {};
+    for (const pendingId of Object.keys(pending)) {
+      const template = pending[pendingId];
+      if (template.keyword && commentText.includes(template.keyword.toLowerCase())) {
+        postConfig = { ...template };
+        config.posts[mediaId] = postConfig;
+        delete config.pendingTemplates[pendingId];
+        saveConfigLocal(config);
+        saveConfigToGithub(config).catch((err) =>
+          console.error('Planlanan otomasyon bağlanırken GitHub kayıt hatası:', err.message)
+        );
+        console.log(`📌 Planlanan otomasyon ("${template.title || template.keyword}") gönderi ${mediaId} için bağlandı.`);
+        break;
+      }
+    }
+  }
 
   if (!postConfig) {
     // Bu gönderi için otomasyon tanımlı değil - bu normal, hesaptaki her yorumu görüyoruz.
@@ -410,6 +433,43 @@ app.post('/admin/api/posts', async (req, res) => {
 app.delete('/admin/api/posts/:mediaId', async (req, res) => {
   const config = loadConfig();
   delete config.posts[req.params.mediaId];
+  saveConfigLocal(config);
+  await saveConfigToGithub(config);
+  res.json({ ok: true });
+});
+
+// ================== PLANLANAN OTOMASYONLAR (henüz paylaşılmamış gönderiler için) ==================
+// Bir gönderiyi paylaşmadan önce otomasyonunu "taslak" olarak kaydedebilirsin.
+// Gönderi paylaşılıp o anahtar kelimeyle ilk yorum geldiğinde, sistem bu taslağı otomatik
+// olarak gerçek gönderiye bağlar (bkz. handleComment() içindeki eşleştirme mantığı).
+
+app.get('/admin/api/pending', (req, res) => {
+  const config = loadConfig();
+  res.json({ pending: config.pendingTemplates });
+});
+
+app.post('/admin/api/pending', async (req, res) => {
+  const { title, keyword, link, replyMessage, publicReplies } = req.body;
+  if (!keyword || !link) {
+    return res.status(400).json({ error: 'Anahtar kelime ve link zorunlu' });
+  }
+  const config = loadConfig();
+  const id = 'p_' + Date.now();
+  config.pendingTemplates[id] = {
+    title: title || '',
+    keyword,
+    link,
+    replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
+    publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
+  };
+  saveConfigLocal(config);
+  await saveConfigToGithub(config);
+  res.json({ ok: true, id });
+});
+
+app.delete('/admin/api/pending/:id', async (req, res) => {
+  const config = loadConfig();
+  delete config.pendingTemplates[req.params.id];
   saveConfigLocal(config);
   await saveConfigToGithub(config);
   res.json({ ok: true });
