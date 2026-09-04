@@ -272,7 +272,7 @@
 
     <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
     <div id="new-pending-replies"></div>
-    <button type="button" class="ghost" onclick="addPendingReplyField()">+ Cevap Ekle</button>
+    <button type="button" class="ghost" onclick="addPendingReplyTemplate()">+ Cevap Ekle (hazır listeden)</button>
 
     <button class="primary" onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
     <div id="newPendingMsg"></div>
@@ -286,6 +286,21 @@
 </div>
 
 <script>
+// Hazır yorum-altı cevap listesi: "+ Cevap Ekle" her tıklandığında sırayla bunlardan biri
+// otomatik olarak kutuya yerleştirilir. İstersen metni değiştirebilir ya da silebilirsin.
+const DEFAULT_PUBLIC_REPLIES = [
+  'Mesajı size ilettim. Güzel günlerde kullanın, umarım beğenirsiniz. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 😊',
+  'İstediğiniz içeriği size gönderdim. Güle güle kullanın, umarım işinize yarar. Gönderiyi beğenip takipte kalmayı unutmayın. 🌸',
+  'Mesaj olarak ilettim. Umarım severek kullanırsınız. Gönderiyi beğenmeyi ve yeni paylaşımlar için takipte kalmayı unutmayın. ❤️',
+  'İstediğiniz dosyayı size gönderdim. Güzel günlerde kullanmanız dileğiyle. Gönderiyi beğenmeyi ve takip etmeyi unutmayın. ✨',
+  'İçeriği size mesaj olarak ilettim. Umarım faydalı olur. Beğeniniz ve takibiniz için şimdiden teşekkür ederim. 📚',
+  'Gönderimi tamamladım, mesajlarınızı kontrol edebilirsiniz. Güle güle kullanın. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 🌿',
+  'İstediğiniz içeriği gönderdim. Umarım işinize yarar ve güzel günlerde kullanırsınız. Desteğiniz için teşekkür ederim. 🙏🏻',
+  'Mesajı size ilettim. Umarım beğenirsiniz ve keyifle kullanırsınız. Yeni paylaşımlarımız için takipte kalmayı unutmayın. 💫',
+  'Dosyayı mesaj yoluyla size gönderdim. Güle güle kullanın, umarım faydasını görürsünüz. Gönderiyi beğenmeyi unutmayın. 👍🏻',
+  'İstediğiniz içeriği size ilettim. Güzel günlerde kullanın, umarım beklentinizi karşılar. Bizi takip etmeyi ve gönderiyi beğenmeyi unutmayın. 🌷',
+];
+
 function showTab(tab) {
   document.getElementById('postsTab').style.display = tab === 'posts' ? 'block' : 'none';
   document.getElementById('pendingTab').style.display = tab === 'pending' ? 'block' : 'none';
@@ -333,7 +348,7 @@ async function loadPosts() {
 
       <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
       <div id="publicReplies-${post.id}"></div>
-      <button type="button" class="ghost" onclick="addPublicReplyField('${post.id}')">+ Cevap Ekle</button>
+      <button type="button" class="ghost" onclick="addPublicReplyTemplate('${post.id}')">+ Cevap Ekle (hazır listeden)</button>
 
       <button class="primary" onclick="savePost('${post.id}')">Kaydet</button>
       ${auto ? `<button class="danger" onclick="deletePost('${post.id}')">Otomasyonu Kaldır</button>` : ''}
@@ -343,7 +358,7 @@ async function loadPosts() {
 
     const existingReplies = (auto && auto.publicReplies && auto.publicReplies.length > 0)
       ? auto.publicReplies
-      : [''];
+      : [];
     existingReplies.forEach((text) => addPublicReplyField(post.id, text));
   });
 
@@ -363,6 +378,13 @@ function addPublicReplyField(postId, value = '') {
     <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
   `;
   container.appendChild(row);
+}
+
+// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden sıradaki metni otomatik doldurur.
+function addPublicReplyTemplate(postId) {
+  const container = document.getElementById('publicReplies-' + postId);
+  const nextText = DEFAULT_PUBLIC_REPLIES[container.children.length % DEFAULT_PUBLIC_REPLIES.length];
+  addPublicReplyField(postId, nextText);
 }
 
 async function savePost(mediaId) {
@@ -420,7 +442,13 @@ function addPendingReplyField(value = '') {
   `;
   container.appendChild(row);
 }
-addPendingReplyField();
+
+// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden sıradaki metni otomatik doldurur.
+function addPendingReplyTemplate() {
+  const container = document.getElementById('new-pending-replies');
+  const nextText = DEFAULT_PUBLIC_REPLIES[container.children.length % DEFAULT_PUBLIC_REPLIES.length];
+  addPendingReplyField(nextText);
+}
 
 async function addPendingTemplate() {
   const title = document.getElementById('new-pending-title').value;
@@ -457,7 +485,6 @@ async function addPendingTemplate() {
     document.getElementById('new-pending-link').value = '';
     document.getElementById('new-pending-msg').value = '';
     document.getElementById('new-pending-replies').innerHTML = '';
-    addPendingReplyField();
     loadPending();
   } else {
     msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
