@@ -54,9 +54,10 @@ function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) return { posts: {}, pendingTemplates: {} };
+  if (!fs.existsSync(CONFIG_FILE)) return { posts: {}, pendingTemplates: {}, tokenRefreshedAt: null };
   const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
   if (!config.pendingTemplates) config.pendingTemplates = {};
+  if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
   return config;
 }
 function saveConfigLocal(config) {
@@ -111,7 +112,18 @@ async function saveConfigToGithub(config) {
 // GÜVENLİ bir şekilde her 24 saatte bir "vakti geldi mi" diye kontrol ediyoruz,
 // gerçek yenileme sadece 45 gün dolduğunda tetikleniyor.
 
-let sonTokenYenilemeZamani = Date.now(); // az önce taze bir token aldık, şimdiden say
+// ÖNEMLİ (2. düzeltme): "son yenileme zamanı" artık sadece bellekte değil, config.json
+// içinde KALICI olarak tutuluyor (GitHub'a da kaydediliyor). Çünkü Render bu uygulamayı
+// çok sık yeniden başlatıyor (panelden her kayıt yeni bir deploy tetikliyor, ayrıca ücretsiz
+// plan uzun süre istek gelmeyince kendini tamamen kapatıp bir sonraki istekte yeniden açıyor).
+// Eğer bu zaman sadece bellekte tutulsaydı, her yeniden başlamada "az önce yenilendi" sanılır
+// ve 45 günlük sayaç hiçbir zaman gerçekten dolamayabilirdi - yani otomatik yenileme hiç
+// tetiklenmeyebilirdi. Şimdi gerçek son yenileme zamanı diskte/GitHub'da saklandığı için,
+// uygulama kaç kere yeniden başlarsa başlasın doğru zamanı hatırlıyor.
+let sonTokenYenilemeZamani = (function () {
+  const config = loadConfig();
+  return config.tokenRefreshedAt || Date.now();
+})();
 
 async function refreshAccessToken() {
   if (!igAccessToken) {
@@ -127,6 +139,13 @@ async function refreshAccessToken() {
     if (result.access_token) {
       igAccessToken = result.access_token;
       sonTokenYenilemeZamani = Date.now();
+
+      // Gerçek yenileme zamanını kalıcı olarak kaydet (bellek + disk + GitHub).
+      const config = loadConfig();
+      config.tokenRefreshedAt = sonTokenYenilemeZamani;
+      saveConfigLocal(config);
+      await saveConfigToGithub(config);
+
       const gunSayisi = Math.round((result.expires_in || 0) / 86400);
       console.log(`✅ Instagram access token yenilendi. Yeni geçerlilik: ~${gunSayisi} gün.`);
       await persistTokenToRender(igAccessToken);
@@ -186,8 +205,11 @@ function refreshAccessTokenIfDue() {
   }
 }
 
-// Her 24 saatte bir "vakti geldi mi" diye kontrol et (24 saat = 86.400.000 ms,
-// 32-bit zamanlayıcı sınırının çok altında, bu yüzden güvenli).
+// Uygulama her açıldığında bir kez kontrol et (artık zaman kalıcı olarak saklandığı için
+// bu güvenli - sık sık yeniden başlasa bile Meta'ya gereksiz istek gitmiyor, sadece
+// gerçekten 45 gün dolmuşsa istek atılıyor). Sonra her 24 saatte bir tekrar kontrol et
+// (24 saat = 86.400.000 ms, 32-bit zamanlayıcı sınırının çok altında, bu yüzden güvenli).
+refreshAccessTokenIfDue();
 setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
 
 // ================== WEBHOOK (Instagram tarafı) ==================
