@@ -1,6 +1,12 @@
 // HakanHoca Otomasyon - Instagram Yorum -> DM Sistemi (Panel'li versiyon)
 // Yorum geldiğinde anahtar kelime eşleşirse ANINDA özel mesaj gönderilir.
 // Yönetim telefondan /admin adresinden yapılır, GitHub'a hiç gerek yoktur.
+//
+// GÜNCELLEME (Instagram Login sistemine geçiş):
+// - Mesaj gönderme ve yorum cevaplama artık graph.facebook.com yerine
+//   graph.instagram.com üzerinden, Instagram Login ile alınan access token ile yapılıyor.
+// - Access token artık otomatik olarak kendini yeniliyor (60 günlük ömrü dolmadan önce),
+//   böylece elle token yenileme işine bir daha hiç gerek kalmıyor.
 
 const express = require('express');
 const fs = require('fs');
@@ -12,11 +18,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'hakanhoca_dogrulama_kelimesi';
-const ACCESS_TOKEN = process.env.IG_ACCESS_TOKEN;
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN || process.env.IG_ACCESS_TOKEN; // DM gönderme için Facebook Sayfa token'ı
 const IG_USER_ID = process.env.IG_USER_ID; // Instagram business hesabının ID'si
 const ADMIN_USER = process.env.ADMIN_USER || 'hakanhoca';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'degistir123';
+
+// Instagram API sürümü ve temel adres (Instagram Login sistemi - Facebook Login değil)
+const IG_GRAPH_BASE = 'https://graph.instagram.com/v23.0';
+
+// ---- Access token: bellekte tutulan, otomatik yenilenen değişken ----
+// Başlangıçta Render'daki IG_ACCESS_TOKEN ortam değişkeninden okunur.
+// Sunucu çalışırken otomatik yenilendikçe bu değişken güncellenir.
+let igAccessToken = process.env.IG_ACCESS_TOKEN;
+
+// Token'ı kalıcı olarak Render'ın ortam değişkenine de yazmak için (opsiyonel ama önerilir).
+// Bu ikisi ayarlanmazsa, yenileme yine çalışır ama sadece sunucu yeniden başlamadığı sürece geçerli olur.
+const RENDER_API_KEY = process.env.RENDER_API_KEY;
+const RENDER_SERVICE_ID = process.env.RENDER_SERVICE_ID;
 
 // GitHub'a otomatik kaydetme (panel değişiklikleri kalıcı olsun diye - restart sonrası kaybolmasın)
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -80,6 +97,72 @@ async function saveConfigToGithub(config) {
     console.error('GitHub kaydetme hatası:', err.message);
   }
 }
+
+// ================== ACCESS TOKEN OTOMATİK YENİLEME ==================
+// Instagram Login token'ları 60 gün geçerli. Süresi dolmadan önce (ve en az
+// 24 saat kullanıldıktan sonra) yenilenebilir. Burada 45 günde bir otomatik
+// yenileme deneniyor, böylece token hiçbir zaman süresi dolmadan tazeleniyor.
+
+async function refreshAccessToken() {
+  if (!igAccessToken) {
+    console.log('IG_ACCESS_TOKEN ayarlanmamış, token yenileme atlanıyor.');
+    return;
+  }
+  try {
+    const res = await fetch(
+      `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${igAccessToken}`
+    );
+    const result = await res.json();
+
+    if (result.access_token) {
+      igAccessToken = result.access_token;
+      const gunSayisi = Math.round((result.expires_in || 0) / 86400);
+      console.log(`✅ Instagram access token yenilendi. Yeni geçerlilik: ~${gunSayisi} gün.`);
+      await persistTokenToRender(igAccessToken);
+    } else {
+      console.error('⚠️ Token yenileme başarısız oldu:', result.error ? result.error.message : result);
+    }
+  } catch (err) {
+    console.error('⚠️ Token yenileme sırasında bağlantı hatası:', err.message);
+  }
+}
+
+// Yenilenen token'ı Render'ın ortam değişkenine kalıcı olarak yazar.
+// Bu sayede sunucu yeniden başlasa (deploy, restart vb.) bile en güncel token kullanılır.
+// RENDER_API_KEY ve RENDER_SERVICE_ID ayarlanmadıysa bu adım sessizce atlanır
+// (token yine de bellekte güncel kalır, sadece bir sonraki tam restart'ta eskisine döner).
+async function persistTokenToRender(token) {
+  if (!RENDER_API_KEY || !RENDER_SERVICE_ID) {
+    console.log('RENDER_API_KEY / RENDER_SERVICE_ID ayarlanmamış, token sadece bellekte güncellendi.');
+    return;
+  }
+  try {
+    const res = await fetch(
+      `https://api.render.com/v1/services/${RENDER_SERVICE_ID}/env-vars/IG_ACCESS_TOKEN`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${RENDER_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ value: token }),
+      }
+    );
+    if (res.ok) {
+      console.log('✅ Yeni token Render ortam değişkenine kalıcı olarak kaydedildi.');
+    } else {
+      const errText = await res.text();
+      console.error('⚠️ Render ortam değişkeni güncellenemedi:', res.status, errText);
+    }
+  } catch (err) {
+    console.error('⚠️ Render API bağlantı hatası:', err.message);
+  }
+}
+
+// Sunucu açılışında bir kere dene (token zaten tazeyse Meta reddedebilir, sorun değil,
+// 45 gün sonra tekrar denenecek). Sonra her 45 günde bir otomatik tekrar dene.
+refreshAccessToken();
+setInterval(refreshAccessToken, 45 * 24 * 60 * 60 * 1000);
 
 // ================== WEBHOOK (Instagram tarafı) ==================
 
@@ -160,11 +243,11 @@ function pickNextPublicReply(mediaId, replies) {
 async function sendPublicReply(commentId, text) {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v21.0/${commentId}/replies`,
+      `${IG_GRAPH_BASE}/${commentId}/replies?access_token=${igAccessToken}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, access_token: PAGE_ACCESS_TOKEN }),
+        body: JSON.stringify({ message: text }),
       }
     );
     const result = await response.json();
@@ -176,14 +259,18 @@ async function sendPublicReply(commentId, text) {
   }
 }
 
+// Yoruma özel mesaj (DM) gönder - Instagram Login / graph.instagram.com üzerinden
 async function attemptSend(commentId, message, record) {
   try {
     const response = await fetch(
-      `https://graph.facebook.com/v21.0/${commentId}/private_replies`,
+      `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, access_token: PAGE_ACCESS_TOKEN }),
+        body: JSON.stringify({
+          recipient: { comment_id: commentId },
+          message: { text: message },
+        }),
       }
     );
     const result = await response.json();
@@ -260,7 +347,7 @@ app.get('/admin', (req, res) => {
 app.get('/admin/api/posts', async (req, res) => {
   try {
     const response = await fetch(
-      `https://graph.instagram.com/v23.0/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=20&access_token=${ACCESS_TOKEN}`
+      `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=20&access_token=${igAccessToken}`
     );
     const result = await response.json();
     if (result.error) return res.status(500).json({ error: result.error.message });
