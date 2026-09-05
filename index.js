@@ -512,11 +512,15 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Son Instagram gönderilerini getir
+// Son Instagram gönderilerini getir. "after" parametresi verilirse (sayfalama),
+// Instagram'ın verdiği o sayfadan devam eder - böylece 25'ten eski gönderilere de
+// "Daha Fazla Göster" butonuyla ulaşılabilir. Zaten kaydedilmiş otomasyonlar
+// (config.json) bu listeleme mantığından tamamen bağımsız saklanır, hiçbir zaman silinmez.
 app.get('/admin/api/posts', async (req, res) => {
   try {
+    const after = req.query.after ? `&after=${encodeURIComponent(req.query.after)}` : '';
     const response = await fetch(
-      `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=20&access_token=${igAccessToken}`
+      `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=25${after}&access_token=${igAccessToken}`
     );
     const result = await response.json();
     if (result.error) return res.status(500).json({ error: result.error.message });
@@ -526,7 +530,9 @@ app.get('/admin/api/posts', async (req, res) => {
       ...post,
       automation: config.posts[post.id] || null,
     }));
-    res.json({ posts });
+    const nextCursor = result.paging && result.paging.cursors ? result.paging.cursors.after : null;
+    const hasMore = !!(result.paging && result.paging.next);
+    res.json({ posts, nextCursor, hasMore });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
