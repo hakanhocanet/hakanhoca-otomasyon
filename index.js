@@ -241,7 +241,7 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-// Bir gönderi otomasyonu için gönderilecek son mesaj metnini oluşturur.
+// Bir gönderi otomasyonu için gönderilecek son mesaj metnini oluşturur (düz metin sürümü).
 // ÖNEMLİ DÜZELTME: Panelde kendi mesaj metnini yazan (ve linki metnin içine
 // eklemeyi unutan) kullanıcılar için - link alanı dolu olduğu halde mesaj
 // metninde o link geçmiyorsa, link otomatik olarak mesajın sonuna eklenir.
@@ -256,6 +256,69 @@ function buildMessage(postConfig) {
     message = `${message}\n\n${link}`;
   }
   return message;
+}
+
+// Butonlu (tıklanabilir) mesaj için metin hazırlar - linki metnin içinden çıkarır,
+// çünkü link artık düz yazı olarak değil, ayrı bir tıklanabilir buton olarak gidecek.
+function buildButtonText(postConfig) {
+  const link = (postConfig.link || '').trim();
+  let text = (postConfig.replyMessage && postConfig.replyMessage.trim())
+    ? postConfig.replyMessage.trim()
+    : 'Merhaba 👋 Materyali aşağıdaki butona tıklayarak ücretsiz indirebilirsin.';
+
+  if (link) {
+    text = text.split(link).join('').trim();
+  }
+  if (!text) {
+    text = 'Merhaba 👋 Materyali aşağıdaki butona tıklayarak ücretsiz indirebilirsin.';
+  }
+  return text.slice(0, 600);
+}
+
+// Tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dener (Instagram'ın "button template"
+// formatı). Bu, mesajın içine düz metin olarak yapıştırılan linkin tıklanmaması sorununu çözer.
+// NOT: Meta bazı gönderim yollarında (örn. yoruma özel otomatik cevap) yalnızca düz metne
+// izin verebiliyor - dokümantasyon bunu net belirtmiyor. Bu yüzden bu fonksiyon başarısız
+// olursa (hata dönerse) false döner ve çağıran taraf otomatik olarak eski/garanti çalışan
+// düz metin yöntemine (link metnin içinde) geri döner - hiçbir mesaj kaybolmaz.
+async function trySendButtonMessage(commentId, buttonText, link, buttonTitle) {
+  try {
+    const response = await fetch(
+      `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipient: { comment_id: commentId },
+          message: {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: buttonText,
+                buttons: [
+                  { type: 'web_url', url: link, title: buttonTitle.slice(0, 20) },
+                ],
+              },
+            },
+          },
+        }),
+      }
+    );
+    const result = await response.json();
+    if (response.ok && !result.error) {
+      return true;
+    }
+    console.log(
+      'Butonlu mesaj gönderilemedi (' +
+        (result.error ? result.error.message : 'bilinmeyen hata') +
+        '), düz metne geri dönülüyor.'
+    );
+    return false;
+  } catch (err) {
+    console.log('Butonlu mesaj bağlantı hatası, düz metne geri dönülüyor:', err.message);
+    return false;
+  }
 }
 
 async function handleComment(value) {
@@ -303,9 +366,30 @@ async function handleComment(value) {
   const keyword = postConfig.keyword.toLowerCase();
   if (!commentText.includes(keyword)) return; // ilgisiz yorum, sessizce geç
 
-  const message = buildMessage(postConfig);
+  const baseRecord = { ...record, postTitle: postConfig.title || '', mediaId };
 
-  await attemptSend(commentId, message, { ...record, postTitle: postConfig.title || '', mediaId });
+  // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
+  // (Meta bu gönderim yolunda desteklemiyorsa) otomatik olarak eski, garanti çalışan
+  // düz metin yöntemine (link mesajın içinde) geri dönülür - kullanıcı hiçbir ayar
+  // yapmadan en iyi sonucu alır.
+  let sent = false;
+  if (postConfig.link) {
+    sent = await trySendButtonMessage(
+      commentId,
+      buildButtonText(postConfig),
+      postConfig.link,
+      postConfig.buttonTitle || "PDF'e Ulaş 📎"
+    );
+    if (sent) {
+      logSent(baseRecord);
+      console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
+    }
+  }
+
+  if (!sent) {
+    const message = buildMessage(postConfig);
+    await attemptSend(commentId, message, baseRecord);
+  }
 
   // Herkese açık yorum cevabı da gönder (varsa) - dönüşümlü, hep aynısı olmasın
   if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
