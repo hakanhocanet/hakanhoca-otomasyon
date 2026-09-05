@@ -311,17 +311,36 @@ function showTab(tab) {
   if (tab === 'pending') loadPending();
 }
 
-async function loadPosts() {
-  const res = await fetch('/admin/api/posts');
-  const data = await res.json();
+// "after" verilirse (Daha Fazla Göster'e tıklanınca) mevcut kartlar SİLİNMEZ,
+// yeni gönderiler listenin altına eklenir. Zaten kaydettiğin otomasyonlar
+// (sunucuda config.json / GitHub'da saklanır) bu listeleme işleminden
+// tamamen bağımsızdır - listeyi ne kadar yenilersen yenile hiçbiri kaybolmaz.
+let postsNextCursor = null;
+
+async function loadPosts(after = null) {
   const container = document.getElementById('postsList');
+  const loadMoreBtn = document.getElementById('loadMorePostsBtn');
+
+  if (!after) {
+    container.innerHTML = '<div class="loading">Gönderiler yükleniyor...</div>';
+  } else if (loadMoreBtn) {
+    loadMoreBtn.textContent = 'Yükleniyor...';
+    loadMoreBtn.disabled = true;
+  }
+
+  const res = await fetch('/admin/api/posts' + (after ? '?after=' + encodeURIComponent(after) : ''));
+  const data = await res.json();
 
   if (data.error) {
     container.innerHTML = '<div class="empty-state"><span class="icon">⚠️</span>Hata: ' + data.error + '</div>';
     return;
   }
 
-  container.innerHTML = '';
+  if (!after) {
+    container.innerHTML = '';
+  }
+  if (loadMoreBtn) loadMoreBtn.remove();
+
   data.posts.forEach(post => {
     const auto = post.automation;
     const img = post.thumbnail_url || post.media_url || '';
@@ -362,8 +381,18 @@ async function loadPosts() {
     existingReplies.forEach((text) => addPublicReplyField(post.id, text));
   });
 
-  if (data.posts.length === 0) {
+  if (!after && data.posts.length === 0) {
     container.innerHTML = '<div class="empty-state"><span class="icon">🖼️</span>Henüz gönderi bulunamadı.</div>';
+  }
+
+  postsNextCursor = data.nextCursor || null;
+  if (data.hasMore && postsNextCursor) {
+    const btn = document.createElement('button');
+    btn.id = 'loadMorePostsBtn';
+    btn.className = 'ghost';
+    btn.textContent = '⬇️ Daha Fazla Göster (daha eski gönderiler)';
+    btn.onclick = () => loadPosts(postsNextCursor);
+    container.appendChild(btn);
   }
 }
 
@@ -417,17 +446,59 @@ async function savePost(mediaId) {
   if (result.ok) {
     msgEl.textContent = '✅ Kaydedildi!';
     msgEl.style.color = 'var(--success)';
-    setTimeout(loadPosts, 1000);
+    // ÖNEMLİ: Listeyi baştan yeniden yüklemiyoruz (loadPosts() çağırmıyoruz) - çünkü bu,
+    // "Daha Fazla Göster" ile aşağı indiğin tüm gönderileri sıfırlayıp seni listenin
+    // başına atardı. Bunun yerine sadece bu kartın rozetini/butonunu güncelliyoruz,
+    // diğer tüm kartlar ve konumun olduğu gibi kalıyor.
+    markPostAsSaved(mediaId);
   } else {
     msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
     msgEl.style.color = 'var(--danger)';
   }
 }
 
+// Kaydetme sonrası sayfayı yeniden yüklemeden kartı "otomasyon aktif" durumuna günceller.
+function markPostAsSaved(mediaId) {
+  const titleInput = document.getElementById('title-' + mediaId);
+  if (!titleInput) return;
+  const card = titleInput.closest('.card');
+  if (!card) return;
+
+  card.classList.add('accent');
+  const badge = card.querySelector('.badge');
+  if (badge) {
+    badge.className = 'badge on';
+    badge.textContent = '✅ Otomasyon aktif';
+  }
+  if (!card.querySelector('button.danger')) {
+    const primaryBtn = card.querySelector('button.primary');
+    const dangerBtn = document.createElement('button');
+    dangerBtn.type = 'button';
+    dangerBtn.className = 'danger';
+    dangerBtn.textContent = 'Otomasyonu Kaldır';
+    dangerBtn.onclick = () => deletePost(mediaId);
+    if (primaryBtn) primaryBtn.insertAdjacentElement('afterend', dangerBtn);
+  }
+}
+
 async function deletePost(mediaId) {
   if (!confirm('Bu gönderinin otomasyonunu kaldırmak istediğine emin misin?')) return;
   await fetch('/admin/api/posts/' + mediaId, { method: 'DELETE' });
-  loadPosts();
+
+  // Burada da tüm listeyi yeniden yüklemek yerine sadece bu kartı güncelliyoruz,
+  // böylece diğer gönderiler ve scroll konumun bozulmuyor.
+  const titleInput = document.getElementById('title-' + mediaId);
+  const card = titleInput ? titleInput.closest('.card') : null;
+  if (card) {
+    card.classList.remove('accent');
+    const badge = card.querySelector('.badge');
+    if (badge) {
+      badge.className = 'badge off';
+      badge.textContent = '⚪ Otomasyon yok';
+    }
+    const dangerBtn = card.querySelector('button.danger');
+    if (dangerBtn) dangerBtn.remove();
+  }
 }
 
 function addPendingReplyField(value = '') {
