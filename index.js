@@ -241,6 +241,23 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+// Bir gönderi otomasyonu için gönderilecek son mesaj metnini oluşturur.
+// ÖNEMLİ DÜZELTME: Panelde kendi mesaj metnini yazan (ve linki metnin içine
+// eklemeyi unutan) kullanıcılar için - link alanı dolu olduğu halde mesaj
+// metninde o link geçmiyorsa, link otomatik olarak mesajın sonuna eklenir.
+// Böylece "mesaj gitti ama link hiç gitmedi" durumu bir daha yaşanmaz.
+function buildMessage(postConfig) {
+  const link = (postConfig.link || '').trim();
+  let message = (postConfig.replyMessage && postConfig.replyMessage.trim())
+    ? postConfig.replyMessage.trim()
+    : `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`;
+
+  if (link && !message.includes(link)) {
+    message = `${message}\n\n${link}`;
+  }
+  return message;
+}
+
 async function handleComment(value) {
   const commentId = value.id;
   const commentText = (value.text || '').toLowerCase().trim();
@@ -286,8 +303,7 @@ async function handleComment(value) {
   const keyword = postConfig.keyword.toLowerCase();
   if (!commentText.includes(keyword)) return; // ilgisiz yorum, sessizce geç
 
-  const message = postConfig.replyMessage ||
-    `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${postConfig.link}`;
+  const message = buildMessage(postConfig);
 
   await attemptSend(commentId, message, { ...record, postTitle: postConfig.title || '', mediaId });
 
