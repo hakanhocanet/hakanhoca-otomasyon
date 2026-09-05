@@ -64,41 +64,97 @@ function saveConfigLocal(config) {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 }
 
-// ---- GitHub'a config.json'ı kaydet (kalıcı olması için) ----
-async function saveConfigToGithub(config) {
-  if (!GITHUB_TOKEN || !GITHUB_REPO) {
-    console.log('GitHub bağlantısı ayarlanmamış, sadece yerel diske kaydedildi.');
-    return;
+// ---- GitHub'daki config.json'ın O ANKİ GERÇEK halini oku (sha ile birlikte) ----
+async function fetchGithubConfig() {
+  const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
+  const res = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, {
+    headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
+  });
+  if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
+  const data = await res.json();
+  if (!data.content) return null;
+  const config = JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+  if (!config.posts) config.posts = {};
+  if (!config.pendingTemplates) config.pendingTemplates = {};
+  if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
+  return { config, sha: data.sha };
+}
+
+// ================== GÜVENLİ CONFIG DEĞİŞTİRME (yarış durumu / race condition koruması) ==================
+// ÖNEMLİ: Render her kayıtta otomatik olarak yeni bir sunucu kopyası (deploy) başlatıyor.
+// Bu yüzden aynı anda eski ve yeni kopya kısa süreliğine birlikte çalışabiliyor. ESKİDEN
+// her değişiklik "yerel diskten oku -> değiştir -> GitHub'a olduğu gibi yolla" şeklinde
+// yapılıyordu. Sorun şu: bir kopyanın belleğindeki eski hali GitHub'a yazılırsa, ARADA
+// başka bir kopyanın (ya da panelin başka bir sekmesinin) yaptığı değişiklik sessizce
+// silinip üzerine yazılabiliyordu. TAM OLARAK bunu yaşadın: iki "Planlanan" eklemiştin,
+// biri gönderiye doğru bağlanacakken, arada devam eden bir başka kayıt işlemi GitHub'daki
+// hali eski bir kopyayla ezdi ve "son eklenen" gönderiye yanlış şekilde yapıştı.
+//
+// ÇÖZÜM: Her değişiklikte ÖNCE GitHub'daki O ANKİ GERÇEK halini çekiyoruz, değişikliği
+// SADECE o güncel hale uyguluyoruz, sonra geri yazıyoruz. Yazarken araya biri girip
+// GitHub'ı değiştirmişse (sha uyuşmazlığı hatası döner), en güncel hali tekrar çekip
+// değişikliği yeniden uyguluyor ve tekrar deniyoruz (birkaç kez). Böylece istekler hangi
+// sırayla gelirse gelsin, hiçbiri diğerini ezip kaybettirmiyor.
+//
+// "mutatorFn" bu yüzden İDEMPOTENT olmalı: aynı mantıksal işlemi (örn. "şu id'li planı
+// ekle", "şu mediaId'yi eğer henüz bağlı değilse şu şablona bağla") her denemede güvenle
+// tekrar uygulayabilmeli - aşağıdaki tüm kullanım yerleri buna göre yazıldı.
+async function mutateConfig(mutatorFn) {
+  const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
+  const MAX_DENEME = 5;
+
+  for (let deneme = 1; deneme <= MAX_DENEME; deneme++) {
+    let config = null;
+    let sha = null;
+
+    if (hasGithub) {
+      try {
+        const remote = await fetchGithubConfig();
+        if (remote) {
+          config = remote.config;
+          sha = remote.sha;
+        }
+      } catch (err) {
+        console.error('GitHub güncel config okunamadı:', err.message);
+      }
+    }
+    if (!config) config = loadConfig();
+
+    mutatorFn(config);
+    saveConfigLocal(config);
+
+    if (!hasGithub) return config;
+
+    try {
+      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
+      const content = Buffer.from(JSON.stringify(config, null, 2)).toString('base64');
+      const body = { message: 'Panel üzerinden otomasyon güncellendi', content, branch: GITHUB_BRANCH };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (putRes.ok) {
+        return config;
+      }
+      if (putRes.status === 409 || putRes.status === 422) {
+        console.log(`config.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}), en güncel hal tekrar çekilip deneniyor...`);
+        continue;
+      }
+      const errText = await putRes.text();
+      console.error('config.json GitHub kaydetme hatası:', putRes.status, errText);
+      return config;
+    } catch (err) {
+      console.error('config.json GitHub bağlantı hatası:', err.message);
+      return config;
+    }
   }
-  try {
-    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
 
-    // Önce mevcut dosyanın sha'sını al (güncelleme için gerekli)
-    const getRes = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, {
-      headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
-    });
-    const getData = await getRes.json();
-    const sha = getData.sha;
-
-    const content = Buffer.from(JSON.stringify(config, null, 2)).toString('base64');
-
-    await fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: 'Panel üzerinden otomasyon güncellendi',
-        content,
-        sha,
-        branch: GITHUB_BRANCH,
-      }),
-    });
-    console.log('config.json GitHub\'a kaydedildi.');
-  } catch (err) {
-    console.error('GitHub kaydetme hatası:', err.message);
-  }
+  console.error('config.json GitHub ile senkronize edilemedi (çok fazla çakışma), son deneme yerel diske kaydedildi.');
+  return loadConfig();
 }
 
 // ================== ACCESS TOKEN OTOMATİK YENİLEME ==================
@@ -141,10 +197,10 @@ async function refreshAccessToken() {
       sonTokenYenilemeZamani = Date.now();
 
       // Gerçek yenileme zamanını kalıcı olarak kaydet (bellek + disk + GitHub).
-      const config = loadConfig();
-      config.tokenRefreshedAt = sonTokenYenilemeZamani;
-      saveConfigLocal(config);
-      await saveConfigToGithub(config);
+      const zaman = sonTokenYenilemeZamani;
+      await mutateConfig((config) => {
+        config.tokenRefreshedAt = zaman;
+      });
 
       const gunSayisi = Math.round((result.expires_in || 0) / 86400);
       console.log(`✅ Instagram access token yenilendi. Yeni geçerlilik: ~${gunSayisi} gün.`);
@@ -327,8 +383,18 @@ async function handleComment(value) {
   const mediaId = value.media ? value.media.id : null;
   const fromUsername = value.from ? value.from.username : 'bilinmiyor';
 
-  const config = loadConfig();
-  let postConfig = mediaId ? config.posts[mediaId] : null;
+  // Hikaye (story) yanıtları zaten bu "comments" webhook'undan HİÇ gelmez - onlar
+  // Instagram'da bir DM'dir ve Meta'nın ayrı bir "messaging" webhook türünden gelir,
+  // bu kod onu hiç işlemiyor bile. Yine de ekstra güvenlik için, Meta gönderi türünü
+  // payload'da belirtirse (media_product_type), otomasyonu SADECE gerçek gönderi (FEED),
+  // reels ve albüm gönderileri için çalıştırıyoruz - hikaye asla bu listeye girmez.
+  const mediaProductType = value.media && value.media.media_product_type
+    ? String(value.media.media_product_type).toUpperCase()
+    : null;
+  if (mediaProductType && !['FEED', 'REELS', 'CAROUSEL_ALBUM'].includes(mediaProductType)) {
+    console.log(`Yorum "${mediaProductType}" türünde bir içerikten geldi (gönderi/reels değil), otomasyon atlandı.`);
+    return;
+  }
 
   const record = {
     commentId, mediaId, fromUsername,
@@ -336,25 +402,38 @@ async function handleComment(value) {
     timestamp: new Date().toISOString(),
   };
 
+  let postConfig = mediaId ? loadConfig().posts[mediaId] : null;
+
   // Bu gönderi için henüz özel bir otomasyon yoksa, "Planlanan" (henüz paylaşılmamışken
   // hazırlanmış) otomasyonlardan anahtar kelimesi bu yorumla eşleşen var mı diye bak.
   // Eşleşme bulunursa, o taslak artık kalıcı olarak bu gerçek gönderiye bağlanır.
+  //
+  // ÖNEMLİ: Bu eşleştirme+bağlama işlemi artık mutateConfig() üzerinden, GitHub'daki
+  // O ANKİ GERÇEK haline göre yapılıyor (yerel/bayat bir kopyaya göre değil) - böylece
+  // aynı anda başka bir işlem (panelden yeni plan ekleme, başka bir yorum vb.) araya
+  // girse bile, iki farklı planın karışıp yanlış gönderiye yapışması artık mümkün değil.
   if (!postConfig && mediaId) {
-    const pending = config.pendingTemplates || {};
-    for (const pendingId of Object.keys(pending)) {
-      const template = pending[pendingId];
-      if (template.keyword && commentText.includes(template.keyword.toLowerCase())) {
-        postConfig = { ...template };
-        config.posts[mediaId] = postConfig;
-        delete config.pendingTemplates[pendingId];
-        saveConfigLocal(config);
-        saveConfigToGithub(config).catch((err) =>
-          console.error('Planlanan otomasyon bağlanırken GitHub kayıt hatası:', err.message)
-        );
-        console.log(`📌 Planlanan otomasyon ("${template.title || template.keyword}") gönderi ${mediaId} için bağlandı.`);
-        break;
+    let baglanan = null;
+    await mutateConfig((config) => {
+      // Bu deneme sırasında gönderi zaten başka bir işlemle bağlanmış olabilir -
+      // o zaman yeniden eşleştirme yapmadan mevcut bağlıyı kullan.
+      if (config.posts[mediaId]) {
+        baglanan = config.posts[mediaId];
+        return;
       }
-    }
+      const pending = config.pendingTemplates || {};
+      for (const pendingId of Object.keys(pending)) {
+        const template = pending[pendingId];
+        if (template.keyword && commentText.includes(template.keyword.toLowerCase())) {
+          baglanan = { ...template };
+          config.posts[mediaId] = baglanan;
+          delete config.pendingTemplates[pendingId];
+          console.log(`📌 Planlanan otomasyon ("${template.title || template.keyword}") gönderi ${mediaId} için bağlandı.`);
+          break;
+        }
+      }
+    });
+    postConfig = baglanan;
   }
 
   if (!postConfig) {
@@ -544,25 +623,24 @@ app.post('/admin/api/posts', async (req, res) => {
   if (!mediaId || !keyword || !link) {
     return res.status(400).json({ error: 'mediaId, keyword ve link zorunlu' });
   }
-  const config = loadConfig();
-  config.posts[mediaId] = {
+  const newAutomation = {
     title: title || '',
     keyword,
     link,
     replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
     publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
   };
-  saveConfigLocal(config);
-  await saveConfigToGithub(config);
-  res.json({ ok: true, config: config.posts[mediaId] });
+  await mutateConfig((config) => {
+    config.posts[mediaId] = newAutomation;
+  });
+  res.json({ ok: true, config: newAutomation });
 });
 
 // Bir gönderinin otomasyonunu sil
 app.delete('/admin/api/posts/:mediaId', async (req, res) => {
-  const config = loadConfig();
-  delete config.posts[req.params.mediaId];
-  saveConfigLocal(config);
-  await saveConfigToGithub(config);
+  await mutateConfig((config) => {
+    delete config.posts[req.params.mediaId];
+  });
   res.json({ ok: true });
 });
 
@@ -581,25 +659,24 @@ app.post('/admin/api/pending', async (req, res) => {
   if (!keyword || !link) {
     return res.status(400).json({ error: 'Anahtar kelime ve link zorunlu' });
   }
-  const config = loadConfig();
   const id = 'p_' + Date.now();
-  config.pendingTemplates[id] = {
+  const newTemplate = {
     title: title || '',
     keyword,
     link,
     replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
     publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
   };
-  saveConfigLocal(config);
-  await saveConfigToGithub(config);
+  await mutateConfig((config) => {
+    config.pendingTemplates[id] = newTemplate;
+  });
   res.json({ ok: true, id });
 });
 
 app.delete('/admin/api/pending/:id', async (req, res) => {
-  const config = loadConfig();
-  delete config.pendingTemplates[req.params.id];
-  saveConfigLocal(config);
-  await saveConfigToGithub(config);
+  await mutateConfig((config) => {
+    delete config.pendingTemplates[req.params.id];
+  });
   res.json({ ok: true });
 });
 
