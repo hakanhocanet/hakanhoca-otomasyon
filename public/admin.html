@@ -33,6 +33,7 @@
     --radius-sm: 10px;
   }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     font-family: 'Poppins', -apple-system, Roboto, sans-serif;
     background: var(--bg);
@@ -42,27 +43,26 @@
     background-attachment: fixed;
     color: var(--text);
     margin: 0;
-    padding: 18px;
-    padding-bottom: 60px;
   }
 
   .header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
   }
   .header .logo {
-    width: 44px; height: 44px;
-    border-radius: 13px;
+    width: 40px; height: 40px;
+    border-radius: 12px;
     background: var(--gradient);
     display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
+    font-size: 20px;
     flex-shrink: 0;
     box-shadow: 0 6px 16px rgba(238,42,123,0.25);
   }
   h1 {
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     margin: 0;
     background: var(--gradient);
@@ -70,28 +70,42 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-  .sub { color: var(--text-dim); font-size: 12.5px; margin-top: 2px; }
+  .sub { color: var(--text-dim); font-size: 12px; margin-top: 2px; }
 
-  .tabs {
-    display: flex; gap: 8px; margin-bottom: 20px;
+  /* ---------- SOL İKON MENÜ ---------- */
+  .app-shell { display: flex; align-items: flex-start; }
+  .sidebar {
+    width: 72px; flex-shrink: 0;
     background: var(--bg-elevated);
-    padding: 6px; border-radius: 16px;
-    border: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 14px 0 10px;
+    position: sticky; top: 0; height: 100vh;
   }
-  .tab {
-    flex: 1; text-align: center; padding: 11px 6px;
-    border-radius: 12px; cursor: pointer;
-    font-size: 13.5px; font-weight: 600;
+  .nav-list { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center; }
+  .nav-icon {
+    width: 58px; padding: 8px 2px 7px;
+    border-radius: 14px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
     color: var(--text-dim);
     transition: all .15s ease;
     user-select: none;
   }
-  .tab .tab-icon { margin-right: 5px; }
-  .tab.active {
-    background: var(--gradient);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(238,42,123,0.30);
+  .nav-icon .emoji { font-size: 18px; line-height: 1; }
+  .nav-icon .lbl { font-size: 8.5px; font-weight: 600; letter-spacing: .01em; text-align: center; }
+  .nav-icon.active { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(238,42,123,0.30); }
+  .nav-icon:not(.active):hover { background: var(--bg-card-2); color: var(--text); }
+
+  .main { flex: 1; min-width: 0; padding: 18px 16px 70px; max-width: 720px; }
+
+  .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .page-header .icon-box {
+    width: 40px; height: 40px; border-radius: 13px;
+    background: var(--gradient-soft); border: 1px solid rgba(238,42,123,0.25);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0;
   }
+  .page-header h2 { font-size: 16.5px; font-weight: 700; margin: 0; color: var(--text); }
+  .page-header .sub { font-size: 12px; }
 
   .section-title {
     font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
@@ -201,6 +215,22 @@
   }
   .reply-remove:hover { background: rgba(251,84,121,0.25); }
 
+  .summary-line {
+    display: flex; flex-wrap: wrap; gap: 6px 14px;
+    font-size: 12.5px; color: var(--text-dim);
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 18px;
+  }
+  .summary-line b { color: var(--text); font-weight: 700; }
+
+  .month-group {
+    margin-bottom: 16px;
+  }
+  .month-group-title {
+    font-size: 13.5px; font-weight: 700; color: #fff;
+    margin: 0 0 8px 2px;
+  }
+
   .period-toggle {
     display: flex; gap: 6px; margin: 18px 0 14px;
     background: var(--bg-elevated); padding: 5px; border-radius: 14px;
@@ -224,6 +254,23 @@
   .stat.green .num { color: var(--success); }
   .stat.red .num { color: var(--danger); }
   .stat.yellow .num { color: var(--warning); }
+
+  /* basit çubuk grafik (harici kütüphane yok, sadece CSS) */
+  .chart-card { padding: 16px 18px 12px; }
+  .chart-title { font-size: 12px; font-weight: 700; color: var(--text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; max-width: 26px; border-radius: 6px 6px 3px 3px; background: var(--gradient); min-height: 4px; }
+  .bar-day { font-size: 10px; color: var(--text-dimmer); }
+
+  .settings-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 4px; border-bottom: 1px solid var(--border);
+    font-size: 13px; gap: 10px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row .lbl2 { color: var(--text-dim); }
+  .settings-row .val { font-weight: 600; text-align: right; }
 
   .log-item {
     background: var(--bg-card); border: 1px solid var(--border);
@@ -252,75 +299,142 @@
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="showTab('posts')"><span class="tab-icon">🖼️</span>Gönderiler</div>
-  <div class="tab" onclick="showTab('pending')"><span class="tab-icon">🗓️</span>Planlanan</div>
-  <div class="tab" onclick="showTab('status')"><span class="tab-icon">📊</span>Durum</div>
-</div>
-
-<div id="postsTab">
-  <div id="postsList" class="loading">Gönderiler yükleniyor...</div>
-</div>
-
-<div id="pendingTab" style="display:none">
-  <div class="card accent">
-    <div class="hint">
-      🗓️ Henüz paylaşmadığın bir gönderi için otomasyonu şimdiden hazırla. Gönderiyi paylaşıp
-      bu anahtar kelimeyle ilk yorum geldiğinde, otomasyon otomatik olarak o gönderiye bağlanır —
-      birden çok tanesini eklersen, hangi sırayla eklediysen o sırayla kullanılır.
+<div class="app-shell">
+  <div class="sidebar">
+    <div class="nav-list">
+      <div class="nav-icon active" onclick="showTab('posts', this)"><span class="emoji">🖼️</span><span class="lbl">Gönderiler</span></div>
+      <div class="nav-icon" onclick="showTab('pending', this)"><span class="emoji">🗓️</span><span class="lbl">Planlanan</span></div>
+      <div class="nav-icon" onclick="showTab('templates', this)"><span class="emoji">💬</span><span class="lbl">Şablonlar</span></div>
+      <div class="nav-icon" onclick="showTab('status', this)"><span class="emoji">📊</span><span class="lbl">Durum</span></div>
+      <div class="nav-icon" onclick="showTab('followers', this)"><span class="emoji">👥</span><span class="lbl">Takipçi</span></div>
+      <div class="nav-icon" onclick="showTab('settings', this)"><span class="emoji">⚙️</span><span class="lbl">Ayarlar</span></div>
     </div>
-
-    <label>Başlık (senin için not)</label>
-    <input type="text" id="new-pending-title" placeholder="Örn: Ritmik Sayma Kartları">
-
-    <label>Anahtar kelime</label>
-    <input type="text" id="new-pending-keyword" placeholder="PDF">
-
-    <label>Gönderilecek link</label>
-    <input type="text" id="new-pending-link" placeholder="https://hakanhoca.net/...">
-
-    <label>Mesaj metni (özel mesaj / DM — boş bırakırsan otomatik oluşur)</label>
-    <textarea id="new-pending-msg" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ..."></textarea>
-
-    <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
-    <div id="new-pending-replies"></div>
-    <button type="button" class="ghost" onclick="addPendingReplyTemplate()">+ Cevap Ekle (hazır listeden)</button>
-
-    <button class="primary" onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
-    <div id="newPendingMsg"></div>
   </div>
 
-  <div id="pendingList"></div>
-</div>
+  <div class="main">
 
-<div id="statusTab" style="display:none">
-  <div id="statusContent" class="loading">Durum yükleniyor...</div>
+    <div id="postsTab">
+      <div class="page-header"><div class="icon-box">🖼️</div><div><h2>Gönderiler</h2><div class="sub">Paylaştığın gönderilere otomasyon bağla</div></div></div>
+      <div id="postsList" class="loading">Gönderiler yükleniyor...</div>
+    </div>
+
+    <div id="pendingTab" style="display:none">
+      <div class="page-header"><div class="icon-box">🗓️</div><div><h2>Planlanan</h2><div class="sub">Henüz paylaşmadığın gönderiler için hazır otomasyon</div></div></div>
+
+      <div class="card accent">
+        <div class="hint">🗓️ Gönderiyi paylaşınca bu anahtar kelimeyle ilk yorum geldiğinde otomatik bağlanır.</div>
+
+        <label>Başlık (senin için not)</label>
+        <input type="text" id="new-pending-title" placeholder="Örn: Ritmik Sayma Kartları">
+
+        <label>Anahtar kelime</label>
+        <input type="text" id="new-pending-keyword" placeholder="PDF">
+
+        <label>Gönderilecek link</label>
+        <input type="text" id="new-pending-link" placeholder="https://hakanhoca.net/...">
+
+        <label>Mesaj metni (özel mesaj / DM — boş bırakırsan şablon kullanılır)</label>
+        <textarea id="new-pending-msg" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ..."></textarea>
+        <button type="button" class="ghost" onclick="sablonMesajiDoldur('new')">📋 Şablonu Kullan</button>
+
+        <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
+        <div id="new-pending-replies"></div>
+        <button type="button" class="ghost" onclick="addPendingReplyTemplate()">+ Cevap Ekle (hazır listeden)</button>
+
+        <button class="primary" onclick="addPendingTemplate()">Planlanan Otomasyon Olarak Kaydet</button>
+        <div id="newPendingMsg"></div>
+      </div>
+
+      <div class="section-title">Bekleyen Otomasyonlar</div>
+      <div id="pendingList"></div>
+    </div>
+
+    <div id="templatesTab" style="display:none">
+      <div class="page-header"><div class="icon-box">💬</div><div><h2>Şablonlar</h2><div class="sub">"+ Cevap Ekle" ve "Şablonu Kullan" butonlarının kullandığı hazır metinler</div></div></div>
+
+      <div class="hint">✏️ Buradaki metinleri düzenlemek yeni eklediğin gönderilerde kullanılacak havuzu değiştirir; zaten kaydedilmiş otomasyonların cevapları etkilenmez.</div>
+
+      <div class="section-title">💬 Yorum Altı Otomatik Cevap Şablonları</div>
+      <div id="templateRepliesList"></div>
+      <button type="button" class="ghost" onclick="sablonAlaniEkle()">+ Yeni Şablon Ekle</button>
+
+      <div class="section-title">📩 Varsayılan Özel Mesaj (DM) Şablonu</div>
+      <div class="hint">Bir gönderinin "Mesaj metni" alanını boş bırakırsan bu şablon kullanılır. <b>{link}</b> yazan yere gönderinin linki otomatik olarak yerleşir.</div>
+      <textarea id="defaultMessageTemplateInput" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: {link}"></textarea>
+
+      <button class="primary" onclick="sablonlariKaydet()">Şablonları Kaydet</button>
+      <div id="templatesSaveMsg"></div>
+    </div>
+
+    <div id="statusTab" style="display:none">
+      <div class="page-header"><div class="icon-box">📊</div><div><h2>Durum</h2><div class="sub">Gönderim istatistikleri</div></div></div>
+      <div id="statusContent" class="loading">Durum yükleniyor...</div>
+    </div>
+
+    <div id="followersTab" style="display:none">
+      <div class="page-header"><div class="icon-box">👥</div><div><h2>Takipçi</h2><div class="sub">Takipçi sayısı ve değişim trendi</div></div></div>
+      <div id="followersContent" class="loading">Takipçi verisi yükleniyor...</div>
+
+      <div class="section-title">🔍 Kimleri Takip Ediyorsun Ama Onlar Seni Takip Etmiyor?</div>
+      <div class="hint">📥 Instagram uygulamasında <b>Ayarlar → Hesap Merkezi → Bilgilerinizin bir kopyasını alın</b> üzerinden takipçi/takip ettiklerin listesini JSON olarak indirebilirsin. İndirdiğin <code>following.json</code> ve <code>followers_1.json</code> dosyalarının içeriğini olduğu gibi yapıştırman yeterli (düz kullanıcı adı listesi de yapıştırabilirsin, satır satır). Bu karşılaştırma tamamen telefonunda/tarayıcında yapılır, hiçbir veri sunucuya gönderilmez.</div>
+      <div class="card">
+        <label>Takip Ettiklerin (following.json içeriği ya da liste)</label>
+        <textarea id="takipEdilenlerInput" placeholder='following.json içeriğini yapıştır ya da satır satır kullanıcı adı yaz'></textarea>
+        <label>Takipçilerin (followers_1.json içeriği ya da liste)</label>
+        <textarea id="takipcilerInput" placeholder='followers_1.json içeriğini yapıştır ya da satır satır kullanıcı adı yaz'></textarea>
+        <button class="primary full" onclick="takipKarsilastir()">Karşılaştır</button>
+        <div id="karsilastirmaSonuc"></div>
+      </div>
+    </div>
+
+    <div id="settingsTab" style="display:none">
+      <div class="page-header"><div class="icon-box">⚙️</div><div><h2>Ayarlar</h2><div class="sub">Hesap ve sistem bilgileri</div></div></div>
+      <div id="settingsContent" class="loading">Yükleniyor...</div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-// Hazır yorum-altı cevap listesi: "+ Cevap Ekle" her tıklandığında sırayla bunlardan biri
-// otomatik olarak kutuya yerleştirilir. İstersen metni değiştirebilir ya da silebilirsin.
-const DEFAULT_PUBLIC_REPLIES = [
-  'Mesajı size ilettim. Güzel günlerde kullanın, umarım beğenirsiniz. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 😊',
-  'İstediğiniz içeriği size gönderdim. Güle güle kullanın, umarım işinize yarar. Gönderiyi beğenip takipte kalmayı unutmayın. 🌸',
-  'Mesaj olarak ilettim. Umarım severek kullanırsınız. Gönderiyi beğenmeyi ve yeni paylaşımlar için takipte kalmayı unutmayın. ❤️',
-  'İstediğiniz dosyayı size gönderdim. Güzel günlerde kullanmanız dileğiyle. Gönderiyi beğenmeyi ve takip etmeyi unutmayın. ✨',
-  'İçeriği size mesaj olarak ilettim. Umarım faydalı olur. Beğeniniz ve takibiniz için şimdiden teşekkür ederim. 📚',
-  'Gönderimi tamamladım, mesajlarınızı kontrol edebilirsiniz. Güle güle kullanın. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 🌿',
-  'İstediğiniz içeriği gönderdim. Umarım işinize yarar ve güzel günlerde kullanırsınız. Desteğiniz için teşekkür ederim. 🙏🏻',
-  'Mesajı size ilettim. Umarım beğenirsiniz ve keyifle kullanırsınız. Yeni paylaşımlarımız için takipte kalmayı unutmayın. 💫',
-  'Dosyayı mesaj yoluyla size gönderdim. Güle güle kullanın, umarım faydasını görürsünüz. Gönderiyi beğenmeyi unutmayın. 👍🏻',
-  'İstediğiniz içeriği size ilettim. Güzel günlerde kullanın, umarım beklentinizi karşılar. Bizi takip etmeyi ve gönderiyi beğenmeyi unutmayın. 🌷',
-];
+// Yorum-altı cevap şablonları ve varsayılan DM şablonu artık sunucudan (config.json,
+// panelin "Şablonlar" sekmesinden düzenlenebilir) geliyor - eskiden burada sabit
+// (hardcoded) bir listeydi. Sayfa açılır açılmaz bir kez çekilip önbelleğe alınır.
+let sablonlarVerisi = { publicReplyTemplates: [], defaultMessageTemplate: '' };
 
-function showTab(tab) {
-  document.getElementById('postsTab').style.display = tab === 'posts' ? 'block' : 'none';
-  document.getElementById('pendingTab').style.display = tab === 'pending' ? 'block' : 'none';
-  document.getElementById('statusTab').style.display = tab === 'status' ? 'block' : 'none';
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.target.closest('.tab').classList.add('active');
+async function sablonlariOnbellekleGetir() {
+  try {
+    const res = await fetch('/admin/api/templates');
+    sablonlarVerisi = await res.json();
+  } catch (err) {
+    console.error('Şablonlar alınamadı:', err.message);
+  }
+}
+
+function showTab(tab, el) {
+  ['posts', 'pending', 'templates', 'status', 'followers', 'settings'].forEach((t) => {
+    document.getElementById(t + 'Tab').style.display = (t === tab) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-icon').forEach((n) => n.classList.remove('active'));
+  if (el) el.classList.add('active');
   if (tab === 'status') loadStatus();
   if (tab === 'pending') loadPending();
+  if (tab === 'templates') loadTemplates();
+  if (tab === 'followers') loadFollowers();
+  if (tab === 'settings') loadSettings();
+}
+
+// Bir gönderinin/planın "Mesaj metni" alanını, varsayılan DM şablonuyla
+// (içindeki {link} yerine o anki link kutusunun değeri konularak) doldurur.
+function sablonMesajiDoldur(mediaIdOrNew) {
+  const isNew = mediaIdOrNew === 'new';
+  const linkInput = document.getElementById(isNew ? 'new-pending-link' : 'link-' + mediaIdOrNew);
+  const msgInput = document.getElementById(isNew ? 'new-pending-msg' : 'msg-' + mediaIdOrNew);
+  if (!linkInput || !msgInput) return;
+  const link = (linkInput.value || '').trim();
+  const sablon = (sablonlarVerisi && sablonlarVerisi.defaultMessageTemplate)
+    ? sablonlarVerisi.defaultMessageTemplate
+    : 'Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: {link}';
+  msgInput.value = sablon.split('{link}').join(link);
 }
 
 // "after" verilirse (Daha Fazla Göster'e tıklanınca) mevcut kartlar SİLİNMEZ,
@@ -374,8 +488,9 @@ async function loadPosts(after = null) {
       <label>Gönderilecek link</label>
       <input type="text" id="link-${post.id}" value="${auto ? auto.link : ''}" placeholder="https://hakanhoca.net/...">
 
-      <label>Mesaj metni (özel mesaj / DM — boş bırakırsan otomatik oluşur)</label>
+      <label>Mesaj metni (özel mesaj / DM — boş bırakırsan şablon kullanılır)</label>
       <textarea id="msg-${post.id}" placeholder="Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ...">${auto && auto.replyMessage ? auto.replyMessage : ''}</textarea>
+      <button type="button" class="ghost" onclick="sablonMesajiDoldur('${post.id}')">📋 Şablonu Kullan</button>
 
       <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
       <div id="publicReplies-${post.id}"></div>
@@ -421,10 +536,13 @@ function addPublicReplyField(postId, value = '') {
   container.appendChild(row);
 }
 
-// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden sıradaki metni otomatik doldurur.
+// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden (Şablonlar sekmesi) sıradaki
+// metni otomatik doldurur.
 function addPublicReplyTemplate(postId) {
+  const liste = (sablonlarVerisi && sablonlarVerisi.publicReplyTemplates) || [];
+  if (liste.length === 0) return;
   const container = document.getElementById('publicReplies-' + postId);
-  const nextText = DEFAULT_PUBLIC_REPLIES[container.children.length % DEFAULT_PUBLIC_REPLIES.length];
+  const nextText = liste[container.children.length % liste.length];
   addPublicReplyField(postId, nextText);
 }
 
@@ -526,10 +644,13 @@ function addPendingReplyField(value = '') {
   container.appendChild(row);
 }
 
-// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden sıradaki metni otomatik doldurur.
+// "+ Cevap Ekle" butonuna her tıklandığında hazır listeden (Şablonlar sekmesi) sıradaki
+// metni otomatik doldurur.
 function addPendingReplyTemplate() {
+  const liste = (sablonlarVerisi && sablonlarVerisi.publicReplyTemplates) || [];
+  if (liste.length === 0) return;
   const container = document.getElementById('new-pending-replies');
-  const nextText = DEFAULT_PUBLIC_REPLIES[container.children.length % DEFAULT_PUBLIC_REPLIES.length];
+  const nextText = liste[container.children.length % liste.length];
   addPendingReplyField(nextText);
 }
 
@@ -586,7 +707,7 @@ async function loadPending() {
     return;
   }
 
-  container.innerHTML = '<div class="section-title">⏳ Bekleyen Planlanan Otomasyonlar (kullanım sırası yukarıdan aşağı)</div>';
+  container.innerHTML = '';
   ids.forEach((id, i) => {
     const t = data.pending[id];
     const card = document.createElement('div');
@@ -607,6 +728,185 @@ async function deletePending(id) {
   loadPending();
 }
 
+// ================== ŞABLONLAR SEKMESİ ==================
+
+async function loadTemplates() {
+  await sablonlariOnbellekleGetir();
+  renderTemplatesPage();
+}
+
+function renderTemplatesPage() {
+  const container = document.getElementById('templateRepliesList');
+  container.innerHTML = '';
+  (sablonlarVerisi.publicReplyTemplates || []).forEach((text) => sablonAlaniEkle(text));
+  document.getElementById('defaultMessageTemplateInput').value = sablonlarVerisi.defaultMessageTemplate || '';
+}
+
+function sablonAlaniEkle(value = '') {
+  const container = document.getElementById('templateRepliesList');
+  const index = container.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'reply-item';
+  row.innerHTML = `
+    <div class="reply-number">${index}</div>
+    <textarea class="template-reply-input" placeholder="Örn: Materyali DM'den gönderdim, kontrol eder misin? 📩">${value}</textarea>
+    <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+async function sablonlariKaydet() {
+  const publicReplyTemplates = Array.from(
+    document.querySelectorAll('#templateRepliesList .template-reply-input')
+  ).map((el) => el.value.trim()).filter(Boolean);
+  const defaultMessageTemplate = document.getElementById('defaultMessageTemplateInput').value.trim();
+  const msgEl = document.getElementById('templatesSaveMsg');
+
+  if (publicReplyTemplates.length === 0) {
+    msgEl.textContent = '⚠️ En az 1 yorum altı cevap şablonu olmalı';
+    msgEl.style.color = 'var(--danger)';
+    return;
+  }
+
+  msgEl.textContent = 'Kaydediliyor...';
+  msgEl.style.color = 'var(--text-dim)';
+
+  const res = await fetch('/admin/api/templates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ publicReplyTemplates, defaultMessageTemplate }),
+  });
+  const result = await res.json();
+
+  if (result.ok) {
+    msgEl.textContent = '✅ Kaydedildi!';
+    msgEl.style.color = 'var(--success)';
+    await sablonlariOnbellekleGetir();
+  } else {
+    msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
+    msgEl.style.color = 'var(--danger)';
+  }
+}
+
+// ================== TAKİPÇİ SEKMESİ ==================
+
+async function loadFollowers() {
+  const container = document.getElementById('followersContent');
+  container.innerHTML = '<div class="loading">Takipçi verisi yükleniyor...</div>';
+
+  const res = await fetch('/admin/api/followers');
+  const data = await res.json();
+
+  if (!data.veriVarMi) {
+    container.innerHTML = `
+      <div class="hint">ℹ️ Instagram'ın resmi API'si tek tek "kim takip ediyor" listesini vermiyor, bu yüzden burada sadece toplam takipçi sayısındaki değişimi takip ediyoruz.</div>
+      <div class="empty-state"><span class="icon">👥</span>Henüz veri toplanmadı — ilk rakam bugünden itibaren birkaç saat içinde/yarın burada görünecek.</div>
+    `;
+    return;
+  }
+
+  const isaretle = (n) => (n > 0 ? '+' + n : String(n));
+  let html = `
+    <div class="hint">ℹ️ Instagram'ın resmi API'si tek tek "kim takip ediyor, kim etmiyor" listesini vermiyor — bu yüzden burada <b>toplam takipçi sayısındaki net değişimi</b> takip ediyoruz.</div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">${data.guncelSayi}</div><div class="stat-label">Güncel Takipçi</div></div>
+      <div class="stat ${data.bugunDegisim > 0 ? 'green' : (data.bugunDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.bugunDegisim)}</div><div class="stat-label">Bugünkü Değişim</div></div>
+      <div class="stat ${data.haftalikDegisim > 0 ? 'green' : (data.haftalikDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.haftalikDegisim)}</div><div class="stat-label">Bu Haftaki Net Değişim</div></div>
+    </div>
+  `;
+
+  if (data.son7Gun && data.son7Gun.length > 1) {
+    const maxAbs = Math.max(1, ...data.son7Gun.map((g) => Math.abs(g.degisim)));
+    html += '<div class="card chart-card"><div class="chart-title">Son Günler — Net Değişim</div><div class="bars">';
+    data.son7Gun.forEach((g) => {
+      const yukseklik = Math.max(6, Math.round((Math.abs(g.degisim) / maxAbs) * 100));
+      const renk = g.degisim > 0 ? 'var(--success)' : (g.degisim < 0 ? 'var(--danger)' : 'var(--border)');
+      const gunAdi = new Date(g.tarih + 'T00:00:00').toLocaleDateString('tr-TR', { weekday: 'short' });
+      html += `<div class="bar-col"><div class="bar" style="height:${yukseklik}%;background:${renk}"></div><div class="bar-day">${gunAdi}</div></div>`;
+    });
+    html += '</div></div>';
+  }
+
+  container.innerHTML = html;
+}
+
+// "following.json"/"followers_1.json" içeriğini (ya da düz, satır satır kullanıcı adı
+// listesini) kullanıcı adları dizisine çevirir. JSON değilse düz liste olarak okunur.
+// Instagram'ın export formatı iç içe olabildiği için (string_list_data, value alanları)
+// nesneyi baştan sona gezip bulduğu her "value" metnini toplar.
+function kullaniciListesiCoz(metin) {
+  const t = (metin || '').trim();
+  if (!t) return [];
+  try {
+    const veri = JSON.parse(t);
+    const isimler = [];
+    const gez = (node) => {
+      if (Array.isArray(node)) { node.forEach(gez); return; }
+      if (node && typeof node === 'object') {
+        if (typeof node.value === 'string') isimler.push(node.value);
+        if (Array.isArray(node.string_list_data)) node.string_list_data.forEach(gez);
+        Object.values(node).forEach((v) => { if (v && typeof v === 'object') gez(v); });
+      }
+    };
+    gez(veri);
+    if (isimler.length > 0) return [...new Set(isimler.map((s) => s.toLowerCase()))];
+  } catch (e) {
+    // JSON değil, düz liste olarak devam et
+  }
+  return [...new Set(
+    t.split(/[\n,]+/).map((s) => s.trim().replace(/^@/, '').toLowerCase()).filter(Boolean)
+  )];
+}
+
+// Tamamen tarayıcıda çalışır - hiçbir kullanıcı adı sunucuya gönderilmez.
+function takipKarsilastir() {
+  const takipEdilenler = kullaniciListesiCoz(document.getElementById('takipEdilenlerInput').value);
+  const takipciler = new Set(kullaniciListesiCoz(document.getElementById('takipcilerInput').value));
+  const sonucEl = document.getElementById('karsilastirmaSonuc');
+
+  if (takipEdilenler.length === 0 || takipciler.size === 0) {
+    sonucEl.innerHTML = '<div class="hint">⚠️ Her iki listeyi de yapıştırman gerekiyor.</div>';
+    return;
+  }
+
+  const seniTakipEtmeyenler = takipEdilenler.filter((u) => !takipciler.has(u));
+
+  if (seniTakipEtmeyenler.length === 0) {
+    sonucEl.innerHTML = '<div class="hint">🎉 Takip ettiğin herkes seni de takip ediyor!</div>';
+    return;
+  }
+
+  sonucEl.innerHTML = `
+    <div class="section-title">${seniTakipEtmeyenler.length} kişi seni takip etmiyor</div>
+    ${seniTakipEtmeyenler.map((u) => `<div class="log-item"><span class="user">@${u}</span></div>`).join('')}
+  `;
+}
+
+// ================== AYARLAR SEKMESİ ==================
+
+async function loadSettings() {
+  const container = document.getElementById('settingsContent');
+  const res = await fetch('/admin/api/settings');
+  const data = await res.json();
+  const tarih = data.tokenYenilemeZamani
+    ? new Date(data.tokenYenilemeZamani).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })
+    : 'Henüz yenilenmedi';
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="settings-row"><span class="lbl2">Panel kullanıcı adı</span><span class="val">${data.adminUser}</span></div>
+      <div class="settings-row"><span class="lbl2">Panel şifresi</span><span class="val">•••••••• (Render ortam değişkeninden)</span></div>
+      <div class="settings-row"><span class="lbl2">Instagram token durumu</span><span class="val" style="color:${data.tokenVarMi ? 'var(--success)' : 'var(--danger)'}">${data.tokenVarMi ? '✅ Bağlı' : '❌ Bağlı değil'}</span></div>
+      <div class="settings-row"><span class="lbl2">Son token yenileme</span><span class="val">${tarih}</span></div>
+    </div>
+    <div class="section-title">Bildirimler</div>
+    <div class="card">
+      <div class="settings-row"><span class="lbl2">Başarısız gönderimde bildirim</span><span class="badge off">🔜 Yakında</span></div>
+      <div class="settings-row"><span class="lbl2">Günlük özet bildirimi</span><span class="badge off">🔜 Yakında</span></div>
+    </div>
+  `;
+}
+
 let sonDurumVerisi = null;
 let secilenDonem = 'gun'; // 'gun' | 'hafta' | 'ay'
 
@@ -616,21 +916,16 @@ async function loadStatus() {
   renderStatus();
 }
 
-// Bir hafta anahtarını ("YYYY-MM-DD", o haftanın Pazartesi'si) "06 - 12 Eylül 2026" gibi
-// okunur bir aralığa çevirir.
-function haftaEtiketi(pazartesiTarihi) {
-  const baslangic = new Date(pazartesiTarihi + 'T00:00:00');
-  const bitis = new Date(baslangic);
-  bitis.setDate(bitis.getDate() + 6);
-  const b1 = baslangic.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' });
-  const b2 = bitis.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
-  return `${b1} – ${b2}`;
-}
-
 // Bir ay anahtarını ("YYYY-MM") "Eylül 2026" gibi okunur hale çevirir.
 function ayEtiketi(ayAnahtari) {
   const tarih = new Date(ayAnahtari + '-01T00:00:00');
   return tarih.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+}
+
+// Bir hafta anahtarını ("2026-05-H1") {ay: "Mayıs 2026", haftaNo: 1} olarak ayırır.
+function haftaAnahtariAyristir(anahtar) {
+  const [ayAnahtari, haftaKismi] = anahtar.split('-H');
+  return { ayAnahtari, haftaNo: Number(haftaKismi) };
 }
 
 function switchOzetDonemi(donem) {
@@ -643,14 +938,13 @@ function renderStatus() {
   if (!data) return;
   const container = document.getElementById('statusContent');
 
+  // Sade özet çubuğu: kalıcı toplam rakamlar tek satırda, göz yormadan.
   let html = `
-    <div class="stat-row">
-      <div class="stat green"><div class="stat-icon">✅</div><div class="num">${data.ozet.basariylaGonderilen}</div><div class="stat-label">Toplam Gönderildi</div></div>
-      <div class="stat red"><div class="stat-icon">⚠️</div><div class="num">${data.ozet.basarisizOlan}</div><div class="stat-label">Başarısız</div></div>
-      <div class="stat yellow"><div class="stat-icon">⏳</div><div class="num">${data.ozet.tekrarDenenecek}</div><div class="stat-label">Bekliyor</div></div>
-    </div>
-    <div class="hint" style="margin-top:-8px;">
-      ℹ️ Bu sayılar artık kalıcı olarak saklanıyor — sunucu yeniden başlasa bile bir daha sıfırlanmaz.
+    <div class="summary-line">
+      <span>Toplam gönderilen: <b>${data.ozet.basariylaGonderilen}</b></span>
+      <span>Başarısız: <b>${data.ozet.basarisizOlan}</b></span>
+      <span>Bekleyen tekrar: <b>${data.ozet.tekrarDenenecek}</b></span>
+      <span>· hiçbiri sıfırlanmaz ✅</span>
     </div>
   `;
 
@@ -664,7 +958,19 @@ function renderStatus() {
     `;
   }
 
-  html += '<div class="section-title">📊 Özet — kaç PDF gitti, kimlere gitti</div>';
+  // Son 7 günün basit çubuk grafiği (data.gunlukOzet en yeniden en eskiye sıralı geliyor).
+  if (data.gunlukOzet && data.gunlukOzet.length > 0) {
+    const son7 = data.gunlukOzet.slice(0, 7).slice().reverse(); // kronolojik sıraya çevir
+    const maxAdet = Math.max(1, ...son7.map((g) => g.adet));
+    html += '<div class="card chart-card"><div class="chart-title">Son 7 Gün</div><div class="bars">';
+    son7.forEach((g) => {
+      const yukseklik = Math.max(6, Math.round((g.adet / maxAdet) * 100));
+      const gunAdi = new Date(g.tarih + 'T00:00:00').toLocaleDateString('tr-TR', { weekday: 'short' });
+      html += `<div class="bar-col"><div class="bar" style="height:${yukseklik}%"></div><div class="bar-day">${gunAdi}</div></div>`;
+    });
+    html += '</div></div>';
+  }
+
   html += `
     <div class="period-toggle">
       <div class="period-btn ${secilenDonem === 'gun' ? 'active' : ''}" onclick="switchOzetDonemi('gun')">Günlük</div>
@@ -676,35 +982,58 @@ function renderStatus() {
   const bugunStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
   const dunStr = new Date(Date.now() - 86400000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
 
-  let liste = [];
-  if (secilenDonem === 'gun') liste = data.gunlukOzet || [];
-  else if (secilenDonem === 'hafta') liste = data.haftalikOzet || [];
-  else liste = data.aylikOzet || [];
+  function satirHtml(baslik, adet, kullanicilarListesi) {
+    const kullanicilar = (kullanicilarListesi || []).map(u => '@' + u).join(', ') || '—';
+    return `<div class="log-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="user">${baslik}</span>
+        <span style="color:var(--success);font-weight:700;white-space:nowrap;margin-left:8px;">${adet} PDF</span>
+      </div>
+      <div class="comment-text" style="margin-top:6px;">${kullanicilar}</div>
+    </div>`;
+  }
 
-  if (liste.length === 0) {
-    html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kayıt yok.</div>';
+  if (secilenDonem === 'gun') {
+    const liste = data.gunlukOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kayıt yok.</div>';
+    } else {
+      liste.forEach(gun => {
+        const tarihObj = new Date(gun.tarih + 'T00:00:00');
+        let baslik = tarihObj.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+        if (gun.tarih === bugunStr) baslik += ' — bugün';
+        else if (gun.tarih === dunStr) baslik += ' — dün';
+        html += satirHtml(baslik, gun.adet, gun.kullanicilar);
+      });
+    }
+  } else if (secilenDonem === 'hafta') {
+    // "Mayıs 2026" ay başlığı altında "1. Hafta", "2. Hafta" şeklinde gruplu göster -
+    // tam olarak "Mayıs 1. hafta, 2. hafta" mantığıyla, ay sınırını hiç aşmadan.
+    const liste = data.haftalikOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kayıt yok.</div>';
+    } else {
+      let acikAy = null;
+      liste.forEach(hafta => {
+        const { ayAnahtari, haftaNo } = haftaAnahtariAyristir(hafta.anahtar);
+        if (ayAnahtari !== acikAy) {
+          if (acikAy !== null) html += '</div>'; // önceki .month-group'u kapat
+          html += `<div class="month-group"><div class="month-group-title">🗓️ ${ayEtiketi(ayAnahtari)}</div>`;
+          acikAy = ayAnahtari;
+        }
+        html += satirHtml(`${haftaNo}. Hafta`, hafta.adet, hafta.kullanicilar);
+      });
+      html += '</div>'; // son .month-group'u kapat
+    }
   } else {
-    liste.forEach(kayit => {
-      let baslik;
-      if (secilenDonem === 'gun') {
-        const tarihObj = new Date(kayit.tarih + 'T00:00:00');
-        baslik = tarihObj.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
-        if (kayit.tarih === bugunStr) baslik += ' — bugün';
-        else if (kayit.tarih === dunStr) baslik += ' — dün';
-      } else if (secilenDonem === 'hafta') {
-        baslik = haftaEtiketi(kayit.anahtar);
-      } else {
-        baslik = ayEtiketi(kayit.anahtar);
-      }
-      const kullanicilar = (kayit.kullanicilar || []).map(u => '@' + u).join(', ') || '—';
-      html += `<div class="log-item">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span class="user">${baslik}</span>
-          <span style="color:var(--success);font-weight:700;white-space:nowrap;margin-left:8px;">${kayit.adet} PDF</span>
-        </div>
-        <div class="comment-text" style="margin-top:6px;">${kullanicilar}</div>
-      </div>`;
-    });
+    const liste = data.aylikOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kayıt yok.</div>';
+    } else {
+      liste.forEach(ay => {
+        html += satirHtml(ayEtiketi(ay.anahtar), ay.adet, ay.kullanicilar);
+      });
+    }
   }
 
   if (data.basarisizOlanlar.length > 0) {
@@ -730,6 +1059,7 @@ function renderStatus() {
 }
 
 loadPosts();
+sablonlariOnbellekleGetir();
 </script>
 
 </body>
