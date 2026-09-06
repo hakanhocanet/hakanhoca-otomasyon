@@ -72,31 +72,111 @@
   }
   .sub { color: var(--text-dim); font-size: 12px; margin-top: 2px; }
 
-  /* ---------- SOL İKON MENÜ ---------- */
-  .app-shell { display: flex; align-items: flex-start; }
-  .sidebar {
-    width: 72px; flex-shrink: 0;
-    background: var(--bg-elevated);
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center;
-    padding: 14px 0 10px;
-    position: sticky; top: 0; height: 100vh;
-  }
-  .nav-list { display: flex; flex-direction: column; gap: 4px; width: 100%; align-items: center; }
-  .nav-icon {
-    width: 58px; padding: 8px 2px 7px;
-    border-radius: 14px; cursor: pointer;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    color: var(--text-dim);
-    transition: all .15s ease;
-    user-select: none;
-  }
-  .nav-icon .emoji { font-size: 18px; line-height: 1; }
-  .nav-icon .lbl { font-size: 8.5px; font-weight: 600; letter-spacing: .01em; text-align: center; }
-  .nav-icon.active { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(238,42,123,0.30); }
-  .nav-icon:not(.active):hover { background: var(--bg-card-2); color: var(--text); }
+  /* ---------- SAĞ ÜST AÇILIR/KAPANIR HAMBURGER MENÜ ---------- */
+  .app-shell { display: block; }
+  .main { padding: 18px 16px 70px; max-width: 720px; margin: 0 auto; }
 
-  .main { flex: 1; min-width: 0; padding: 18px 16px 70px; max-width: 720px; }
+  .hamburger-btn {
+    position: fixed; top: 14px; right: 16px; z-index: 60;
+    width: 46px; height: 46px; border-radius: 14px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: var(--text); cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    transition: transform .12s ease;
+  }
+  .hamburger-btn:active { transform: scale(0.94); }
+
+  .nav-overlay {
+    position: fixed; inset: 0; background: rgba(6,6,10,0.6);
+    z-index: 70; opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .nav-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .nav-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 71;
+    width: 250px; max-width: 80vw;
+    background: var(--bg-elevated); border-left: 1px solid var(--border);
+    padding: 16px 12px; overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform .25s ease;
+    display: flex; flex-direction: column;
+  }
+  .nav-drawer.open { transform: translateX(0); }
+  .nav-drawer-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 6px 14px; margin-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .nav-drawer-header .title {
+    font-size: 12.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--text-dim);
+  }
+  .nav-drawer-close {
+    width: 30px; height: 30px; border-radius: 9px; background: var(--bg-card-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: 14px; cursor: pointer;
+  }
+  .nav-drawer-close:hover { color: var(--text); }
+  .nav-list { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+  .drawer-group-label {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--text-dimmer); margin: 14px 4px 6px;
+  }
+  .drawer-group-label:first-of-type { margin-top: 2px; }
+  .drawer-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 12px; border-radius: 14px; cursor: pointer;
+    color: var(--text-dim); user-select: none;
+    transition: all .15s ease;
+  }
+  .drawer-item .emoji { font-size: 19px; width: 22px; text-align: center; flex-shrink: 0; }
+  .drawer-item .lbl { font-size: 14px; font-weight: 600; }
+  .drawer-item.active { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(238,42,123,0.30); }
+  .drawer-item:not(.active):hover { background: var(--bg-card-2); color: var(--text); }
+
+  /* ---------- Hesap Durumu: kill switch, hız göstergesi, kara liste ---------- */
+  .killswitch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .killswitch-text b { display: block; font-size: 14px; color: #fff; margin-bottom: 2px; }
+  .killswitch-text span { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+  .toggle { width: 50px; height: 28px; border-radius: 20px; background: var(--bg-elevated); border: 1px solid var(--border); position: relative; flex-shrink: 0; cursor: pointer; transition: background .15s ease; }
+  .toggle.on { background: var(--gradient); }
+  .toggle::after { content: ""; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: left .2s ease; }
+  .toggle.on::after { left: 24px; }
+
+  .gauge-wrap { margin-top: 6px; }
+  .gauge-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .gauge-top .big { font-size: 26px; font-weight: 800; }
+  .gauge-top .small { font-size: 12px; color: var(--text-dim); }
+  .gauge-bar { height: 14px; border-radius: 8px; background: var(--bg-elevated); border: 1px solid var(--border); overflow: hidden; }
+  .gauge-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--success), #22c98f); transition: width .3s ease; }
+  .gauge-fill.warn { background: linear-gradient(90deg, var(--warning), #f59e0b); }
+  .gauge-fill.danger { background: linear-gradient(90deg, var(--danger), #e11d48); }
+  .gauge-note { font-size: 11.5px; color: var(--text-dimmer); margin-top: 8px; line-height: 1.5; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+  .tag { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 20px; padding: 6px 8px 6px 12px; font-size: 12.5px; display: flex; align-items: center; gap: 8px; color: var(--text); }
+  .tag .x { width: 18px; height: 18px; border-radius: 50%; background: var(--danger-bg); color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; flex-shrink: 0; }
+  .add-row { display: flex; gap: 8px; margin-top: 10px; }
+  .add-row input { flex: 1; padding: 11px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-size: 13.5px; font-family: inherit; }
+  .add-row button { flex-shrink: 0; width: auto; padding: 0 16px; border-radius: var(--radius-sm); border: none; background: var(--gradient); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 0; }
+
+  /* ---------- İstatistikler ---------- */
+  .post-stat-card { display: flex; gap: 12px; }
+  .post-stat-card img { width: 62px; height: 62px; border-radius: 12px; object-fit: cover; flex-shrink: 0; background: var(--bg-elevated); }
+  .post-stat-info { flex: 1; min-width: 0; }
+  .post-stat-caption { font-size: 13px; color: #d5d5df; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .post-stat-nums { display: flex; gap: 14px; flex-wrap: wrap; }
+  .post-stat-nums .item { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
+  .post-stat-nums .item b { color: #fff; font-size: 13px; }
+
+  .export-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg-card-2); border: 1px dashed var(--border); color: var(--text-dim);
+    padding: 9px 14px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 600;
+    margin-top: 10px; text-decoration: none; cursor: pointer;
+  }
+  .export-btn:hover { color: var(--text); border-color: #ee2a7b; }
 
   .page-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
   .page-header .icon-box {
@@ -299,18 +379,29 @@
   </div>
 </div>
 
-<div class="app-shell">
-  <div class="sidebar">
-    <div class="nav-list">
-      <div class="nav-icon active" onclick="showTab('posts', this)"><span class="emoji">🖼️</span><span class="lbl">Gönderiler</span></div>
-      <div class="nav-icon" onclick="showTab('pending', this)"><span class="emoji">🗓️</span><span class="lbl">Planlanan</span></div>
-      <div class="nav-icon" onclick="showTab('templates', this)"><span class="emoji">💬</span><span class="lbl">Şablonlar</span></div>
-      <div class="nav-icon" onclick="showTab('status', this)"><span class="emoji">📊</span><span class="lbl">Durum</span></div>
-      <div class="nav-icon" onclick="showTab('followers', this)"><span class="emoji">👥</span><span class="lbl">Takipçi</span></div>
-      <div class="nav-icon" onclick="showTab('settings', this)"><span class="emoji">⚙️</span><span class="lbl">Ayarlar</span></div>
-    </div>
+<div class="hamburger-btn" onclick="toggleMenu()">☰</div>
+<div class="nav-overlay" id="navOverlay" onclick="closeMenu()"></div>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-header">
+    <span class="title">Menü</span>
+    <div class="nav-drawer-close" onclick="closeMenu()">✕</div>
   </div>
+  <div class="nav-list">
+    <div class="drawer-group-label">Otomasyon</div>
+    <div class="drawer-item active" onclick="showTab('posts', this)"><span class="emoji">🖼️</span><span class="lbl">Gönderiler</span></div>
+    <div class="drawer-item" onclick="showTab('pending', this)"><span class="emoji">🗓️</span><span class="lbl">Planlanan</span></div>
+    <div class="drawer-item" onclick="showTab('templates', this)"><span class="emoji">💬</span><span class="lbl">Şablonlar</span></div>
+    <div class="drawer-group-label">Analiz</div>
+    <div class="drawer-item" onclick="showTab('status', this)"><span class="emoji">📊</span><span class="lbl">Durum</span></div>
+    <div class="drawer-item" onclick="showTab('followers', this)"><span class="emoji">👥</span><span class="lbl">Takipçi</span></div>
+    <div class="drawer-item" onclick="showTab('poststats', this)"><span class="emoji">📈</span><span class="lbl">İstatistikler</span></div>
+    <div class="drawer-group-label">Hesap &amp; Sistem</div>
+    <div class="drawer-item" onclick="showTab('accounthealth', this)"><span class="emoji">🛡️</span><span class="lbl">Hesap Durumu</span></div>
+    <div class="drawer-item" onclick="showTab('settings', this)"><span class="emoji">⚙️</span><span class="lbl">Ayarlar</span></div>
+  </div>
+</div>
 
+<div class="app-shell">
   <div class="main">
 
     <div id="postsTab">
@@ -371,6 +462,16 @@
       <div id="statusContent" class="loading">Durum yükleniyor...</div>
     </div>
 
+    <div id="poststatsTab" style="display:none">
+      <div class="page-header"><div class="icon-box">📈</div><div><h2>İstatistikler</h2><div class="sub">Gönderi bazlı beğeni/yorum/DM performansı</div></div></div>
+      <div id="poststatsContent" class="loading">İstatistikler yükleniyor...</div>
+    </div>
+
+    <div id="accounthealthTab" style="display:none">
+      <div class="page-header"><div class="icon-box">🛡️</div><div><h2>Hesap Durumu</h2><div class="sub">Ceza/kısıtlama riskini gözle görünür kılan sayfa</div></div></div>
+      <div id="accounthealthContent" class="loading">Hesap durumu yükleniyor...</div>
+    </div>
+
     <div id="followersTab" style="display:none">
       <div class="page-header"><div class="icon-box">👥</div><div><h2>Takipçi</h2><div class="sub">Takipçi sayısı ve değişim trendi</div></div></div>
       <div id="followersContent" class="loading">Takipçi verisi yükleniyor...</div>
@@ -410,16 +511,33 @@ async function sablonlariOnbellekleGetir() {
   }
 }
 
+// ================== SAĞ ÜST HAMBURGER MENÜ ==================
+function toggleMenu() {
+  const drawer = document.getElementById('navDrawer');
+  if (drawer.classList.contains('open')) closeMenu(); else openMenu();
+}
+function openMenu() {
+  document.getElementById('navDrawer').classList.add('open');
+  document.getElementById('navOverlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('navDrawer').classList.remove('open');
+  document.getElementById('navOverlay').classList.remove('open');
+}
+
 function showTab(tab, el) {
-  ['posts', 'pending', 'templates', 'status', 'followers', 'settings'].forEach((t) => {
+  ['posts', 'pending', 'templates', 'status', 'followers', 'poststats', 'accounthealth', 'settings'].forEach((t) => {
     document.getElementById(t + 'Tab').style.display = (t === tab) ? 'block' : 'none';
   });
-  document.querySelectorAll('.nav-icon').forEach((n) => n.classList.remove('active'));
+  document.querySelectorAll('.drawer-item').forEach((n) => n.classList.remove('active'));
   if (el) el.classList.add('active');
+  closeMenu();
   if (tab === 'status') loadStatus();
   if (tab === 'pending') loadPending();
   if (tab === 'templates') loadTemplates();
   if (tab === 'followers') loadFollowers();
+  if (tab === 'poststats') loadPostStats();
+  if (tab === 'accounthealth') loadAccountHealth();
   if (tab === 'settings') loadSettings();
 }
 
@@ -789,13 +907,30 @@ async function sablonlariKaydet() {
 }
 
 // ================== TAKİPÇİ SEKMESİ ==================
+// Durum sayfasındaki AYNI "Günlük / Haftalık / Aylık" karşılaştırma modeli burada da
+// kullanılıyor - tek fark, PDF adedi yerine takipçi sayısındaki net değişimin gösterilmesi.
+
+let sonTakipciVerisi = null;
+let secilenTakipciDonemi = 'gun'; // 'gun' | 'hafta' | 'ay'
 
 async function loadFollowers() {
   const container = document.getElementById('followersContent');
   container.innerHTML = '<div class="loading">Takipçi verisi yükleniyor...</div>';
 
   const res = await fetch('/admin/api/followers');
-  const data = await res.json();
+  sonTakipciVerisi = await res.json();
+  renderFollowers();
+}
+
+function switchTakipciDonemi(donem) {
+  secilenTakipciDonemi = donem;
+  renderFollowers();
+}
+
+function renderFollowers() {
+  const data = sonTakipciVerisi;
+  const container = document.getElementById('followersContent');
+  if (!data) return;
 
   if (!data.veriVarMi) {
     container.innerHTML = `
@@ -810,8 +945,8 @@ async function loadFollowers() {
     <div class="hint">ℹ️ Instagram'ın resmi API'si tek tek "kim takip ediyor, kim etmiyor" listesini vermiyor — bu yüzden burada <b>toplam takipçi sayısındaki net değişimi</b> takip ediyoruz.</div>
     <div class="stat-row">
       <div class="stat"><div class="num">${data.guncelSayi}</div><div class="stat-label">Güncel Takipçi</div></div>
-      <div class="stat ${data.bugunDegisim > 0 ? 'green' : (data.bugunDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.bugunDegisim)}</div><div class="stat-label">Bugünkü Değişim</div></div>
-      <div class="stat ${data.haftalikDegisim > 0 ? 'green' : (data.haftalikDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.haftalikDegisim)}</div><div class="stat-label">Bu Haftaki Net Değişim</div></div>
+      <div class="stat ${data.bugunDegisim > 0 ? 'green' : (data.bugunDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.bugunDegisim)}</div><div class="stat-label">Bugün</div></div>
+      <div class="stat ${data.haftalikDegisim > 0 ? 'green' : (data.haftalikDegisim < 0 ? 'red' : '')}"><div class="num">${isaretle(data.haftalikDegisim)}</div><div class="stat-label">Bu Hafta</div></div>
     </div>
   `;
 
@@ -825,6 +960,68 @@ async function loadFollowers() {
       html += `<div class="bar-col"><div class="bar" style="height:${yukseklik}%;background:${renk}"></div><div class="bar-day">${gunAdi}</div></div>`;
     });
     html += '</div></div>';
+  }
+
+  html += `
+    <div class="period-toggle">
+      <div class="period-btn ${secilenTakipciDonemi === 'gun' ? 'active' : ''}" onclick="switchTakipciDonemi('gun')">Günlük</div>
+      <div class="period-btn ${secilenTakipciDonemi === 'hafta' ? 'active' : ''}" onclick="switchTakipciDonemi('hafta')">Haftalık</div>
+      <div class="period-btn ${secilenTakipciDonemi === 'ay' ? 'active' : ''}" onclick="switchTakipciDonemi('ay')">Aylık</div>
+    </div>
+  `;
+
+  const bugunStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+  const dunStr = new Date(Date.now() - 86400000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+
+  function degisimSatiri(baslik, degisim) {
+    const renk = degisim > 0 ? 'var(--success)' : (degisim < 0 ? 'var(--danger)' : 'var(--text-dim)');
+    return `<div class="log-item">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="user">${baslik}</span>
+        <span style="color:${renk};font-weight:700;white-space:nowrap;margin-left:8px;">${isaretle(degisim)} takipçi</span>
+      </div>
+    </div>`;
+  }
+
+  if (secilenTakipciDonemi === 'gun') {
+    const liste = data.gunlukOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kıyaslanacak kayıt yok.</div>';
+    } else {
+      liste.forEach((gun) => {
+        const tarihObj = new Date(gun.tarih + 'T00:00:00');
+        let baslik = tarihObj.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+        if (gun.tarih === bugunStr) baslik += ' — bugün';
+        else if (gun.tarih === dunStr) baslik += ' — dün';
+        html += degisimSatiri(baslik, gun.degisim);
+      });
+    }
+  } else if (secilenTakipciDonemi === 'hafta') {
+    const liste = data.haftalikOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kıyaslanacak kayıt yok.</div>';
+    } else {
+      let acikAy = null;
+      liste.forEach((hafta) => {
+        const { ayAnahtari, haftaNo } = haftaAnahtariAyristir(hafta.anahtar);
+        if (ayAnahtari !== acikAy) {
+          if (acikAy !== null) html += '</div>';
+          html += `<div class="month-group"><div class="month-group-title">🗓️ ${ayEtiketi(ayAnahtari)}</div>`;
+          acikAy = ayAnahtari;
+        }
+        html += degisimSatiri(`${haftaNo}. Hafta`, hafta.degisim);
+      });
+      html += '</div>';
+    }
+  } else {
+    const liste = data.aylikOzet || [];
+    if (liste.length === 0) {
+      html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kıyaslanacak kayıt yok.</div>';
+    } else {
+      liste.forEach((ay) => {
+        html += degisimSatiri(ayEtiketi(ay.anahtar), ay.degisim);
+      });
+    }
   }
 
   container.innerHTML = html;
@@ -882,7 +1079,199 @@ function takipKarsilastir() {
   `;
 }
 
+// ================== İSTATİSTİKLER SEKMESİ (gönderi bazlı beğeni/yorum/DM) ==================
+
+let sonPostStatsVerisi = null;
+let secilenSiralama = 'dm'; // 'dm' | 'yorum' | 'begeni'
+
+async function loadPostStats() {
+  const container = document.getElementById('poststatsContent');
+  container.innerHTML = '<div class="loading">İstatistikler yükleniyor...</div>';
+
+  const res = await fetch('/admin/api/post-stats');
+  const data = await res.json();
+
+  if (data.error) {
+    container.innerHTML = '<div class="empty-state"><span class="icon">⚠️</span>Hata: ' + data.error + '</div>';
+    return;
+  }
+
+  sonPostStatsVerisi = data.posts || [];
+  renderPostStats();
+}
+
+function switchSiralama(tur) {
+  secilenSiralama = tur;
+  renderPostStats();
+}
+
+function renderPostStats() {
+  const container = document.getElementById('poststatsContent');
+  const posts = sonPostStatsVerisi || [];
+
+  if (posts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><span class="icon">📈</span>Henüz gönderi bulunamadı.</div>';
+    return;
+  }
+
+  const siraliPosts = [...posts].sort((a, b) => {
+    if (secilenSiralama === 'yorum') return (b.commentsCount || 0) - (a.commentsCount || 0);
+    if (secilenSiralama === 'begeni') return (b.likeCount || 0) - (a.likeCount || 0);
+    return (b.dmGonderilen || 0) - (a.dmGonderilen || 0);
+  });
+
+  let html = `
+    <div class="hint">ℹ️ Beğeni/yorum sayıları Instagram'dan canlı çekiliyor; bazı hesap türlerinde bu alanlar gelmeyebilir, o durumda "—" gösterilir. "DM gitti" sayısı ise bu sistemin kendi kayıtlarından, kalıcı.</div>
+    <div class="period-toggle">
+      <div class="period-btn ${secilenSiralama === 'dm' ? 'active' : ''}" onclick="switchSiralama('dm')">En Çok DM</div>
+      <div class="period-btn ${secilenSiralama === 'yorum' ? 'active' : ''}" onclick="switchSiralama('yorum')">En Çok Yorum</div>
+      <div class="period-btn ${secilenSiralama === 'begeni' ? 'active' : ''}" onclick="switchSiralama('begeni')">En Çok Beğeni</div>
+    </div>
+  `;
+
+  siraliPosts.forEach((post) => {
+    const caption = (post.caption || '(açıklama yok)').replace(/\n/g, ' ');
+    const img = post.thumbnail || '';
+    html += `
+      <div class="card post-stat-card">
+        ${img ? `<img src="${img}">` : '<div style="width:62px;height:62px;border-radius:12px;background:var(--bg-elevated);flex-shrink:0;"></div>'}
+        <div class="post-stat-info">
+          <div class="post-stat-caption">${caption}</div>
+          <div class="post-stat-nums">
+            <span class="item">📨 <b>${post.dmGonderilen || 0}</b> DM gitti</span>
+            <span class="item">💬 <b>${post.commentsCount === null ? '—' : post.commentsCount}</b> yorum</span>
+            <span class="item">❤️ <b>${post.likeCount === null ? '—' : post.likeCount}</b> beğeni</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// ================== HESAP DURUMU SEKMESİ ==================
+
+async function loadAccountHealth() {
+  const container = document.getElementById('accounthealthContent');
+  container.innerHTML = '<div class="loading">Hesap durumu yükleniyor...</div>';
+
+  const res = await fetch('/admin/api/account-health');
+  const data = await res.json();
+  renderAccountHealth(data);
+}
+
+async function toggleOtomasyonDuraklat(su_anKiDurum) {
+  const yeniDurum = !su_anKiDurum;
+  await fetch('/admin/api/account-health/pause', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paused: yeniDurum }),
+  });
+  loadAccountHealth();
+}
+
+async function karaListeyeEkle() {
+  const input = document.getElementById('blacklistYeniInput');
+  const kullaniciAdi = (input.value || '').trim();
+  if (!kullaniciAdi) return;
+  await fetch('/admin/api/blacklist', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: kullaniciAdi }),
+  });
+  input.value = '';
+  loadAccountHealth();
+}
+
+async function karaListedenSil(kullaniciAdi) {
+  await fetch('/admin/api/blacklist/' + encodeURIComponent(kullaniciAdi), { method: 'DELETE' });
+  loadAccountHealth();
+}
+
+function renderAccountHealth(data) {
+  const container = document.getElementById('accounthealthContent');
+
+  const yuzde = Math.min(100, Math.round((data.saatlikGonderim / data.saatlikGuvenliLimit) * 100));
+  const gaugeRenk = yuzde >= 90 ? 'danger' : (yuzde >= 70 ? 'warn' : '');
+
+  const genelDurumHtml = data.saglikli
+    ? `<div class="badge on">✅ Hesap sağlıklı görünüyor</div>`
+    : `<div class="badge danger">⚠️ Kontrol edilmesi gereken bir şey var</div>`;
+
+  const blacklist = data.blacklist || [];
+  const eslesmeyenler = data.eslesmeyenYorumlar || [];
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="killswitch-row">
+        <div class="killswitch-text">
+          <b>🛑 Otomasyonu Duraklat</b>
+          <span>Açarsan, kapatana kadar hiçbir yoruma DM/cevap gitmez. Gelen yorumlar Instagram tarafında kalır, panelde geriye dönük "yetişme" olmaz.</span>
+        </div>
+        <div class="toggle ${data.otomasyonDuraklatildiMi ? 'on' : ''}" onclick="toggleOtomasyonDuraklat(${data.otomasyonDuraklatildiMi})"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      ${genelDurumHtml}
+      <div class="gauge-wrap">
+        <div class="gauge-top">
+          <span class="big">${data.saatlikGonderim}<span style="font-size:15px;color:var(--text-dim);"> / ${data.saatlikGuvenliLimit}</span></span>
+          <span class="small">bu saatki DM gönderimi</span>
+        </div>
+        <div class="gauge-bar"><div class="gauge-fill ${gaugeRenk}" style="width:${yuzde}%"></div></div>
+        <div class="gauge-note">Meta'nın resmi sınırı yoruma-özel-mesaj için <b>saatte ${data.metaResmiLimit}</b>. Biz güvenlik payı bırakmak için <b>${data.saatlikGuvenliLimit}'de</b> durup kalanları otomatik olarak sıraya alıyoruz — sınıra hiç değmiyoruz.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="settings-row"><span class="lbl2">Son 24 saatte Meta'dan rate-limit hatası</span><span class="val" style="color:${data.son24SaatRateLimitHatasi > 0 ? 'var(--danger)' : 'var(--success)'}">${data.son24SaatRateLimitHatasi}</span></div>
+      <div class="settings-row"><span class="lbl2">Sıraya alınıp ertelenen gönderim (toplam)</span><span class="val">${data.toplamErtelenen}</span></div>
+      <div class="settings-row"><span class="lbl2">Kara listedeki kişi sayısı</span><span class="val">${blacklist.length}</span></div>
+    </div>
+
+    <div class="section-title">🚫 Kara Liste</div>
+    <div class="hint">Buraya eklediğin kullanıcı adlarına otomasyon hiç mesaj/cevap göndermez — spam hesaplar ya da istemediğin kişiler için.</div>
+    <div class="card">
+      <div class="tag-row">
+        ${blacklist.length === 0
+          ? '<span style="color:var(--text-dimmer);font-size:12.5px;">Kara listede kimse yok.</span>'
+          : blacklist.map((u) => `<div class="tag">@${u} <span class="x" onclick="karaListedenSil('${u}')">✕</span></div>`).join('')}
+      </div>
+      <div class="add-row">
+        <input type="text" id="blacklistYeniInput" placeholder="kullanıcı adı yaz (@ olmadan)">
+        <button type="button" onclick="karaListeyeEkle()">Ekle</button>
+      </div>
+    </div>
+
+    <div class="section-title">🔍 Kaçırılan Fırsatlar — Eşleşmeyen Yorumlar</div>
+    <div class="hint">Bu yorumlar geldi ama hiçbir gönderide tanımlı otomasyon olmadığı için hiçbir şey gönderilmedi. Belki bu gönderi(ler) için de bir otomasyon kurman gerekiyordur.</div>
+    ${eslesmeyenler.length === 0
+      ? '<div class="empty-state"><span class="icon">🎉</span>Kaçırılan bir şey yok görünüyor.</div>'
+      : eslesmeyenler.map((y) => `
+        <div class="log-item">
+          <span class="user">@${y.fromUsername}</span> <span class="comment-text">— "${y.commentText}"</span>
+          <span class="time" style="float:right;color:var(--text-dimmer);font-size:11px;">${goreceliZaman(y.timestamp)}</span>
+        </div>
+      `).join('')}
+  `;
+}
+
 // ================== AYARLAR SEKMESİ ==================
+
+// Bir zaman damgasını "3 saat önce / 2 gün önce" gibi kısa, göreceli bir ifadeye çevirir.
+function goreceliZaman(isoZaman) {
+  if (!isoZaman) return '';
+  const farkMs = Date.now() - new Date(isoZaman).getTime();
+  const dk = Math.floor(farkMs / 60000);
+  if (dk < 1) return 'az önce';
+  if (dk < 60) return `${dk} dk önce`;
+  const saat = Math.floor(dk / 60);
+  if (saat < 24) return `${saat} saat önce`;
+  const gun = Math.floor(saat / 24);
+  return `${gun} gün önce`;
+}
 
 async function loadSettings() {
   const container = document.getElementById('settingsContent');
@@ -891,6 +1280,15 @@ async function loadSettings() {
   const tarih = data.tokenYenilemeZamani
     ? new Date(data.tokenYenilemeZamani).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })
     : 'Henüz yenilenmedi';
+  const kalanGunMetni = (typeof data.tokenKalanGun === 'number')
+    ? `~${data.tokenKalanGun} gün sonra`
+    : 'bilinmiyor';
+
+  const saglik = data.saglik || {};
+  const sorunVarMi = (saglik.basarisizSon24Saat > 0) || (saglik.tekrarBekleyen > 0) || !data.tokenVarMi;
+  const genelDurumHtml = sorunVarMi
+    ? `<div class="badge off">⚠️ Kontrol edilmesi gereken bir şey var</div>`
+    : `<div class="badge on">✅ Her şey yolunda</div>`;
 
   container.innerHTML = `
     <div class="card">
@@ -898,12 +1296,30 @@ async function loadSettings() {
       <div class="settings-row"><span class="lbl2">Panel şifresi</span><span class="val">•••••••• (Render ortam değişkeninden)</span></div>
       <div class="settings-row"><span class="lbl2">Instagram token durumu</span><span class="val" style="color:${data.tokenVarMi ? 'var(--success)' : 'var(--danger)'}">${data.tokenVarMi ? '✅ Bağlı' : '❌ Bağlı değil'}</span></div>
       <div class="settings-row"><span class="lbl2">Son token yenileme</span><span class="val">${tarih}</span></div>
+      <div class="settings-row"><span class="lbl2">Sonraki otomatik yenileme</span><span class="val">${kalanGunMetni}</span></div>
     </div>
-    <div class="section-title">Bildirimler</div>
+
+    <div class="section-title">🔔 Bildirimler ve Sistem Sağlığı</div>
     <div class="card">
-      <div class="settings-row"><span class="lbl2">Başarısız gönderimde bildirim</span><span class="badge off">🔜 Yakında</span></div>
-      <div class="settings-row"><span class="lbl2">Günlük özet bildirimi</span><span class="badge off">🔜 Yakında</span></div>
+      ${genelDurumHtml}
+      <div class="settings-row"><span class="lbl2">Son 24 saatte başarısız gönderim</span><span class="val" style="color:${saglik.basarisizSon24Saat > 0 ? 'var(--danger)' : 'var(--success)'}">${saglik.basarisizSon24Saat || 0}</span></div>
+      <div class="settings-row"><span class="lbl2">Toplam başarısız (kalıcı sayaç)</span><span class="val">${saglik.basarisizToplam || 0}</span></div>
+      <div class="settings-row"><span class="lbl2">Tekrar denenecek (kuyrukta)</span><span class="val" style="color:${saglik.tekrarBekleyen > 0 ? 'var(--warning)' : 'var(--text)'}">${saglik.tekrarBekleyen || 0}</span></div>
+      <div class="settings-row"><span class="lbl2">Takipçi verisi toplanıyor mu</span><span class="val" style="color:${saglik.takipciVerisiVarMi ? 'var(--success)' : 'var(--text-dim)'}">${saglik.takipciVerisiVarMi ? '✅ Evet' : '⏳ Henüz veri yok'}</span></div>
     </div>
+
+    ${(saglik.sonBasarisizlar && saglik.sonBasarisizlar.length > 0) ? `
+      <div class="section-title">⚠️ Son Başarısız Gönderimler</div>
+      ${saglik.sonBasarisizlar.map((f) => `
+        <div class="log-item">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="user">@${f.fromUsername}</span>
+            <span style="color:var(--text-dimmer);font-size:11.5px;white-space:nowrap;margin-left:8px;">${goreceliZaman(f.timestamp)}</span>
+          </div>
+          <div class="reason">${f.reason}</div>
+        </div>
+      `).join('')}
+    ` : ''}
   `;
 }
 
@@ -946,6 +1362,8 @@ function renderStatus() {
       <span>Bekleyen tekrar: <b>${data.ozet.tekrarDenenecek}</b></span>
       <span>· hiçbiri sıfırlanmaz ✅</span>
     </div>
+    <a class="export-btn" href="/admin/api/export/sent">📥 Gönderilenleri CSV indir</a>
+    <a class="export-btn" href="/admin/api/export/failed" style="margin-left:8px;">📥 Başarısızları CSV indir</a>
   `;
 
   if (data.hizliOzet) {
@@ -1036,15 +1454,8 @@ function renderStatus() {
     }
   }
 
-  if (data.basarisizOlanlar.length > 0) {
-    html += '<div class="section-title">⚠️ Başarısız Olanlar (son 50)</div>';
-    data.basarisizOlanlar.forEach(item => {
-      html += `<div class="log-item">
-        <span class="user">@${item.fromUsername}</span> <span class="comment-text">— "${item.commentText}"</span>
-        <div class="reason">${item.reason}</div>
-      </div>`;
-    });
-  }
+  // NOT: Başarısız gönderimlerin ayrıntılı listesi artık burada gösterilmiyor - bildirim/
+  // sistem sağlığı ile ilgili her şey tek bir yerde toplansın diye Ayarlar sayfasına taşındı.
 
   if (data.gonderilenler.length > 0) {
     html += '<div class="section-title">✅ Son Gönderilenler (son 50)</div>';
