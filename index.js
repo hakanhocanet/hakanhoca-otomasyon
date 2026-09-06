@@ -43,17 +43,36 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const DATA_FILE = path.join(__dirname, 'data.json');
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
+// ---- Şablonlar (panelden düzenlenebilen varsayılan metinler) ----
+// Bu liste sadece İLK KURULUMDA config.json'a yazılır - sonrasında panelden
+// (Şablonlar sekmesi) değiştirdiğin her şey config.json/GitHub üzerinden kalıcı olur.
+const DEFAULT_PUBLIC_REPLY_TEMPLATES = [
+  'Mesajı size ilettim. Güzel günlerde kullanın, umarım beğenirsiniz. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 😊',
+  'İstediğiniz içeriği size gönderdim. Güle güle kullanın, umarım işinize yarar. Gönderiyi beğenip takipte kalmayı unutmayın. 🌸',
+  'Mesaj olarak ilettim. Umarım severek kullanırsınız. Gönderiyi beğenmeyi ve yeni paylaşımlar için takipte kalmayı unutmayın. ❤️',
+  'İstediğiniz dosyayı size gönderdim. Güzel günlerde kullanmanız dileğiyle. Gönderiyi beğenmeyi ve takip etmeyi unutmayın. ✨',
+  'İçeriği size mesaj olarak ilettim. Umarım faydalı olur. Beğeniniz ve takibiniz için şimdiden teşekkür ederim. 📚',
+  'Gönderimi tamamladım, mesajlarınızı kontrol edebilirsiniz. Güle güle kullanın. Gönderiyi beğenmeyi ve takipte kalmayı unutmayın. 🌿',
+  'İstediğiniz içeriği gönderdim. Umarım işinize yarar ve güzel günlerde kullanırsınız. Desteğiniz için teşekkür ederim. 🙏🏻',
+  'Mesajı size ilettim. Umarım beğenirsiniz ve keyifle kullanırsınız. Yeni paylaşımlarımız için takipte kalmayı unutmayın. 💫',
+  'Dosyayı mesaj yoluyla size gönderdim. Güle güle kullanın, umarım faydasını görürsünüz. Gönderiyi beğenmeyi unutmayın. 👍🏻',
+  'İstediğiniz içeriği size ilettim. Güzel günlerde kullanın, umarım beklentinizi karşılar. Bizi takip etmeyi ve gönderiyi beğenmeyi unutmayın. 🌷',
+];
+const DEFAULT_MESSAGE_TEMPLATE = 'Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: {link}';
+
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
     return {
       sent: [], failed: [], retryQueue: [], replyCounters: {},
       dailyStats: {}, totalSentCount: 0, totalFailedCount: 0,
+      followerHistory: {},
     };
   }
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
   if (!data.replyCounters) data.replyCounters = {};
   if (!data.dailyStats) data.dailyStats = {};
+  if (!data.followerHistory) data.followerHistory = {};
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent ? data.sent.length : 0;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed ? data.failed.length : 0;
   return data;
@@ -77,6 +96,7 @@ async function fetchGithubData() {
   if (!data.retryQueue) data.retryQueue = [];
   if (!data.replyCounters) data.replyCounters = {};
   if (!data.dailyStats) data.dailyStats = {};
+  if (!data.followerHistory) data.followerHistory = {};
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent.length;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed.length;
   return { data, sha: result.sha };
@@ -154,10 +174,20 @@ function istanbulGunAnahtari(isoZaman) {
   return new Date(isoZaman).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
 }
 function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) return { posts: {}, pendingTemplates: {}, tokenRefreshedAt: null };
+  if (!fs.existsSync(CONFIG_FILE)) {
+    return {
+      posts: {}, pendingTemplates: {}, tokenRefreshedAt: null,
+      publicReplyTemplates: [...DEFAULT_PUBLIC_REPLY_TEMPLATES],
+      defaultMessageTemplate: DEFAULT_MESSAGE_TEMPLATE,
+    };
+  }
   const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
   if (!config.pendingTemplates) config.pendingTemplates = {};
   if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
+  if (!Array.isArray(config.publicReplyTemplates) || config.publicReplyTemplates.length === 0) {
+    config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
+  }
+  if (!config.defaultMessageTemplate) config.defaultMessageTemplate = DEFAULT_MESSAGE_TEMPLATE;
   return config;
 }
 function saveConfigLocal(config) {
@@ -177,6 +207,10 @@ async function fetchGithubConfig() {
   if (!config.posts) config.posts = {};
   if (!config.pendingTemplates) config.pendingTemplates = {};
   if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
+  if (!Array.isArray(config.publicReplyTemplates) || config.publicReplyTemplates.length === 0) {
+    config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
+  }
+  if (!config.defaultMessageTemplate) config.defaultMessageTemplate = DEFAULT_MESSAGE_TEMPLATE;
   return { config, sha: data.sha };
 }
 
@@ -368,6 +402,45 @@ function refreshAccessTokenIfDue() {
 refreshAccessTokenIfDue();
 setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
 
+// ================== TAKİPÇİ SAYISI GÜNLÜK TAKİBİ ==================
+// Instagram'ın resmi API'si (Instagram Login dahil) tek tek "kim takip ediyor,
+// kim etmiyor" listesini vermiyor - bu Meta'nın gizlilik kısıtlaması, kodla aşılamaz.
+// Ama IG User üzerindeki "followers_count" alanı (TOPLAM takipçi sayısı) genel bir
+// profil alanı olduğu için bu token ile de çalışması bekleniyor - bu yüzden burada
+// her gün bir kez bu sayıyı çekip kaydediyoruz, panelde "bugün/bu hafta net değişim"
+// olarak gösterebilmek için. API bu alanı reddederse (izin/kapsam sorunu olursa),
+// hata sessizce loglanır ve panel "veri alınamıyor" durumunu gösterir - hiçbir şey
+// bozulmaz, sadece bu özellik o zaman devre dışı kalmış olur.
+async function takipciSayisiniGetirVeKaydet() {
+  if (!igAccessToken || !IG_USER_ID) return;
+  try {
+    const res = await fetch(`${IG_GRAPH_BASE}/${IG_USER_ID}?fields=followers_count&access_token=${igAccessToken}`);
+    const result = await res.json();
+    if (result.error) {
+      console.error('⚠️ Takipçi sayısı alınamadı:', result.error.message);
+      return;
+    }
+    if (typeof result.followers_count !== 'number') {
+      console.error('⚠️ Takipçi sayısı yanıtı beklenmedik biçimde geldi:', JSON.stringify(result));
+      return;
+    }
+    const gun = istanbulGunAnahtari(new Date().toISOString());
+    await mutateData((data) => {
+      if (!data.followerHistory) data.followerHistory = {};
+      data.followerHistory[gun] = result.followers_count;
+      const gunler = Object.keys(data.followerHistory);
+      if (gunler.length > 180) delete data.followerHistory[gunler[0]]; // en eski günü at
+    });
+    console.log(`👥 Takipçi sayısı kaydedildi: ${result.followers_count} (${gun})`);
+  } catch (err) {
+    console.error('⚠️ Takipçi sayısı bağlantı hatası:', err.message);
+  }
+}
+
+// Uygulama açıldığında bir kez, sonra her 24 saatte bir tekrar kaydet.
+takipciSayisiniGetirVeKaydet();
+setInterval(takipciSayisiniGetirVeKaydet, 24 * 60 * 60 * 1000);
+
 // ================== WEBHOOK (Instagram tarafı) ==================
 
 app.get('/webhook', (req, res) => {
@@ -402,11 +475,12 @@ app.post('/webhook', async (req, res) => {
 // eklemeyi unutan) kullanıcılar için - link alanı dolu olduğu halde mesaj
 // metninde o link geçmiyorsa, link otomatik olarak mesajın sonuna eklenir.
 // Böylece "mesaj gitti ama link hiç gitmedi" durumu bir daha yaşanmaz.
-function buildMessage(postConfig) {
+function buildMessage(postConfig, config) {
   const link = (postConfig.link || '').trim();
+  const sablon = (config && config.defaultMessageTemplate) || DEFAULT_MESSAGE_TEMPLATE;
   let message = (postConfig.replyMessage && postConfig.replyMessage.trim())
     ? postConfig.replyMessage.trim()
-    : `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`;
+    : sablon.split('{link}').join(link);
 
   if (link && !message.includes(link)) {
     message = `${message}\n\n${link}`;
@@ -502,7 +576,8 @@ async function handleComment(value) {
     timestamp: new Date().toISOString(),
   };
 
-  let postConfig = mediaId ? loadConfig().posts[mediaId] : null;
+  const config = loadConfig();
+  let postConfig = mediaId ? config.posts[mediaId] : null;
 
   // Bu gönderi için henüz özel bir otomasyon yoksa, "Planlanan" (henüz paylaşılmamışken
   // hazırlanmış) otomasyonlardan anahtar kelimesi bu yorumla eşleşen var mı diye bak.
@@ -566,7 +641,7 @@ async function handleComment(value) {
   }
 
   if (!sent) {
-    const message = buildMessage(postConfig);
+    const message = buildMessage(postConfig, config);
     await attemptSend(commentId, message, baseRecord);
   }
 
@@ -814,18 +889,86 @@ app.delete('/admin/api/pending/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Bir günün ("YYYY-MM-DD") ait olduğu haftanın Pazartesi gününü ("YYYY-MM-DD") döndürür.
-// NOT: Burada Date sadece bir "takvim hesap makinesi" gibi kullanılıyor (UTC ile inşa
-// edip UTC ile okunuyor) - gerçek bir saat dilimi/an ifade etmiyor, sadece "bu tarihten
-// kaç gün geriye gidince Pazartesi'ye denk gelir" hesaplanıyor. Bu yüzden saat dilimi
-// kaymasından tamamen bağımsız ve güvenli.
-function haftaBaslangici(gunAnahtari) {
-  const [y, m, d] = gunAnahtari.split('-').map(Number);
-  const tarih = new Date(Date.UTC(y, m - 1, d));
-  const gunNo = tarih.getUTCDay(); // 0=Pazar, 1=Pazartesi ... 6=Cumartesi
-  const pazartesiyeFark = gunNo === 0 ? 6 : gunNo - 1;
-  tarih.setUTCDate(tarih.getUTCDate() - pazartesiyeFark);
-  return tarih.toISOString().slice(0, 10);
+// ================== ŞABLONLAR (panelden düzenlenebilen hazır metinler) ==================
+// "Yorum Altı Otomatik Cevaplar" havuzu (+ Cevap Ekle butonunun kullandığı liste) ve
+// "Mesaj metni" boş bırakıldığında kullanılan varsayılan DM şablonu artık burada,
+// config.json üzerinden panelden düzenlenebiliyor - eskiden admin.html içine
+// gömülüydü, değiştirmek için kod düzenlemek gerekiyordu.
+app.get('/admin/api/templates', (req, res) => {
+  const config = loadConfig();
+  res.json({
+    publicReplyTemplates: config.publicReplyTemplates,
+    defaultMessageTemplate: config.defaultMessageTemplate,
+  });
+});
+
+app.post('/admin/api/templates', async (req, res) => {
+  const { publicReplyTemplates, defaultMessageTemplate } = req.body;
+  const temizlenmisListe = Array.isArray(publicReplyTemplates)
+    ? publicReplyTemplates.map((t) => String(t || '').trim()).filter(Boolean)
+    : [];
+  if (temizlenmisListe.length === 0) {
+    return res.status(400).json({ error: 'En az 1 yorum altı cevap şablonu olmalı' });
+  }
+  const mesajSablonu = (typeof defaultMessageTemplate === 'string' && defaultMessageTemplate.trim())
+    ? defaultMessageTemplate.trim()
+    : DEFAULT_MESSAGE_TEMPLATE;
+
+  await mutateConfig((config) => {
+    config.publicReplyTemplates = temizlenmisListe;
+    config.defaultMessageTemplate = mesajSablonu;
+  });
+  res.json({ ok: true });
+});
+
+// ================== TAKİPÇİ (trend + hızlı özet) ==================
+app.get('/admin/api/followers', (req, res) => {
+  const data = loadData();
+  const history = data.followerHistory || {};
+  const gunler = Object.keys(history).sort(); // eskiden yeniye (YYYY-MM-DD string sıralaması güvenli)
+
+  if (gunler.length === 0) {
+    return res.json({ veriVarMi: false });
+  }
+
+  const guncelSayi = history[gunler[gunler.length - 1]];
+  const bugunDegisim = gunler.length >= 2
+    ? history[gunler[gunler.length - 1]] - history[gunler[gunler.length - 2]]
+    : 0;
+  const yediGunOncekiAnahtar = gunler.length > 7 ? gunler[gunler.length - 8] : gunler[0];
+  const haftalikDegisim = gunler.length >= 2
+    ? history[gunler[gunler.length - 1]] - history[yediGunOncekiAnahtar]
+    : 0;
+
+  const son7Gun = gunler.slice(-7).map((gun, i, arr) => {
+    const oncekiGun = i === 0 ? null : arr[i - 1];
+    const degisim = oncekiGun === null ? 0 : history[gun] - history[oncekiGun];
+    return { tarih: gun, sayi: history[gun], degisim };
+  });
+
+  res.json({ veriVarMi: true, guncelSayi, bugunDegisim, haftalikDegisim, son7Gun });
+});
+
+// ================== AYARLAR (salt-okunur sistem bilgisi) ==================
+// ÖNEMLİ: Şifre asla burada döndürülmüyor - sadece kullanıcı adı ve token/sistem durumu.
+app.get('/admin/api/settings', (req, res) => {
+  const config = loadConfig();
+  res.json({
+    adminUser: ADMIN_USER,
+    tokenVarMi: !!igAccessToken,
+    tokenYenilemeZamani: config.tokenRefreshedAt || null,
+  });
+});
+
+// Bir günün ("YYYY-MM-DD") ait olduğu "ay içi hafta" anahtarını üretir: "2026-05-H1",
+// "2026-05-H2" gibi - yani "Mayıs 1. Hafta, Mayıs 2. Hafta" mantığıyla, HER AY KENDİ
+// İÇİNDE 1'den başlayarak numaralanır (ayın 1-7. günleri 1. hafta, 8-14. günleri
+// 2. hafta, ... 29-31. günleri 5. hafta). Böylece hafta hiçbir zaman ay sınırını
+// aşmaz ve "Mayıs 1. Hafta" dediğinde herkesin anladığı gibi çalışır.
+function haftaAnahtariUret(gunAnahtari) {
+  const gun = Number(gunAnahtari.slice(8, 10));
+  const haftaNo = Math.ceil(gun / 7); // 1..5
+  return `${gunAnahtari.slice(0, 7)}-H${haftaNo}`;
 }
 
 // dailyStats'ı (gün -> {count, users}) istenen gruba (hafta başlangıcı ya da "YYYY-MM" ay)
@@ -872,17 +1015,17 @@ app.get('/admin/api/status', (req, res) => {
       kullanicilar: dailyStats[tarih].users || [],
     }));
 
-  const haftalikOzet = ozetOlustur(dailyStats, haftaBaslangici, 26); // son ~6 ay
+  const haftalikOzet = ozetOlustur(dailyStats, haftaAnahtariUret, 30); // son ~6-7 ay
   const aylikOzet = ozetOlustur(dailyStats, (gun) => gun.slice(0, 7), 24); // son 24 ay
 
   const bugunGunAnahtari = istanbulGunAnahtari(new Date().toISOString());
-  const buHaftaAnahtari = haftaBaslangici(bugunGunAnahtari);
+  const buHaftaAnahtari = haftaAnahtariUret(bugunGunAnahtari);
   const buAyAnahtari = bugunGunAnahtari.slice(0, 7);
   let bugunAdet = 0, buHaftaAdet = 0, buAyAdet = 0;
   Object.keys(dailyStats).forEach((gun) => {
     const adet = dailyStats[gun].count;
     if (gun === bugunGunAnahtari) bugunAdet += adet;
-    if (haftaBaslangici(gun) === buHaftaAnahtari) buHaftaAdet += adet;
+    if (haftaAnahtariUret(gun) === buHaftaAnahtari) buHaftaAdet += adet;
     if (gun.slice(0, 7) === buAyAnahtari) buAyAdet += adet;
   });
 
