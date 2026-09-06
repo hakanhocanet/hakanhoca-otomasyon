@@ -162,11 +162,20 @@
   .add-row button { flex-shrink: 0; width: auto; padding: 0 16px; border-radius: var(--radius-sm); border: none; background: var(--gradient); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 0; }
 
   /* ---------- İstatistikler ---------- */
-  .post-stat-card { display: flex; gap: 12px; }
-  .post-stat-card img { width: 62px; height: 62px; border-radius: 12px; object-fit: cover; flex-shrink: 0; background: var(--bg-elevated); }
-  .post-stat-info { flex: 1; min-width: 0; }
-  .post-stat-caption { font-size: 13px; color: #d5d5df; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .post-stat-nums { display: flex; gap: 14px; flex-wrap: wrap; }
+  /* NOT: Selector özellikle ".card.post-stat-card" (tek ".post-stat-card" değil) -
+     çünkü kart zaten "card post-stat-card" class'larını taşıyor ve genel ".card img"
+     kuralıyla (width:100%, display:block) AYNI özgüllükteydi; sonradan tanımlanan
+     ".card img" kazanıp resmi tam genişliğe yayıyor, veriler sağa sıkışıp görünmez
+     oluyordu. ".card.post-stat-card img" iki class birden olduğu için her zaman kazanır. */
+  .card.post-stat-card { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .card.post-stat-card img {
+    width: 100%; max-width: 210px; aspect-ratio: 4 / 5;
+    border-radius: 14px; object-fit: contain; flex-shrink: 0;
+    background: var(--bg-elevated); margin: 0;
+  }
+  .post-stat-info { width: 100%; min-width: 0; }
+  .post-stat-caption { font-size: 13px; color: #d5d5df; margin-bottom: 8px; text-align: center; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .post-stat-nums { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   .post-stat-nums .item { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 4px; }
   .post-stat-nums .item b { color: #fff; font-size: 13px; }
 
@@ -814,11 +823,16 @@ async function addPendingTemplate() {
   }
 }
 
+// Sunucudan gelen son planlanan-otomasyon verisi burada tutulur ki "Düzenle"ye
+// basınca formu doldurmak için ayrıca bir istek atmaya gerek kalmasın.
+let sonPendingVerisi = null;
+
 async function loadPending() {
   const res = await fetch('/admin/api/pending');
   const data = await res.json();
+  sonPendingVerisi = data.pending || {};
   const container = document.getElementById('pendingList');
-  const ids = Object.keys(data.pending || {});
+  const ids = Object.keys(sonPendingVerisi);
 
   if (ids.length === 0) {
     container.innerHTML = '<div class="empty-state"><span class="icon">🗓️</span>Bekleyen planlanan otomasyon yok.</div>';
@@ -827,17 +841,112 @@ async function loadPending() {
 
   container.innerHTML = '';
   ids.forEach((id, i) => {
-    const t = data.pending[id];
+    const t = sonPendingVerisi[id];
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `
-      <div class="badge wait">⏳ ${i + 1}. sırada — anahtar kelime: "${t.keyword}"</div>
-      <div class="caption" style="font-weight:600;color:#fff;">${t.title || '(başlıksız)'}</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;word-break:break-all;">${t.link}</div>
-      <button class="danger" onclick="deletePending('${id}')">Sil</button>
-    `;
+    card.id = 'pending-card-' + id;
+    card.innerHTML = pendingGoruntuleHtml(id, t, i);
     container.appendChild(card);
   });
+}
+
+function pendingGoruntuleHtml(id, t, i) {
+  return `
+    <div class="badge wait">⏳ ${i + 1}. sırada — anahtar kelime: "${t.keyword}"</div>
+    <div class="caption" style="font-weight:600;color:#fff;">${t.title || '(başlıksız)'}</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;word-break:break-all;">${t.link}</div>
+    <button type="button" class="ghost" onclick="pendingDuzenleAc('${id}')">✏️ Düzenle</button>
+    <button class="danger" onclick="deletePending('${id}')">Sil</button>
+  `;
+}
+
+// Kartı düzenlenebilir bir forma çevirir, mevcut değerlerle doldurur. ÖNEMLİ: Kaydet
+// aynı id üzerinde günceller (silip yeniden eklemez) - bu yüzden bekleyen otomasyonların
+// eşleşme sırası (sunucuda Object.keys sırası, "1. sırada / 2. sırada" etiketleri) hiç
+// bozulmaz; sadece içeriği değişir, kuyruktaki yeri aynı kalır.
+function pendingDuzenleAc(id) {
+  const card = document.getElementById('pending-card-' + id);
+  if (!card || !sonPendingVerisi) return;
+  const t = sonPendingVerisi[id];
+  if (!t) return;
+
+  const repliesHtml = (t.publicReplies || []).map((r, idx) => `
+    <div class="reply-item">
+      <div class="reply-number">${idx + 1}</div>
+      <textarea class="pending-edit-reply-input">${r}</textarea>
+      <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
+    </div>
+  `).join('');
+
+  card.innerHTML = `
+    <div class="badge wait">✏️ Düzenleniyor</div>
+    <label>Başlık (senin için not)</label>
+    <input type="text" id="edit-title-${id}" value="${t.title || ''}">
+    <label>Anahtar kelime</label>
+    <input type="text" id="edit-keyword-${id}" value="${t.keyword || ''}">
+    <label>Gönderilecek link</label>
+    <input type="text" id="edit-link-${id}" value="${t.link || ''}">
+    <label>Mesaj metni (özel mesaj / DM)</label>
+    <textarea id="edit-msg-${id}">${t.replyMessage || ''}</textarea>
+    <div class="section-title">💬 Yorum Altı Otomatik Cevaplar</div>
+    <div id="edit-replies-${id}">${repliesHtml}</div>
+    <button type="button" class="ghost" onclick="pendingDuzenleCevapEkle('${id}')">+ Cevap Ekle</button>
+    <button class="primary" onclick="pendingDuzenleKaydet('${id}')">Kaydet</button>
+    <button type="button" class="ghost" onclick="loadPending()">Vazgeç</button>
+    <div id="edit-msg-el-${id}"></div>
+  `;
+}
+
+function pendingDuzenleCevapEkle(id) {
+  const liste = (sablonlarVerisi && sablonlarVerisi.publicReplyTemplates) || [];
+  const container = document.getElementById('edit-replies-' + id);
+  const index = container.children.length + 1;
+  const nextText = liste.length > 0 ? liste[container.children.length % liste.length] : '';
+  const row = document.createElement('div');
+  row.className = 'reply-item';
+  row.innerHTML = `
+    <div class="reply-number">${index}</div>
+    <textarea class="pending-edit-reply-input">${nextText}</textarea>
+    <button type="button" class="reply-remove" onclick="this.parentElement.remove()">✕</button>
+  `;
+  container.appendChild(row);
+}
+
+async function pendingDuzenleKaydet(id) {
+  const title = document.getElementById('edit-title-' + id).value;
+  const keyword = document.getElementById('edit-keyword-' + id).value;
+  const link = document.getElementById('edit-link-' + id).value;
+  const replyMessage = document.getElementById('edit-msg-' + id).value;
+  const msgEl = document.getElementById('edit-msg-el-' + id);
+
+  const publicReplies = Array.from(
+    document.querySelectorAll('#edit-replies-' + id + ' .pending-edit-reply-input')
+  ).map((el) => el.value.trim()).filter(Boolean);
+
+  if (!keyword || !link) {
+    msgEl.textContent = '⚠️ Anahtar kelime ve link zorunlu';
+    msgEl.style.color = 'var(--danger)';
+    return;
+  }
+
+  msgEl.textContent = 'Kaydediliyor...';
+  msgEl.style.color = 'var(--text-dim)';
+
+  const res = await fetch('/admin/api/pending/' + id, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, keyword, link, replyMessage, publicReplies }),
+  });
+  const result = await res.json();
+
+  if (result.ok) {
+    // Listeyi sunucudan tazeleyip görüntüleme moduna dönüyoruz - id değişmediği ve
+    // sunucu tarafında sırayı bozmadan güncellediği için sıradaki yeri aynı kalır.
+    loadPending();
+  } else {
+    msgEl.textContent = '❌ Hata: ' + (result.error || 'bilinmeyen');
+    msgEl.style.color = 'var(--danger)';
+  }
 }
 
 async function deletePending(id) {
@@ -1134,7 +1243,7 @@ function renderPostStats() {
     const img = post.thumbnail || '';
     html += `
       <div class="card post-stat-card">
-        ${img ? `<img src="${img}">` : '<div style="width:62px;height:62px;border-radius:12px;background:var(--bg-elevated);flex-shrink:0;"></div>'}
+        ${img ? `<img src="${img}">` : '<div style="width:100%;max-width:210px;aspect-ratio:4/5;border-radius:14px;background:var(--bg-elevated);"></div>'}
         <div class="post-stat-info">
           <div class="post-stat-caption">${caption}</div>
           <div class="post-stat-nums">
