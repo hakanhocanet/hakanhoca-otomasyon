@@ -1099,6 +1099,35 @@ app.post('/admin/api/pending', async (req, res) => {
   res.json({ ok: true, id });
 });
 
+// Var olan bir planlanan otomasyonu DÜZENLER. Bilerek silip-yeniden-eklemiyoruz:
+// config.pendingTemplates bir obje ve JS'te mevcut bir anahtarın değerini yerinde
+// güncellemek (delete+set değil, doğrudan atama) o anahtarın Object.keys() sırasındaki
+// konumunu DEĞİŞTİRMEZ. handleComment() içindeki eşleştirme ve panelde "N. sırada"
+// etiketi bu sıraya göre çalıştığı için, düzenleme kuyruktaki yeri asla bozmaz.
+app.put('/admin/api/pending/:id', async (req, res) => {
+  const { title, keyword, link, replyMessage, publicReplies } = req.body;
+  if (!keyword || !link) {
+    return res.status(400).json({ error: 'Anahtar kelime ve link zorunlu' });
+  }
+  const id = req.params.id;
+  let bulunduMu = false;
+  await mutateConfig((config) => {
+    if (!config.pendingTemplates[id]) return;
+    bulunduMu = true;
+    config.pendingTemplates[id] = {
+      title: title || '',
+      keyword,
+      link,
+      replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
+      publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
+    };
+  });
+  if (!bulunduMu) {
+    return res.status(404).json({ error: 'Planlanan otomasyon bulunamadı' });
+  }
+  res.json({ ok: true });
+});
+
 app.delete('/admin/api/pending/:id', async (req, res) => {
   await mutateConfig((config) => {
     delete config.pendingTemplates[req.params.id];
