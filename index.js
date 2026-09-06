@@ -45,13 +45,113 @@ const CONFIG_FILE = path.join(__dirname, 'config.json');
 
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
-  if (!fs.existsSync(DATA_FILE)) return { sent: [], failed: [], retryQueue: [], replyCounters: {} };
+  if (!fs.existsSync(DATA_FILE)) {
+    return {
+      sent: [], failed: [], retryQueue: [], replyCounters: {},
+      dailyStats: {}, totalSentCount: 0, totalFailedCount: 0,
+    };
+  }
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
   if (!data.replyCounters) data.replyCounters = {};
+  if (!data.dailyStats) data.dailyStats = {};
+  if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent ? data.sent.length : 0;
+  if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed ? data.failed.length : 0;
   return data;
 }
 function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+// ---- GitHub'daki data.json'ın (gönderim kayıtları) O ANKİ GERÇEK halini oku (sha ile) ----
+async function fetchGithubData() {
+  const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`;
+  const res = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, {
+    headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
+  });
+  if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
+  const result = await res.json();
+  if (!result.content) return null;
+  const data = JSON.parse(Buffer.from(result.content, 'base64').toString('utf8'));
+  if (!data.sent) data.sent = [];
+  if (!data.failed) data.failed = [];
+  if (!data.retryQueue) data.retryQueue = [];
+  if (!data.replyCounters) data.replyCounters = {};
+  if (!data.dailyStats) data.dailyStats = {};
+  if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent.length;
+  if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed.length;
+  return { data, sha: result.sha };
+}
+
+// ================== GÜVENLİ VERİ (gönderim kayıtları) DEĞİŞTİRME ==================
+// ÖNEMLİ DÜZELTME: Eskiden "kaç PDF gönderildi / başarısız oldu" sayacı SADECE
+// sunucunun yerel diskine yazılıyordu (data.json), GitHub'a hiç kaydedilmiyordu.
+// Render her kayıtta / her aralıkta konteyneri yeniden oluşturduğu için, bu yerel
+// dosya sık sık silinip sıfırdan başlıyordu - panelde "başarılı/başarısız" sayısının
+// aniden sıfırlanması TAM OLARAK buydu. Artık config.json ile birebir aynı güvenli
+// yöntemle (önce GitHub'daki güncel hali çek, değişikliği uygula, çakışma olursa
+// tekrar dene) data.json da GitHub'a kalıcı olarak yazılıyor - bir daha sıfırlanmaz.
+async function mutateData(mutatorFn) {
+  const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
+  const MAX_DENEME = 5;
+
+  for (let deneme = 1; deneme <= MAX_DENEME; deneme++) {
+    let data = null;
+    let sha = null;
+
+    if (hasGithub) {
+      try {
+        const remote = await fetchGithubData();
+        if (remote) {
+          data = remote.data;
+          sha = remote.sha;
+        }
+      } catch (err) {
+        console.error('GitHub güncel data.json okunamadı:', err.message);
+      }
+    }
+    if (!data) data = loadData();
+
+    mutatorFn(data);
+    saveData(data);
+
+    if (!hasGithub) return data;
+
+    try {
+      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`;
+      const content = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
+      const body = { message: 'Gönderim kaydı güncellendi', content, branch: GITHUB_BRANCH };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (putRes.ok) {
+        return data;
+      }
+      if (putRes.status === 409 || putRes.status === 422) {
+        console.log(`data.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}), en güncel hal tekrar çekilip deneniyor...`);
+        continue;
+      }
+      const errText = await putRes.text();
+      console.error('data.json GitHub kaydetme hatası:', putRes.status, errText);
+      return data;
+    } catch (err) {
+      console.error('data.json GitHub bağlantı hatası:', err.message);
+      return data;
+    }
+  }
+
+  console.error('data.json GitHub ile senkronize edilemedi (çok fazla çakışma), son deneme yerel diske kaydedildi.');
+  return loadData();
+}
+
+// Bir ISO zaman damgasını Türkiye saatine (Europe/Istanbul) göre "YYYY-MM-DD" gün
+// anahtarına çevirir - günlük özet (hangi gün kaç PDF gönderildi) bu anahtara göre tutulur.
+function istanbulGunAnahtari(isoZaman) {
+  return new Date(isoZaman).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
 }
 function loadConfig() {
   if (!fs.existsSync(CONFIG_FILE)) return { posts: {}, pendingTemplates: {}, tokenRefreshedAt: null };
@@ -460,7 +560,7 @@ async function handleComment(value) {
       postConfig.buttonTitle || "PDF'e Ulaş 📎"
     );
     if (sent) {
-      logSent(baseRecord);
+      await logSent(baseRecord);
       console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
     }
   }
@@ -472,19 +572,21 @@ async function handleComment(value) {
 
   // Herkese açık yorum cevabı da gönder (varsa) - dönüşümlü, hep aynısı olmasın
   if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
-    const publicText = pickNextPublicReply(mediaId, postConfig.publicReplies);
+    const publicText = await pickNextPublicReply(mediaId, postConfig.publicReplies);
     await sendPublicReply(commentId, publicText);
   }
 }
 
 // Sırayla, hep aynı cevabı art arda kullanmadan bir sonraki metni seç
-function pickNextPublicReply(mediaId, replies) {
-  const data = loadData();
-  const currentIndex = data.replyCounters[mediaId] || 0;
-  const nextIndex = (currentIndex + 1) % replies.length;
-  data.replyCounters[mediaId] = nextIndex;
-  saveData(data);
-  return replies[currentIndex % replies.length];
+async function pickNextPublicReply(mediaId, replies) {
+  let secilen = replies[0];
+  await mutateData((data) => {
+    if (!data.replyCounters) data.replyCounters = {};
+    const currentIndex = data.replyCounters[mediaId] || 0;
+    secilen = replies[currentIndex % replies.length];
+    data.replyCounters[mediaId] = (currentIndex + 1) % replies.length;
+  });
+  return secilen;
 }
 
 // Yorumun altına herkese görünecek şekilde cevap yaz
@@ -524,45 +626,77 @@ async function attemptSend(commentId, message, record) {
     const result = await response.json();
 
     if (response.ok && !result.error) {
-      logSent(record);
+      await logSent(record);
       console.log(`✅ DM gönderildi: @${record.fromUsername}`);
     } else {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
       const errorCode = result.error ? result.error.code : null;
       if (errorCode === 4 || errorCode === 17 || errorCode === 32) {
-        addToRetryQueue(commentId, message, record);
-        logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}` });
+        await addToRetryQueue(commentId, message, record);
+        await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}` });
       } else {
-        logFailed({ ...record, reason: errorMsg });
+        await logFailed({ ...record, reason: errorMsg });
       }
     }
   } catch (err) {
-    logFailed({ ...record, reason: `Bağlantı hatası: ${err.message}` });
+    await logFailed({ ...record, reason: `Bağlantı hatası: ${err.message}` });
   }
 }
 
-function logSent(record) {
-  const data = loadData();
-  data.sent.push({ ...record, sentAt: new Date().toISOString() });
-  saveData(data);
+// ÖNEMLİ: Artık data.json'a her yazma işlemi mutateData() üzerinden, GitHub'daki
+// GÜNCEL haline göre yapılıyor - böylece hem "sayaç sıfırlanıyor" hatası çözülüyor,
+// hem de aynı anda birden fazla gönderim olsa bile (mesela bir gönderiye aynı anda
+// çok sayıda yorum gelmesi) hiçbir kayıt birbirinin üzerine yazıp kaybolmuyor.
+//
+// "sent" ve "failed" listeleri paneldeki "Son Gönderilenler / Başarısız Olanlar"
+// bölümü için son 500/200 kayıtla sınırlı tutuluyor (dosya çok büyümesin diye),
+// AMA gerçek toplam sayı (totalSentCount / totalFailedCount) hiçbir zaman
+// sıfırlanmıyor/kırpılmıyor - panelde görünen "Gönderildi" rakamı bu yüzden artık
+// kalıcı ve doğru. Ayrıca "dailyStats" ile hangi gün kaç PDF gönderildiği ve
+// o gün kimlere gönderildiği (kullanıcı adları) ayrı ayrı, kalıcı olarak tutuluyor
+// (son 180 gün) - panelde "Günlük Özet" bu veriden geliyor.
+async function logSent(record) {
+  const sentAt = new Date().toISOString();
+  const gun = istanbulGunAnahtari(sentAt);
+  await mutateData((data) => {
+    data.sent.push({ ...record, sentAt });
+    if (data.sent.length > 500) data.sent.splice(0, data.sent.length - 500);
+    data.totalSentCount = (data.totalSentCount || 0) + 1;
+
+    if (!data.dailyStats) data.dailyStats = {};
+    if (!data.dailyStats[gun]) {
+      const gunler = Object.keys(data.dailyStats);
+      if (gunler.length >= 180) delete data.dailyStats[gunler[0]]; // en eski günü at, yer aç
+      data.dailyStats[gun] = { count: 0, users: [] };
+    }
+    data.dailyStats[gun].count += 1;
+    if (record.fromUsername && !data.dailyStats[gun].users.includes(record.fromUsername)) {
+      data.dailyStats[gun].users.push(record.fromUsername);
+    }
+  });
 }
-function logFailed(record) {
-  const data = loadData();
-  data.failed.push(record);
-  saveData(data);
+
+async function logFailed(record) {
+  await mutateData((data) => {
+    data.failed.push(record);
+    if (data.failed.length > 200) data.failed.splice(0, data.failed.length - 200);
+    data.totalFailedCount = (data.totalFailedCount || 0) + 1;
+  });
 }
-function addToRetryQueue(commentId, message, record) {
-  const data = loadData();
-  data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString() });
-  saveData(data);
+
+async function addToRetryQueue(commentId, message, record) {
+  await mutateData((data) => {
+    data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString() });
+  });
 }
 
 setInterval(async () => {
-  const data = loadData();
-  if (data.retryQueue.length === 0) return;
-  const queue = [...data.retryQueue];
-  data.retryQueue = [];
-  saveData(data);
+  let queue = [];
+  await mutateData((data) => {
+    queue = [...data.retryQueue];
+    data.retryQueue = [];
+  });
+  if (queue.length === 0) return;
   for (const item of queue) {
     await attemptSend(item.commentId, item.message, item.record);
     await new Promise((r) => setTimeout(r, 2000));
@@ -680,15 +814,88 @@ app.delete('/admin/api/pending/:id', async (req, res) => {
   res.json({ ok: true });
 });
 
+// Bir günün ("YYYY-MM-DD") ait olduğu haftanın Pazartesi gününü ("YYYY-MM-DD") döndürür.
+// NOT: Burada Date sadece bir "takvim hesap makinesi" gibi kullanılıyor (UTC ile inşa
+// edip UTC ile okunuyor) - gerçek bir saat dilimi/an ifade etmiyor, sadece "bu tarihten
+// kaç gün geriye gidince Pazartesi'ye denk gelir" hesaplanıyor. Bu yüzden saat dilimi
+// kaymasından tamamen bağımsız ve güvenli.
+function haftaBaslangici(gunAnahtari) {
+  const [y, m, d] = gunAnahtari.split('-').map(Number);
+  const tarih = new Date(Date.UTC(y, m - 1, d));
+  const gunNo = tarih.getUTCDay(); // 0=Pazar, 1=Pazartesi ... 6=Cumartesi
+  const pazartesiyeFark = gunNo === 0 ? 6 : gunNo - 1;
+  tarih.setUTCDate(tarih.getUTCDate() - pazartesiyeFark);
+  return tarih.toISOString().slice(0, 10);
+}
+
+// dailyStats'ı (gün -> {count, users}) istenen gruba (hafta başlangıcı ya da "YYYY-MM" ay)
+// göre toplayan genel amaçlı yardımcı fonksiyon. Kullanıcı adlarını tekrarsız (Set) tutar,
+// böylece "bu hafta/ay kimler yazdı" listesi aynı kişiyi birden fazla göstermez.
+function ozetOlustur(dailyStats, anahtarFn, sinir) {
+  const sonuc = {};
+  Object.keys(dailyStats).forEach((gun) => {
+    const anahtar = anahtarFn(gun);
+    if (!sonuc[anahtar]) sonuc[anahtar] = { count: 0, users: new Set() };
+    sonuc[anahtar].count += dailyStats[gun].count;
+    (dailyStats[gun].users || []).forEach((u) => sonuc[anahtar].users.add(u));
+  });
+  return Object.keys(sonuc)
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, sinir)
+    .map((anahtar) => ({
+      anahtar,
+      adet: sonuc[anahtar].count,
+      kullanicilar: Array.from(sonuc[anahtar].users),
+    }));
+}
+
 // Durum raporu
+// ÖNEMLİ DÜZELTME: "basariylaGonderilen/basarisizOlan" artık data.json'daki
+// totalSentCount/totalFailedCount kalıcı sayaçlarından geliyor - bu sayılar
+// artık GitHub'a kalıcı yazıldığı için sunucu yeniden başlasa (redeploy, ücretsiz
+// planın uykuya dalıp uyanması vb.) bile SIFIRLANMAZ.
+//
+// YENİ: Artık sadece günlük değil, HAFTALIK ve AYLIK özet de dönüyor (hepsi
+// dailyStats'tan anlık hesaplanıyor, ayrı bir yerde saklamaya gerek yok). Ayrıca
+// "bugün / bu hafta / bu ay" hızlı sayıları da ekleniyor - panel bunları tek
+// bakışta gösterebilsin diye.
 app.get('/admin/api/status', (req, res) => {
   const data = loadData();
+  const dailyStats = data.dailyStats || {};
+
+  const gunlukOzet = Object.keys(dailyStats)
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, 60)
+    .map((tarih) => ({
+      tarih,
+      adet: dailyStats[tarih].count,
+      kullanicilar: dailyStats[tarih].users || [],
+    }));
+
+  const haftalikOzet = ozetOlustur(dailyStats, haftaBaslangici, 26); // son ~6 ay
+  const aylikOzet = ozetOlustur(dailyStats, (gun) => gun.slice(0, 7), 24); // son 24 ay
+
+  const bugunGunAnahtari = istanbulGunAnahtari(new Date().toISOString());
+  const buHaftaAnahtari = haftaBaslangici(bugunGunAnahtari);
+  const buAyAnahtari = bugunGunAnahtari.slice(0, 7);
+  let bugunAdet = 0, buHaftaAdet = 0, buAyAdet = 0;
+  Object.keys(dailyStats).forEach((gun) => {
+    const adet = dailyStats[gun].count;
+    if (gun === bugunGunAnahtari) bugunAdet += adet;
+    if (haftaBaslangici(gun) === buHaftaAnahtari) buHaftaAdet += adet;
+    if (gun.slice(0, 7) === buAyAnahtari) buAyAdet += adet;
+  });
+
   res.json({
     ozet: {
-      basariylaGonderilen: data.sent.length,
-      basarisizOlan: data.failed.length,
+      basariylaGonderilen: typeof data.totalSentCount === 'number' ? data.totalSentCount : data.sent.length,
+      basarisizOlan: typeof data.totalFailedCount === 'number' ? data.totalFailedCount : data.failed.length,
       tekrarDenenecek: data.retryQueue.length,
     },
+    hizliOzet: { bugun: bugunAdet, buHafta: buHaftaAdet, buAy: buAyAdet },
+    gunlukOzet,
+    haftalikOzet,
+    aylikOzet,
     gonderilenler: data.sent.slice(-50).reverse(),
     basarisizOlanlar: data.failed.slice(-50).reverse(),
   });
