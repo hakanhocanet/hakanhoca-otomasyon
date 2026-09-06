@@ -60,6 +60,16 @@ const DEFAULT_PUBLIC_REPLY_TEMPLATES = [
 ];
 const DEFAULT_MESSAGE_TEMPLATE = 'Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: {link}';
 
+// ================== DM GÜVENLİ GÖNDERİM SINIRI (ceza/kısıtlama riskini önlemek için) ==================
+// Meta'nın resmi Graph API belgelerine göre, burada kullanılan "yoruma özel mesaj" (comment_id
+// üzerinden DM) yöntemi için saatlik sınır 750 çağrı/saat/hesap. Biz bunun belirgin bir miktar
+// altında kalarak (güvenlik payı bırakarak) BU SINIRA ASLA DEĞMEMEYİ hedefliyoruz - sınıra değmek
+// hesabın geçici olarak kısıtlanmasına/cezalandırılmasına yol açabilir. Sınıra yaklaşılırsa
+// mesajlar KAYBOLMAZ, sadece var olan 30 dakikalık "tekrar deneme" döngüsüne ertelenir - bir
+// sonraki uygun anda otomatik olarak gönderilirler.
+const META_SAATLIK_LIMIT = 750; // Meta'nın resmi belgelenmiş sınırı (Private Replies - Posts/Reels)
+const GUVENLI_SAATLIK_LIMIT = 600; // bizim bıraktığımız güvenlik payıyla kendi tavanımız (~%80)
+
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
@@ -67,12 +77,18 @@ function loadData() {
       sent: [], failed: [], retryQueue: [], replyCounters: {},
       dailyStats: {}, totalSentCount: 0, totalFailedCount: 0,
       followerHistory: {},
+      mesajGonderimZamanlari: [], postSendCounts: {}, eslesmeyenYorumlar: [],
+      totalRateLimitDeferCount: 0,
     };
   }
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
   if (!data.replyCounters) data.replyCounters = {};
   if (!data.dailyStats) data.dailyStats = {};
   if (!data.followerHistory) data.followerHistory = {};
+  if (!data.mesajGonderimZamanlari) data.mesajGonderimZamanlari = [];
+  if (!data.postSendCounts) data.postSendCounts = {};
+  if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
+  if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent ? data.sent.length : 0;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed ? data.failed.length : 0;
   return data;
@@ -97,6 +113,10 @@ async function fetchGithubData() {
   if (!data.replyCounters) data.replyCounters = {};
   if (!data.dailyStats) data.dailyStats = {};
   if (!data.followerHistory) data.followerHistory = {};
+  if (!data.mesajGonderimZamanlari) data.mesajGonderimZamanlari = [];
+  if (!data.postSendCounts) data.postSendCounts = {};
+  if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
+  if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent.length;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed.length;
   return { data, sha: result.sha };
@@ -179,6 +199,7 @@ function loadConfig() {
       posts: {}, pendingTemplates: {}, tokenRefreshedAt: null,
       publicReplyTemplates: [...DEFAULT_PUBLIC_REPLY_TEMPLATES],
       defaultMessageTemplate: DEFAULT_MESSAGE_TEMPLATE,
+      blacklistedUsers: [], automationPaused: false,
     };
   }
   const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
@@ -188,6 +209,8 @@ function loadConfig() {
     config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
   }
   if (!config.defaultMessageTemplate) config.defaultMessageTemplate = DEFAULT_MESSAGE_TEMPLATE;
+  if (!Array.isArray(config.blacklistedUsers)) config.blacklistedUsers = [];
+  if (typeof config.automationPaused !== 'boolean') config.automationPaused = false;
   return config;
 }
 function saveConfigLocal(config) {
@@ -211,6 +234,8 @@ async function fetchGithubConfig() {
     config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
   }
   if (!config.defaultMessageTemplate) config.defaultMessageTemplate = DEFAULT_MESSAGE_TEMPLATE;
+  if (!Array.isArray(config.blacklistedUsers)) config.blacklistedUsers = [];
+  if (typeof config.automationPaused !== 'boolean') config.automationPaused = false;
   return { config, sha: data.sha };
 }
 
@@ -551,6 +576,39 @@ async function trySendButtonMessage(commentId, buttonText, link, buttonTitle) {
   }
 }
 
+// Saatlik güvenli DM gönderim sınırına (GUVENLI_SAATLIK_LIMIT) şu an ulaşılmış mı diye bakar.
+// Yerel diskteki (loadData) veriyle hızlıca kontrol ediyoruz - saniye hassasiyetinde kusursuz
+// olması gerekmiyor, çünkü Meta'nın gerçek sınırının (750) belirgin altında (600) durarak zaten
+// geniş bir güvenlik payı bırakıyoruz.
+async function saatlikLimitDoluMu() {
+  const data = loadData();
+  const simdi = Date.now();
+  const zamanlar = (data.mesajGonderimZamanlari || []).filter((t) => simdi - t < 60 * 60 * 1000);
+  return zamanlar.length >= GUVENLI_SAATLIK_LIMIT;
+}
+
+// Instagram'a atılan her gerçek /messages çağrısının zamanını kaydeder (logSent/logFailed
+// içinden, zaten var olan mutateData çağrısına eklenerek - ekstra bir GitHub gidiş-gelişine
+// gerek kalmadan). 65 dakikadan eski kayıtlar atılır (60 dakikalık pencere + küçük tampon).
+function kaydetGonderimZamani(data) {
+  if (!data.mesajGonderimZamanlari) data.mesajGonderimZamanlari = [];
+  const simdi = Date.now();
+  data.mesajGonderimZamanlari.push(simdi);
+  data.mesajGonderimZamanlari = data.mesajGonderimZamanlari.filter((t) => simdi - t < 65 * 60 * 1000);
+}
+
+// Bir gönderide otomasyon TANIMLI DEĞİLKEN gelen yorumları "Kaçırılan Fırsatlar" olarak kaydeder
+// (Hesap Durumu sayfasında gösterilir) - belki bu gönderi için de bir otomasyon kurman gerekiyordur.
+async function kaydetEslesmeyenYorum(kayit) {
+  await mutateData((data) => {
+    if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
+    data.eslesmeyenYorumlar.push(kayit);
+    if (data.eslesmeyenYorumlar.length > 50) {
+      data.eslesmeyenYorumlar.splice(0, data.eslesmeyenYorumlar.length - 50);
+    }
+  });
+}
+
 async function handleComment(value) {
   const commentId = value.id;
   const commentText = (value.text || '').toLowerCase().trim();
@@ -577,6 +635,24 @@ async function handleComment(value) {
   };
 
   const config = loadConfig();
+
+  // Otomasyon panelden "Hesap Durumu" sayfasından geçici olarak duraklatılmış olabilir
+  // (acil durum/tatil vb.) - açık olduğu sürece hiçbir yoruma DM/cevap gitmez. Yorum
+  // kaybolmaz, sadece bu otomasyon turu atlanır (Instagram bu yorumu tekrar göndermez,
+  // bu yüzden duraklatma kapatıldığında geçmişe dönük bir "yetişme" olmaz - bunu bilerek
+  // kullan).
+  if (config.automationPaused) {
+    console.log('⏸️ Otomasyon duraklatılmış durumda, yorum atlandı.');
+    return;
+  }
+
+  // Kara listedeki bir kullanıcıdan geliyorsa (spam/istenmeyen hesap), hiçbir şekilde
+  // DM ya da herkese açık cevap gönderilmez.
+  if ((config.blacklistedUsers || []).includes(fromUsername.toLowerCase())) {
+    console.log(`🚫 @${fromUsername} kara listede, yorum atlandı.`);
+    return;
+  }
+
   let postConfig = mediaId ? config.posts[mediaId] : null;
 
   // Bu gönderi için henüz özel bir otomasyon yoksa, "Planlanan" (henüz paylaşılmamışken
@@ -613,7 +689,12 @@ async function handleComment(value) {
 
   if (!postConfig) {
     // Bu gönderi için otomasyon tanımlı değil - bu normal, hesaptaki her yorumu görüyoruz.
-    // Hata olarak loglamaya gerek yok, sessizce geç.
+    // Hata olarak loglamaya gerek yok ama "Hesap Durumu" sayfasındaki Kaçırılan Fırsatlar
+    // listesine kaydediyoruz - belki bu gönderi için de bir otomasyon kurman gerekiyordur.
+    await kaydetEslesmeyenYorum({
+      fromUsername, commentText: value.text || '', mediaId,
+      timestamp: new Date().toISOString(),
+    });
     return;
   }
 
@@ -622,27 +703,39 @@ async function handleComment(value) {
 
   const baseRecord = { ...record, postTitle: postConfig.title || '', mediaId };
 
-  // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
-  // (Meta bu gönderim yolunda desteklemiyorsa) otomatik olarak eski, garanti çalışan
-  // düz metin yöntemine (link mesajın içinde) geri dönülür - kullanıcı hiçbir ayar
-  // yapmadan en iyi sonucu alır.
-  let sent = false;
-  if (postConfig.link) {
-    sent = await trySendButtonMessage(
-      commentId,
-      buildButtonText(postConfig),
-      postConfig.link,
-      postConfig.buttonTitle || "PDF'e Ulaş 📎"
-    );
-    if (sent) {
-      await logSent(baseRecord);
-      console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
-    }
-  }
-
-  if (!sent) {
+  // ---- GÜVENLİ GÖNDERİM SINIRI KONTROLÜ ----
+  // Saatlik güvenli tavana (GUVENLI_SAATLIK_LIMIT) ulaşıldıysa DM'yi ŞİMDİ göndermeye
+  // ÇALIŞMIYORUZ - mesaj kaybolmuyor, var olan 30 dakikalık tekrar deneme kuyruğuna
+  // ertelenip bir sonraki uygun anda otomatik olarak gönderiliyor. Bu sayede Meta'nın
+  // 750/saat sınırına asla değmiyoruz. NOT: Herkese açık yorum cevabı (aşağıda) bu
+  // sınırdan etkilenmez - o farklı bir API uç noktasını (comment replies) kullanıyor.
+  if (await saatlikLimitDoluMu()) {
     const message = buildMessage(postConfig, config);
-    await attemptSend(commentId, message, baseRecord);
+    await addToRetryQueue(commentId, message, baseRecord, 'rate_limit');
+    console.log(`⏳ Saatlik güvenli DM sınırına (${GUVENLI_SAATLIK_LIMIT}/saat) ulaşıldı, mesaj sıraya alındı: @${record.fromUsername}`);
+  } else {
+    // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
+    // (Meta bu gönderim yolunda desteklemiyorsa) otomatik olarak eski, garanti çalışan
+    // düz metin yöntemine (link mesajın içinde) geri dönülür - kullanıcı hiçbir ayar
+    // yapmadan en iyi sonucu alır.
+    let sent = false;
+    if (postConfig.link) {
+      sent = await trySendButtonMessage(
+        commentId,
+        buildButtonText(postConfig),
+        postConfig.link,
+        postConfig.buttonTitle || "PDF'e Ulaş 📎"
+      );
+      if (sent) {
+        await logSent(baseRecord);
+        console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
+      }
+    }
+
+    if (!sent) {
+      const message = buildMessage(postConfig, config);
+      await attemptSend(commentId, message, baseRecord);
+    }
   }
 
   // Herkese açık yorum cevabı da gönder (varsa) - dönüşümlü, hep aynısı olmasın
@@ -707,8 +800,12 @@ async function attemptSend(commentId, message, record) {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
       const errorCode = result.error ? result.error.code : null;
       if (errorCode === 4 || errorCode === 17 || errorCode === 32) {
+        // Bu, BİZİM 600/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
+        // gelen bir rate-limit hatası - normalde hiç görmememiz gerekir (zaten altında
+        // kalıyoruz), görülürse "rateLimited: true" ile işaretleyip Hesap Durumu
+        // sayfasında görünür kılıyoruz - bu bir uyarı sinyalidir.
         await addToRetryQueue(commentId, message, record);
-        await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}` });
+        await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true });
       } else {
         await logFailed({ ...record, reason: errorMsg });
       }
@@ -748,6 +845,16 @@ async function logSent(record) {
     if (record.fromUsername && !data.dailyStats[gun].users.includes(record.fromUsername)) {
       data.dailyStats[gun].users.push(record.fromUsername);
     }
+
+    // Hız sınırı takibi: bu, Instagram'a atılmış gerçek bir /messages çağrısı -
+    // saatlik güvenli sınır hesaplaması (saatlikLimitDoluMu) bu zaman damgalarını sayıyor.
+    kaydetGonderimZamani(data);
+
+    // Gönderi bazlı istatistik (İstatistikler sayfası): bu gönderiden toplam kaç DM gitti.
+    if (record.mediaId) {
+      if (!data.postSendCounts) data.postSendCounts = {};
+      data.postSendCounts[record.mediaId] = (data.postSendCounts[record.mediaId] || 0) + 1;
+    }
   });
 }
 
@@ -756,12 +863,22 @@ async function logFailed(record) {
     data.failed.push(record);
     if (data.failed.length > 200) data.failed.splice(0, data.failed.length - 200);
     data.totalFailedCount = (data.totalFailedCount || 0) + 1;
+    // Başarısız da olsa Meta'ya gerçek bir /messages çağrısı atılmıştır, bu yüzden
+    // hız sınırı sayacına o da dahil ediliyor.
+    kaydetGonderimZamani(data);
   });
 }
 
-async function addToRetryQueue(commentId, message, record) {
+// "sebep" 'rate_limit' olarak verilirse, bu BİZİM kendi 600/saat güvenlik tavanımıza takılıp
+// proaktif olarak ertelenen bir mesajdır (bir hata DEĞİL) - Hesap Durumu sayfasındaki
+// "sıraya alınıp ertelenen gönderim" sayacına ekleniyor. Meta'nın kendisinden gelen gerçek
+// rate-limit hataları (attemptSend içinde) ayrı ve "rateLimited: true" ile işaretleniyor.
+async function addToRetryQueue(commentId, message, record, sebep) {
   await mutateData((data) => {
-    data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString() });
+    data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString(), sebep: sebep || null });
+    if (sebep === 'rate_limit') {
+      data.totalRateLimitDeferCount = (data.totalRateLimitDeferCount || 0) + 1;
+    }
   });
 }
 
@@ -772,7 +889,20 @@ setInterval(async () => {
     data.retryQueue = [];
   });
   if (queue.length === 0) return;
-  for (const item of queue) {
+  for (let i = 0; i < queue.length; i++) {
+    // Bu döngü sırasında da saatlik güvenli sınıra ulaşılmış olabilir (örn. kuyrukta çok
+    // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
+    // koyup bu turu burada kesiyoruz, bir sonraki 30 dakikalık döngüde devam edilir.
+    // Hiçbir mesaj kaybolmuyor, sadece güvenli hızda gönderiliyor.
+    if (await saatlikLimitDoluMu()) {
+      const kalanlar = queue.slice(i);
+      await mutateData((data) => {
+        data.retryQueue.push(...kalanlar);
+      });
+      console.log(`⏳ Tekrar deneme döngüsünde saatlik güvenli sınıra ulaşıldı, ${kalanlar.length} mesaj bir sonraki döngüye ertelendi.`);
+      break;
+    }
+    const item = queue[i];
     await attemptSend(item.commentId, item.message, item.record);
     await new Promise((r) => setTimeout(r, 2000));
   }
@@ -853,6 +983,93 @@ app.delete('/admin/api/posts/:mediaId', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ================== İSTATİSTİKLER (gönderi bazlı beğeni/yorum + kaç DM gitti) ==================
+// NOT: "like_count" ve "comments_count" alanları Instagram Login (Business hesabı) kapsamında
+// genel medya alanları - ama tüm hesap türlerinde/izin seviyelerinde garantili çalıştığı
+// dokümantasyonda net değil (followers_count'ta olduğu gibi). Bu yüzden savunmacı yazıldı:
+// alan gelmezse null olarak döner, panel o zaman "—" gösterir, hiçbir şey bozulmaz.
+app.get('/admin/api/post-stats', async (req, res) => {
+  try {
+    const response = await fetch(
+      `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count&limit=50&access_token=${igAccessToken}`
+    );
+    const result = await response.json();
+    if (result.error) return res.status(500).json({ error: result.error.message });
+
+    const data = loadData();
+    const postSendCounts = data.postSendCounts || {};
+
+    const posts = (result.data || []).map((post) => ({
+      id: post.id,
+      caption: post.caption || '',
+      thumbnail: post.thumbnail_url || post.media_url || '',
+      permalink: post.permalink || null,
+      likeCount: typeof post.like_count === 'number' ? post.like_count : null,
+      commentsCount: typeof post.comments_count === 'number' ? post.comments_count : null,
+      dmGonderilen: postSendCounts[post.id] || 0,
+    }));
+
+    res.json({ posts });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================== HESAP DURUMU (ceza/kısıtlama riskini gözle görünür kılan sayfa) ==================
+app.get('/admin/api/account-health', (req, res) => {
+  const config = loadConfig();
+  const data = loadData();
+  const simdi = Date.now();
+
+  const zamanlar = (data.mesajGonderimZamanlari || []).filter((t) => simdi - t < 60 * 60 * 1000);
+  const saatlikGonderim = zamanlar.length;
+
+  const son24SaatRateLimitHatasi = (data.failed || []).filter((f) => {
+    return f.rateLimited && f.timestamp && (simdi - new Date(f.timestamp).getTime()) < 24 * 60 * 60 * 1000;
+  }).length;
+
+  const sorunVarMi = saatlikGonderim >= GUVENLI_SAATLIK_LIMIT || son24SaatRateLimitHatasi > 0;
+
+  res.json({
+    otomasyonDuraklatildiMi: !!config.automationPaused,
+    saatlikGonderim,
+    saatlikGuvenliLimit: GUVENLI_SAATLIK_LIMIT,
+    metaResmiLimit: META_SAATLIK_LIMIT,
+    son24SaatRateLimitHatasi,
+    toplamErtelenen: data.totalRateLimitDeferCount || 0,
+    saglikli: !sorunVarMi,
+    blacklist: config.blacklistedUsers || [],
+    eslesmeyenYorumlar: (data.eslesmeyenYorumlar || []).slice(-20).reverse(),
+  });
+});
+
+app.post('/admin/api/account-health/pause', async (req, res) => {
+  const { paused } = req.body;
+  await mutateConfig((config) => {
+    config.automationPaused = !!paused;
+  });
+  res.json({ ok: true, otomasyonDuraklatildiMi: !!paused });
+});
+
+// ---- Kara liste (istenmeyen/spam kullanıcı adlarına otomasyon hiç çalışmaz) ----
+app.post('/admin/api/blacklist', async (req, res) => {
+  const temiz = String((req.body && req.body.username) || '').trim().replace(/^@/, '').toLowerCase();
+  if (!temiz) return res.status(400).json({ error: 'Kullanıcı adı gerekli' });
+  await mutateConfig((config) => {
+    if (!Array.isArray(config.blacklistedUsers)) config.blacklistedUsers = [];
+    if (!config.blacklistedUsers.includes(temiz)) config.blacklistedUsers.push(temiz);
+  });
+  res.json({ ok: true });
+});
+
+app.delete('/admin/api/blacklist/:username', async (req, res) => {
+  const temiz = decodeURIComponent(req.params.username).trim().toLowerCase();
+  await mutateConfig((config) => {
+    config.blacklistedUsers = (config.blacklistedUsers || []).filter((u) => u !== temiz);
+  });
+  res.json({ ok: true });
+});
+
 // ================== PLANLANAN OTOMASYONLAR (henüz paylaşılmamış gönderiler için) ==================
 // Bir gönderiyi paylaşmadan önce otomasyonunu "taslak" olarak kaydedebilirsin.
 // Gönderi paylaşılıp o anahtar kelimeyle ilk yorum geldiğinde, sistem bu taslağı otomatik
@@ -921,7 +1138,25 @@ app.post('/admin/api/templates', async (req, res) => {
   res.json({ ok: true });
 });
 
-// ================== TAKİPÇİ (trend + hızlı özet) ==================
+// ================== TAKİPÇİ (trend + gün/hafta/ay karşılaştırmalı özet) ==================
+// dailyStats'a benzer bir mantıkla, ama burada tutulan şey "kaç PDF gönderildi" değil,
+// "takipçi sayısı bir önceki kayıtlı güne göre ne kadar değişti" (net değişim). Bu günlük
+// değişim serisi üretildikten sonra, Durum sayfasındaki AYNI haftaAnahtariUret() fonksiyonuyla
+// hafta/ay anahtarına göre toplanabiliyor - böylece Takipçi sayfası da Durum ile birebir aynı
+// "Günlük / Haftalık / Aylık" karşılaştırma modeline sahip oluyor.
+function ozetOlusturSayisal(gunlukDegerler, anahtarFn, sinir) {
+  const sonuc = {};
+  Object.keys(gunlukDegerler).forEach((gun) => {
+    const anahtar = anahtarFn(gun);
+    if (typeof sonuc[anahtar] !== 'number') sonuc[anahtar] = 0;
+    sonuc[anahtar] += gunlukDegerler[gun];
+  });
+  return Object.keys(sonuc)
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, sinir)
+    .map((anahtar) => ({ anahtar, degisim: sonuc[anahtar] }));
+}
+
 app.get('/admin/api/followers', (req, res) => {
   const data = loadData();
   const history = data.followerHistory || {};
@@ -946,17 +1181,79 @@ app.get('/admin/api/followers', (req, res) => {
     return { tarih: gun, sayi: history[gun], degisim };
   });
 
-  res.json({ veriVarMi: true, guncelSayi, bugunDegisim, haftalikDegisim, son7Gun });
+  // Günlük net değişim serisi: her gün için bir önceki KAYITLI güne göre fark.
+  // İlk kayıtlı gün için karşılaştıracak önceki gün olmadığından o gün atlanır.
+  const gunlukDegisimler = {};
+  gunler.forEach((gun, i) => {
+    if (i === 0) return;
+    gunlukDegisimler[gun] = history[gun] - history[gunler[i - 1]];
+  });
+
+  const gunlukOzet = Object.keys(gunlukDegisimler)
+    .sort((a, b) => (a < b ? 1 : -1))
+    .slice(0, 60)
+    .map((tarih) => ({ tarih, degisim: gunlukDegisimler[tarih], sayi: history[tarih] }));
+
+  const haftalikOzet = ozetOlusturSayisal(gunlukDegisimler, haftaAnahtariUret, 30); // son ~6-7 ay
+  const aylikOzet = ozetOlusturSayisal(gunlukDegisimler, (gun) => gun.slice(0, 7), 24); // son 24 ay
+
+  // Durum sayfasındaki "hızlıÖzet" ile aynı fikirde: bugün/bu hafta/bu ay net değişim.
+  const bugunGunAnahtari = istanbulGunAnahtari(new Date().toISOString());
+  const buHaftaAnahtari = haftaAnahtariUret(bugunGunAnahtari);
+  const buAyAnahtari = bugunGunAnahtari.slice(0, 7);
+  let buAyDegisim = 0;
+  Object.keys(gunlukDegisimler).forEach((gun) => {
+    if (gun.slice(0, 7) === buAyAnahtari) buAyDegisim += gunlukDegisimler[gun];
+  });
+
+  res.json({
+    veriVarMi: true,
+    guncelSayi, bugunDegisim, haftalikDegisim, buAyDegisim,
+    son7Gun,
+    gunlukOzet, haftalikOzet, aylikOzet,
+  });
 });
 
-// ================== AYARLAR (salt-okunur sistem bilgisi) ==================
+// ================== AYARLAR (sistem sağlığı + bildirimler bir arada) ==================
 // ÖNEMLİ: Şifre asla burada döndürülmüyor - sadece kullanıcı adı ve token/sistem durumu.
+// Başarısız gönderim bildirimleri, token yenileme durumu ve genel sistem sağlığı ile
+// ilgili HER ŞEY artık tek bir yerde (bu uç nokta / Ayarlar sayfası) toplanıyor - eskiden
+// başarısız gönderimler sadece Durum sayfasında, dağınık şekilde görünüyordu.
+const TOKEN_YENILEME_ARALIGI_MS = 45 * 24 * 60 * 60 * 1000;
+
 app.get('/admin/api/settings', (req, res) => {
   const config = loadConfig();
+  const data = loadData();
+
+  let tokenKalanGun = null;
+  if (config.tokenRefreshedAt) {
+    const kalanMs = TOKEN_YENILEME_ARALIGI_MS - (Date.now() - config.tokenRefreshedAt);
+    tokenKalanGun = Math.max(0, Math.ceil(kalanMs / (24 * 60 * 60 * 1000)));
+  }
+
+  const simdi = Date.now();
+  const failedList = data.failed || [];
+  const basarisizSon24Saat = failedList.filter((f) => {
+    return f.timestamp && (simdi - new Date(f.timestamp).getTime()) < 24 * 60 * 60 * 1000;
+  }).length;
+  const sonBasarisizlar = failedList.slice(-5).reverse().map((f) => ({
+    fromUsername: f.fromUsername || 'bilinmiyor',
+    reason: f.reason || '',
+    timestamp: f.timestamp || null,
+  }));
+
   res.json({
     adminUser: ADMIN_USER,
     tokenVarMi: !!igAccessToken,
     tokenYenilemeZamani: config.tokenRefreshedAt || null,
+    tokenKalanGun,
+    saglik: {
+      basarisizToplam: typeof data.totalFailedCount === 'number' ? data.totalFailedCount : failedList.length,
+      basarisizSon24Saat,
+      tekrarBekleyen: (data.retryQueue || []).length,
+      sonBasarisizlar,
+      takipciVerisiVarMi: !!(data.followerHistory && Object.keys(data.followerHistory).length > 0),
+    },
   });
 });
 
@@ -1040,8 +1337,44 @@ app.get('/admin/api/status', (req, res) => {
     haftalikOzet,
     aylikOzet,
     gonderilenler: data.sent.slice(-50).reverse(),
-    basarisizOlanlar: data.failed.slice(-50).reverse(),
+    // NOT: Başarısız gönderimlerin ayrıntılı listesi artık burada değil - bildirim/sağlık
+    // amaçlı her şey tek bir yerde toplansın diye /admin/api/settings üzerinden, Ayarlar
+    // sayfasında gösteriliyor. Buradaki "ozet.basarisizOlan" sadece kalıcı sayaç.
   });
+});
+
+// ================== CSV DIŞA AKTARMA (Excel'de açılabilir kayıt indirme) ==================
+function csvSatiriYaz(degerler) {
+  return degerler.map((v) => {
+    const s = String(v == null ? '' : v).replace(/"/g, '""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  }).join(',') + '\n';
+}
+
+app.get('/admin/api/export/:tur', (req, res) => {
+  const data = loadData();
+  const tur = req.params.tur;
+  let basliklar = [];
+  let satirlar = [];
+
+  if (tur === 'sent') {
+    basliklar = ['Tarih', 'Kullanici', 'Yorum', 'Gonderi Basligi'];
+    satirlar = (data.sent || []).map((s) => [s.sentAt || '', s.fromUsername || '', s.commentText || '', s.postTitle || '']);
+  } else if (tur === 'failed') {
+    basliklar = ['Tarih', 'Kullanici', 'Yorum', 'Sebep'];
+    satirlar = (data.failed || []).map((f) => [f.timestamp || '', f.fromUsername || '', f.commentText || '', f.reason || '']);
+  } else {
+    return res.status(400).send('Geçersiz tür (sent ya da failed olmalı)');
+  }
+
+  // Başa BOM (﻿) ekliyoruz ki Excel Türkçe karakterleri (ş, ı, ğ vb.) doğru göstersin.
+  let csv = '﻿' + csvSatiriYaz(basliklar);
+  satirlar.forEach((s) => { csv += csvSatiriYaz(s); });
+
+  const dosyaAdi = `hakanhoca-${tur}-${istanbulGunAnahtari(new Date().toISOString())}.csv`;
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${dosyaAdi}"`);
+  res.send(csv);
 });
 
 app.get('/privacy', (req, res) => {
