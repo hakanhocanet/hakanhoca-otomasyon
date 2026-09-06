@@ -201,6 +201,18 @@
   }
   .reply-remove:hover { background: rgba(251,84,121,0.25); }
 
+  .period-toggle {
+    display: flex; gap: 6px; margin: 18px 0 14px;
+    background: var(--bg-elevated); padding: 5px; border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+  .period-btn {
+    flex: 1; text-align: center; padding: 9px 6px; border-radius: 10px;
+    cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-dim);
+    transition: all .15s ease; user-select: none;
+  }
+  .period-btn.active { background: var(--gradient); color: #fff; }
+
   .stat-row { display: flex; gap: 10px; margin-bottom: 20px; }
   .stat {
     flex: 1; background: var(--bg-card); border: 1px solid var(--border);
@@ -595,21 +607,108 @@ async function deletePending(id) {
   loadPending();
 }
 
+let sonDurumVerisi = null;
+let secilenDonem = 'gun'; // 'gun' | 'hafta' | 'ay'
+
 async function loadStatus() {
   const res = await fetch('/admin/api/status');
-  const data = await res.json();
+  sonDurumVerisi = await res.json();
+  renderStatus();
+}
+
+// Bir hafta anahtarını ("YYYY-MM-DD", o haftanın Pazartesi'si) "06 - 12 Eylül 2026" gibi
+// okunur bir aralığa çevirir.
+function haftaEtiketi(pazartesiTarihi) {
+  const baslangic = new Date(pazartesiTarihi + 'T00:00:00');
+  const bitis = new Date(baslangic);
+  bitis.setDate(bitis.getDate() + 6);
+  const b1 = baslangic.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' });
+  const b2 = bitis.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  return `${b1} – ${b2}`;
+}
+
+// Bir ay anahtarını ("YYYY-MM") "Eylül 2026" gibi okunur hale çevirir.
+function ayEtiketi(ayAnahtari) {
+  const tarih = new Date(ayAnahtari + '-01T00:00:00');
+  return tarih.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+}
+
+function switchOzetDonemi(donem) {
+  secilenDonem = donem;
+  renderStatus();
+}
+
+function renderStatus() {
+  const data = sonDurumVerisi;
+  if (!data) return;
   const container = document.getElementById('statusContent');
 
   let html = `
     <div class="stat-row">
-      <div class="stat green"><div class="stat-icon">✅</div><div class="num">${data.ozet.basariylaGonderilen}</div><div class="stat-label">Gönderildi</div></div>
+      <div class="stat green"><div class="stat-icon">✅</div><div class="num">${data.ozet.basariylaGonderilen}</div><div class="stat-label">Toplam Gönderildi</div></div>
       <div class="stat red"><div class="stat-icon">⚠️</div><div class="num">${data.ozet.basarisizOlan}</div><div class="stat-label">Başarısız</div></div>
       <div class="stat yellow"><div class="stat-icon">⏳</div><div class="num">${data.ozet.tekrarDenenecek}</div><div class="stat-label">Bekliyor</div></div>
     </div>
+    <div class="hint" style="margin-top:-8px;">
+      ℹ️ Bu sayılar artık kalıcı olarak saklanıyor — sunucu yeniden başlasa bile bir daha sıfırlanmaz.
+    </div>
   `;
 
+  if (data.hizliOzet) {
+    html += `
+      <div class="stat-row">
+        <div class="stat"><div class="stat-icon">📌</div><div class="num">${data.hizliOzet.bugun}</div><div class="stat-label">Bugün</div></div>
+        <div class="stat"><div class="stat-icon">📌</div><div class="num">${data.hizliOzet.buHafta}</div><div class="stat-label">Bu Hafta</div></div>
+        <div class="stat"><div class="stat-icon">📌</div><div class="num">${data.hizliOzet.buAy}</div><div class="stat-label">Bu Ay</div></div>
+      </div>
+    `;
+  }
+
+  html += '<div class="section-title">📊 Özet — kaç PDF gitti, kimlere gitti</div>';
+  html += `
+    <div class="period-toggle">
+      <div class="period-btn ${secilenDonem === 'gun' ? 'active' : ''}" onclick="switchOzetDonemi('gun')">Günlük</div>
+      <div class="period-btn ${secilenDonem === 'hafta' ? 'active' : ''}" onclick="switchOzetDonemi('hafta')">Haftalık</div>
+      <div class="period-btn ${secilenDonem === 'ay' ? 'active' : ''}" onclick="switchOzetDonemi('ay')">Aylık</div>
+    </div>
+  `;
+
+  const bugunStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+  const dunStr = new Date(Date.now() - 86400000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Istanbul' });
+
+  let liste = [];
+  if (secilenDonem === 'gun') liste = data.gunlukOzet || [];
+  else if (secilenDonem === 'hafta') liste = data.haftalikOzet || [];
+  else liste = data.aylikOzet || [];
+
+  if (liste.length === 0) {
+    html += '<div class="empty-state"><span class="icon">📭</span>Bu dönem için henüz kayıt yok.</div>';
+  } else {
+    liste.forEach(kayit => {
+      let baslik;
+      if (secilenDonem === 'gun') {
+        const tarihObj = new Date(kayit.tarih + 'T00:00:00');
+        baslik = tarihObj.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+        if (kayit.tarih === bugunStr) baslik += ' — bugün';
+        else if (kayit.tarih === dunStr) baslik += ' — dün';
+      } else if (secilenDonem === 'hafta') {
+        baslik = haftaEtiketi(kayit.anahtar);
+      } else {
+        baslik = ayEtiketi(kayit.anahtar);
+      }
+      const kullanicilar = (kayit.kullanicilar || []).map(u => '@' + u).join(', ') || '—';
+      html += `<div class="log-item">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="user">${baslik}</span>
+          <span style="color:var(--success);font-weight:700;white-space:nowrap;margin-left:8px;">${kayit.adet} PDF</span>
+        </div>
+        <div class="comment-text" style="margin-top:6px;">${kullanicilar}</div>
+      </div>`;
+    });
+  }
+
   if (data.basarisizOlanlar.length > 0) {
-    html += '<div class="section-title">⚠️ Başarısız Olanlar</div>';
+    html += '<div class="section-title">⚠️ Başarısız Olanlar (son 50)</div>';
     data.basarisizOlanlar.forEach(item => {
       html += `<div class="log-item">
         <span class="user">@${item.fromUsername}</span> <span class="comment-text">— "${item.commentText}"</span>
@@ -619,16 +718,12 @@ async function loadStatus() {
   }
 
   if (data.gonderilenler.length > 0) {
-    html += '<div class="section-title">✅ Son Gönderilenler</div>';
+    html += '<div class="section-title">✅ Son Gönderilenler (son 50)</div>';
     data.gonderilenler.forEach(item => {
       html += `<div class="log-item">
         <span class="user">@${item.fromUsername}</span> <span class="comment-text">— "${item.commentText}"</span>
       </div>`;
     });
-  }
-
-  if (data.basarisizOlanlar.length === 0 && data.gonderilenler.length === 0) {
-    html += '<div class="empty-state"><span class="icon">📭</span>Henüz kayıt yok.</div>';
   }
 
   container.innerHTML = html;
