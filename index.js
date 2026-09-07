@@ -713,6 +713,26 @@ function kaydetGonderimZamani(data) {
   data.mesajGonderimZamanlari = data.mesajGonderimZamanlari.filter((t) => simdi - t < 65 * 60 * 1000);
 }
 
+// ================== YORUM/ANAHTAR KELİME KARŞILAŞTIRMA ÖNCESİ TEMİZLİK ==================
+// ŞİKAYET: "PDF" yazıp hemen ardına emoji ekleyen bazı kullanıcılara mesaj gitmiyor. Eşleştirme
+// zaten esnek (yorumun İÇİNDE anahtar kelime geçiyor mu diye bakıyor, tam eşleşme aramıyor) -
+// yani normalde "pdf😍" yazan biri "pdf" anahtar kelimesiyle otomatik eşleşmeli. En olası sebep,
+// panelde o gönderi için kayıtlı anahtar kelimenin kendisine fark edilmeden bir boşluk, büyük/küçük
+// harf farkı ya da GÖRÜNMEZ bir unicode karakter karışmış olması (telefonda kopyala-yapıştır ya da
+// emoji klavyesi bazen fark edilmeyen "sıfır genişlikli" karakterler ekleyebiliyor - bunlar ekranda
+// hiç görünmez ama metni birebir karşılaştırırken farklı yapar). Bu fonksiyon hem gelen yorumu hem
+// panelde kayıtlı anahtar kelimeyi AYNI şekilde temizleyip karşılaştırıyor: baştaki/sondaki boşluklar
+// atılıyor, art arda gelen boşluklar teke indiriliyor, bilinen görünmez karakterler siliniyor, hepsi
+// küçük harfe çevriliyor. Böylece "elle bakınca aynı görünen ama aslında farklı olan" iki metin
+// yüzünden mesajın sessizce gitmemesi bir daha yaşanmaz.
+function metniTemizle(str) {
+  return String(str || '')
+    .replace(/[\u200B\u200C\u200D\uFEFF\u00A0]/g, '') // sifir genislikli/birlestirici, BOM, kesintisiz bosluk
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
 // Bir gönderide otomasyon TANIMLI DEĞİLKEN gelen yorumları "Kaçırılan Fırsatlar" olarak kaydeder
 // (Hesap Durumu sayfasında gösterilir) - belki bu gönderi için de bir otomasyon kurman gerekiyordur.
 async function kaydetEslesmeyenYorum(kayit) {
@@ -727,7 +747,7 @@ async function kaydetEslesmeyenYorum(kayit) {
 
 async function handleComment(value) {
   const commentId = value.id;
-  const commentText = (value.text || '').toLowerCase().trim();
+  const commentText = metniTemizle(value.text);
   const mediaId = value.media ? value.media.id : null;
   const fromUsername = value.from ? value.from.username : 'bilinmiyor';
 
@@ -791,7 +811,7 @@ async function handleComment(value) {
       const pending = config.pendingTemplates || {};
       for (const pendingId of Object.keys(pending)) {
         const template = pending[pendingId];
-        if (template.keyword && commentText.includes(template.keyword.toLowerCase())) {
+        if (template.keyword && commentText.includes(metniTemizle(template.keyword))) {
           baglanan = { ...template };
           config.posts[mediaId] = baglanan;
           delete config.pendingTemplates[pendingId];
@@ -814,8 +834,18 @@ async function handleComment(value) {
     return;
   }
 
-  const keyword = postConfig.keyword.toLowerCase();
-  if (!commentText.includes(keyword)) return; // ilgisiz yorum, sessizce geç
+  const keyword = metniTemizle(postConfig.keyword);
+  if (!commentText.includes(keyword)) {
+    // ÖNEMLİ: Bu gönderi için otomasyon VAR ama bu yorumdaki anahtar kelime eşleşmedi.
+    // "PDF yazıp hemen ardına emoji koyan bazı kişilere mesaj gitmiyor" şikayetini
+    // araştırabilmek için burayı Render loglarına yazıyoruz - normalde eşleşme metnin
+    // İÇİNDE geçmesi yeterli olacak kadar esnek (tam eşleşme aramıyor), bu yüzden bir
+    // eşleşmeme genelde ya panelde kayıtlı anahtar kelimede fark edilmeyen bir boşluk/
+    // emoji/farklı harf olduğunu ya da yorumun gerçekten alakasız olduğunu gösterir.
+    // Loglardaki "Beklenen" ve "Gelen yorum" değerlerini karşılaştırarak ayırt edebiliriz.
+    console.log(`ℹ️ Otomasyonlu gönderiye yorum geldi ama anahtar kelime eşleşmedi. Beklenen: "${keyword}" | Gelen yorum (temizlenmiş): "${commentText}" | Kullanıcı: @${fromUsername}`);
+    return; // ilgisiz yorum, sessizce geç
+  }
 
   const baseRecord = { ...record, postTitle: postConfig.title || '', mediaId };
 
