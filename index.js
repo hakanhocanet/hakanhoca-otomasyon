@@ -385,6 +385,53 @@ async function mutateConfig(mutatorFn) {
   return loadConfig();
 }
 
+// ================== PANELDEKİ GÖRÜNTÜLEME (GET) UÇ NOKTALARI İÇİN "HER ZAMAN GÜNCEL" OKUMA ==================
+// ÖNEMLİ (planlanan otomasyonun "kaybolmuş gibi görünmesi" hatasının GERÇEK sebebi - 2. kısım):
+// Render'ın ücretsiz planı, birkaç dakika istek gelmeyince sunucuyu tamamen kapatıyor ve bir
+// sonraki istekte SIFIRDAN yeniden başlatıyor (konteynerin yerel diski o an TAMAMEN BOŞ). Açılışta
+// bir kere GitHub'dan yerel diske senkronizasyon yapılıyor (ilkAcilistaGithubdanSenkronizeEt), AMA
+// o istek GitHub'a giderken ÇOK NADİR de olsa geçici bir ağ/GitHub API hatası yaşanabilir - böyle
+// bir anda o özel konteyner kopyasının yerel diski BOŞ kalmış olabilir. Panelin GET uç noktaları
+// (Planlanan, Gönderiler, Şablonlar, Kara Liste, Ayarlar, Durum, Takipçi vb.) ESKİDEN SADECE bu
+// yerel diski okuyordu - yani GitHub'da veri gayet sağlam dururken, sırf o anki konteyner kopyası
+// henüz senkronize olamadığı için panelde "yokmuş gibi/silinmiş gibi" görünebiliyordu. Hiçbir şey
+// GERÇEKTEN silinmiyordu, sadece o anki gösterim yanlıştı.
+//
+// ÇÖZÜM: Panelin TÜM GET uç noktaları artık ÖNCE GitHub'daki O ANKİ GERÇEK haline bakıyor (tıpkı
+// mutateConfig/mutateData'nın yazarken yaptığı gibi), sadece GitHub'a hiç ulaşılamazsa (token
+// ayarlanmamış, internet/GitHub sorunu vb.) yerel diskteki en son bilinen hale geri dönüyor. Böylece
+// panelde gördüğün her şey, o an GitHub'da GERÇEKTEN duran haliyle birebir eşleşiyor - "acaba bu
+// konteyner kopyası senkronize oldu mu" diye asla merak etmene gerek kalmıyor.
+async function readConfig() {
+  if (GITHUB_TOKEN && GITHUB_REPO) {
+    try {
+      const remote = await fetchGithubConfig();
+      if (remote) {
+        saveConfigLocal(remote.config); // yerel önbelleği de tazele, bir sonraki okuma/restart daha güvenli olsun
+        return remote.config;
+      }
+    } catch (err) {
+      console.error('GitHub güncel config okunamadı (panel görüntüleme), yerel diske geri dönülüyor:', err.message);
+    }
+  }
+  return loadConfig();
+}
+
+async function readData() {
+  if (GITHUB_TOKEN && GITHUB_REPO) {
+    try {
+      const remote = await fetchGithubData();
+      if (remote) {
+        saveData(remote.data); // yerel önbelleği de tazele
+        return remote.data;
+      }
+    } catch (err) {
+      console.error('GitHub güncel data.json okunamadı (panel görüntüleme), yerel diske geri dönülüyor:', err.message);
+    }
+  }
+  return loadData();
+}
+
 // ================== ACCESS TOKEN OTOMATİK YENİLEME ==================
 // Instagram Login token'ları 60 gün geçerli. Süresi dolmadan önce (ve en az
 // 24 saat kullanıldıktan sonra) yenilenebilir.
@@ -1012,7 +1059,7 @@ app.get('/admin/api/posts', async (req, res) => {
     const result = await response.json();
     if (result.error) return res.status(500).json({ error: result.error.message });
 
-    const config = loadConfig();
+    const config = await readConfig();
     const posts = (result.data || []).map((post) => ({
       ...post,
       automation: config.posts[post.id] || null,
@@ -1065,7 +1112,7 @@ app.get('/admin/api/post-stats', async (req, res) => {
     const result = await response.json();
     if (result.error) return res.status(500).json({ error: result.error.message });
 
-    const data = loadData();
+    const data = await readData();
     const postSendCounts = data.postSendCounts || {};
 
     const posts = (result.data || []).map((post) => ({
@@ -1085,9 +1132,9 @@ app.get('/admin/api/post-stats', async (req, res) => {
 });
 
 // ================== HESAP DURUMU (ceza/kısıtlama riskini gözle görünür kılan sayfa) ==================
-app.get('/admin/api/account-health', (req, res) => {
-  const config = loadConfig();
-  const data = loadData();
+app.get('/admin/api/account-health', async (req, res) => {
+  const config = await readConfig();
+  const data = await readData();
   const simdi = Date.now();
 
   const zamanlar = (data.mesajGonderimZamanlari || []).filter((t) => simdi - t < 60 * 60 * 1000);
@@ -1144,8 +1191,8 @@ app.delete('/admin/api/blacklist/:username', async (req, res) => {
 // Gönderi paylaşılıp o anahtar kelimeyle ilk yorum geldiğinde, sistem bu taslağı otomatik
 // olarak gerçek gönderiye bağlar (bkz. handleComment() içindeki eşleştirme mantığı).
 
-app.get('/admin/api/pending', (req, res) => {
-  const config = loadConfig();
+app.get('/admin/api/pending', async (req, res) => {
+  const config = await readConfig();
   res.json({ pending: config.pendingTemplates });
 });
 
@@ -1209,8 +1256,8 @@ app.delete('/admin/api/pending/:id', async (req, res) => {
 // "Mesaj metni" boş bırakıldığında kullanılan varsayılan DM şablonu artık burada,
 // config.json üzerinden panelden düzenlenebiliyor - eskiden admin.html içine
 // gömülüydü, değiştirmek için kod düzenlemek gerekiyordu.
-app.get('/admin/api/templates', (req, res) => {
-  const config = loadConfig();
+app.get('/admin/api/templates', async (req, res) => {
+  const config = await readConfig();
   res.json({
     publicReplyTemplates: config.publicReplyTemplates,
     defaultMessageTemplate: config.defaultMessageTemplate,
@@ -1255,8 +1302,8 @@ function ozetOlusturSayisal(gunlukDegerler, anahtarFn, sinir) {
     .map((anahtar) => ({ anahtar, degisim: sonuc[anahtar] }));
 }
 
-app.get('/admin/api/followers', (req, res) => {
-  const data = loadData();
+app.get('/admin/api/followers', async (req, res) => {
+  const data = await readData();
   const history = data.followerHistory || {};
   const gunler = Object.keys(history).sort(); // eskiden yeniye (YYYY-MM-DD string sıralaması güvenli)
 
@@ -1319,9 +1366,9 @@ app.get('/admin/api/followers', (req, res) => {
 // başarısız gönderimler sadece Durum sayfasında, dağınık şekilde görünüyordu.
 const TOKEN_YENILEME_ARALIGI_MS = 45 * 24 * 60 * 60 * 1000;
 
-app.get('/admin/api/settings', (req, res) => {
-  const config = loadConfig();
-  const data = loadData();
+app.get('/admin/api/settings', async (req, res) => {
+  const config = await readConfig();
+  const data = await readData();
 
   let tokenKalanGun = null;
   if (config.tokenRefreshedAt) {
@@ -1397,8 +1444,8 @@ function ozetOlustur(dailyStats, anahtarFn, sinir) {
 // dailyStats'tan anlık hesaplanıyor, ayrı bir yerde saklamaya gerek yok). Ayrıca
 // "bugün / bu hafta / bu ay" hızlı sayıları da ekleniyor - panel bunları tek
 // bakışta gösterebilsin diye.
-app.get('/admin/api/status', (req, res) => {
-  const data = loadData();
+app.get('/admin/api/status', async (req, res) => {
+  const data = await readData();
   const dailyStats = data.dailyStats || {};
 
   const gunlukOzet = Object.keys(dailyStats)
@@ -1449,8 +1496,8 @@ function csvSatiriYaz(degerler) {
   }).join(',') + '\n';
 }
 
-app.get('/admin/api/export/:tur', (req, res) => {
-  const data = loadData();
+app.get('/admin/api/export/:tur', async (req, res) => {
+  const data = await readData();
   const tur = req.params.tur;
   let basliklar = [];
   let satirlar = [];
