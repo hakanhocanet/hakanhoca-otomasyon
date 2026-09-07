@@ -40,6 +40,73 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPO; // örn: "hakanhocanet/hakanhoca-otomasyon"
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 
+// ================== VERİ BRANCH'İ (Render'ın gereksiz redeploy'unu ve fatura riskini önlemek için) ==================
+// ÖNEMLİ: Render, bu repo'ya (GITHUB_BRANCH, yani "main") yapılan HER PUSH'TA otomatik olarak
+// yeniden build+deploy yapıyor. Ama data.json/config.json dosyalarına HER DM gönderiminde, her
+// başarısız denemede, her ayar değişikliğinde (kara liste, duraklat, planlanan otomasyon vb.)
+// yazıyoruz - bu da "main" branch'ine sürekli commit demek, bu da Render'ın sürekli (ve tamamen
+// gereksiz) redeploy yapması demek, bu da ücretsiz "pipeline dakikası" kotasının hızla tükenip
+// ek ücrete (her 1000 dakika için $5) dönüşmesi demek.
+//
+// ÇÖZÜM: data.json ve config.json artık kod branch'inden (GITHUB_BRANCH) TAMAMEN AYRI bir
+// branch'e (GITHUB_DATA_BRANCH, varsayılan "veri") yazılıyor. Render sadece "main" branch'ini
+// izleyip deploy ettiği için, redeploy artık SADECE senin panelden gerçek kod değişikliği yapıp
+// GitHub'a yapıştırdığın anlarda (yani zaten istediğin zamanlarda) tetikleniyor - her DM/kayıt
+// işlemi bir daha asla deploy tetiklemiyor. Hiçbir veri kaybolmuyor/değişmiyor, sadece HANGİ
+// branch'e yazıldığı değişti.
+const GITHUB_DATA_BRANCH = process.env.GITHUB_DATA_BRANCH || 'veri';
+
+// Uygulama ilk açıldığında "veri" branch'i GitHub'da yoksa (ilk kurulum / bu güncellemeden
+// sonraki ilk açılış), "main" branch'inin O ANKİ halinden otomatik olarak oluşturur - telefondan
+// yönetilen bu sistemde kullanıcının GitHub'a girip elle branch oluşturmasına hiç gerek kalmaz.
+async function veriBranchiniGarantiyeAl() {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) return;
+  try {
+    const kontrolRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/git/ref/heads/${GITHUB_DATA_BRANCH}`,
+      { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
+    );
+    if (kontrolRes.ok) {
+      console.log(`✅ "${GITHUB_DATA_BRANCH}" veri branch'i zaten mevcut, veriler oraya yazılıyor.`);
+      return;
+    }
+    if (kontrolRes.status !== 404) {
+      console.error('⚠️ Veri branch kontrolü beklenmedik hata döndürdü:', kontrolRes.status);
+      return;
+    }
+
+    const anaRes = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/git/ref/heads/${GITHUB_BRANCH}`,
+      { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
+    );
+    if (!anaRes.ok) {
+      console.error(`⚠️ "${GITHUB_BRANCH}" branch'i okunamadı, "${GITHUB_DATA_BRANCH}" oluşturulamadı.`);
+      return;
+    }
+    const anaData = await anaRes.json();
+    const sha = anaData.object && anaData.object.sha;
+    if (!sha) return;
+
+    const olusturRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: `refs/heads/${GITHUB_DATA_BRANCH}`, sha }),
+    });
+    if (olusturRes.ok) {
+      console.log(`✅ "${GITHUB_DATA_BRANCH}" veri branch'i "${GITHUB_BRANCH}" üzerinden otomatik oluşturuldu. Artık veri kayıtları redeploy tetiklemeyecek.`);
+    } else {
+      const errText = await olusturRes.text();
+      console.error('⚠️ Veri branch\'i oluşturulamadı:', olusturRes.status, errText);
+    }
+  } catch (err) {
+    console.error('⚠️ Veri branch\'i garantiye alma hatası:', err.message);
+  }
+}
+// NOT: Bu fonksiyon burada ÇAĞRILMIYOR - sunucuyuBaslat() içinde, app.listen'dan
+// ÖNCE, sırayla çalıştırılıyor (bkz. dosyanın en altı). Sıra önemli: önce "veri" branch'i
+// var olduğundan emin ol, SONRA oradan yerel diske senkronize et, SONRA istekleri kabul
+// etmeye başla.
+
 const DATA_FILE = path.join(__dirname, 'data.json');
 const CONFIG_FILE = path.join(__dirname, 'config.json');
 
@@ -98,9 +165,10 @@ function saveData(data) {
 }
 
 // ---- GitHub'daki data.json'ın (gönderim kayıtları) O ANKİ GERÇEK halini oku (sha ile) ----
+// NOT: "veri" branch'inden okunuyor (GITHUB_BRANCH/"main" değil) - bkz. GITHUB_DATA_BRANCH açıklaması.
 async function fetchGithubData() {
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`;
-  const res = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, {
+  const res = await fetch(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
   });
   if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
@@ -159,7 +227,7 @@ async function mutateData(mutatorFn) {
     try {
       const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`;
       const content = Buffer.from(JSON.stringify(data, null, 2)).toString('base64');
-      const body = { message: 'Gönderim kaydı güncellendi', content, branch: GITHUB_BRANCH };
+      const body = { message: 'Gönderim kaydı güncellendi', content, branch: GITHUB_DATA_BRANCH };
       if (sha) body.sha = sha;
 
       const putRes = await fetch(apiUrl, {
@@ -218,9 +286,10 @@ function saveConfigLocal(config) {
 }
 
 // ---- GitHub'daki config.json'ın O ANKİ GERÇEK halini oku (sha ile birlikte) ----
+// NOT: "veri" branch'inden okunuyor (GITHUB_BRANCH/"main" değil) - bkz. GITHUB_DATA_BRANCH açıklaması.
 async function fetchGithubConfig() {
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
-  const res = await fetch(`${apiUrl}?ref=${GITHUB_BRANCH}`, {
+  const res = await fetch(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
   });
   if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
@@ -287,7 +356,7 @@ async function mutateConfig(mutatorFn) {
     try {
       const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
       const content = Buffer.from(JSON.stringify(config, null, 2)).toString('base64');
-      const body = { message: 'Panel üzerinden otomasyon güncellendi', content, branch: GITHUB_BRANCH };
+      const body = { message: 'Panel üzerinden otomasyon güncellendi', content, branch: GITHUB_DATA_BRANCH };
       if (sha) body.sha = sha;
 
       const putRes = await fetch(apiUrl, {
@@ -1439,6 +1508,62 @@ app.get('/', (req, res) => {
   res.send('HakanHoca Otomasyon çalışıyor. Panel için /admin adresine gidin.');
 });
 
-app.listen(PORT, () => {
-  console.log(`Sunucu ${PORT} portunda çalışıyor.`);
-});
+// ================== İLK AÇILIŞTA GITHUB'DAN SENKRONİZASYON ==================
+// ÖNEMLİ (kaybolan "Planlanan otomasyon" hatasının GERÇEK sebebi): Render her redeploy'da
+// konteyneri SIFIRDAN oluşturuyor - yerel diskteki data.json/config.json o an TAMAMEN SİLİNMİŞ
+// oluyor. loadData()/loadConfig() dosya yoksa BOŞ/varsayılan değerler döndürüyor (posts: {},
+// pendingTemplates: {} gibi). Panelin GET uç noktaları (örn. /admin/api/pending,
+// /admin/api/posts) SADECE yerel diskten okuyor - GitHub'a hiç bakmıyor. Yani: redeploy
+// olduktan hemen sonra, henüz hiçbir DM/kayıt işlemi (mutateData/mutateConfig, ki bunlar
+// GitHub'dan taze veri çekiyor) çalışmadan panele bakarsan, GERÇEKTE GitHub'da duran
+// "Planlanan" otomasyonların HİÇBİRİ KAYBOLMAMIŞ olsa bile panelde "yokmuş gibi" görünüyordu.
+// Ve Render her data/config yazımında yeniden deploy tetiklediği için (bu artık "veri"
+// branch'ine taşındığı için düzeldi, ama GERÇEK bir kod güncellemesi/redeploy sırasında hâlâ
+// olabilir), bu durum tam da "bir gönderi paylaştım, mesajlar gitti/yazıldı (ki bu commit'lere
+// yol açar) ve hemen sonra panelde planlanan otomasyonlar gitmiş gibi görünüyor" senaryosuyla
+// birebir örtüşüyor.
+//
+// ÇÖZÜM: Sunucu istek kabul etmeye başlamadan ÖNCE, GitHub'daki (veri branch'indeki) GÜNCEL
+// data.json ve config.json bir kere yerel diske çekiliyor. Böylece panel HİÇBİR ZAMAN
+// "geçici olarak boş" bir görüntü göstermiyor - konteyner ne zaman yeniden oluşursa oluşsun,
+// ilk istekten itibaren gerçek, güncel veriler orada.
+async function ilkAcilistaGithubdanSenkronizeEt() {
+  if (!GITHUB_TOKEN || !GITHUB_REPO) {
+    console.log('GITHUB_TOKEN/GITHUB_REPO ayarlanmamış, açılış senkronizasyonu atlanıyor (sadece yerel disk kullanılacak).');
+    return;
+  }
+  try {
+    const remoteData = await fetchGithubData();
+    if (remoteData) {
+      saveData(remoteData.data);
+      console.log('✅ data.json açılışta GitHub\'dan ("' + GITHUB_DATA_BRANCH + '" branch\'i) yerel diske senkronize edildi.');
+    } else {
+      console.log('ℹ️ GitHub\'da henüz bir data.json yok (muhtemelen ilk kurulum) - yerel varsayılanlar kullanılacak.');
+    }
+  } catch (err) {
+    console.error('⚠️ Açılışta data.json senkronizasyonu başarısız, yerel disk kullanılacak:', err.message);
+  }
+  try {
+    const remoteConfig = await fetchGithubConfig();
+    if (remoteConfig) {
+      saveConfigLocal(remoteConfig.config);
+      console.log('✅ config.json açılışta GitHub\'dan ("' + GITHUB_DATA_BRANCH + '" branch\'i) yerel diske senkronize edildi.');
+    } else {
+      console.log('ℹ️ GitHub\'da henüz bir config.json yok (muhtemelen ilk kurulum) - yerel varsayılanlar kullanılacak.');
+    }
+  } catch (err) {
+    console.error('⚠️ Açılışta config.json senkronizasyonu başarısız, yerel disk kullanılacak:', err.message);
+  }
+}
+
+async function sunucuyuBaslat() {
+  // Sıra kasıtlı: önce "veri" branch'inin var olduğundan emin ol, SONRA oradan yerel diske
+  // çek, EN SON istekleri kabul etmeye başla - böylece webhook/panel hiçbir zaman yarım/boş
+  // bir yerel diskle karşılaşmaz.
+  await veriBranchiniGarantiyeAl();
+  await ilkAcilistaGithubdanSenkronizeEt();
+  app.listen(PORT, () => {
+    console.log(`Sunucu ${PORT} portunda çalışıyor.`);
+  });
+}
+sunucuyuBaslat();
