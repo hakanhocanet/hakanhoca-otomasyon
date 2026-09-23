@@ -56,13 +56,46 @@ const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 // branch'e yazıldığı değişti.
 const GITHUB_DATA_BRANCH = process.env.GITHUB_DATA_BRANCH || 'veri';
 
+// ================== DIŞ SERVİSLERE (GitHub/Instagram/Render) YAPILAN İSTEKLER İÇİN ZAMAN AŞIMI ==================
+// ACİL DÜZELTME: Panelde "Gönderiler yükleniyor..." yazısının SONSUZA KADAR takılı kalması
+// hatasının sebebi şuydu: sıradan fetch() çağrılarının hiçbir zaman aşımı (timeout) yok.
+// GitHub'ın ya da Instagram'ın API'si o an yavaş yanıt verirse (ya da hiç yanıt vermezse -
+// bağlantı takılı kalırsa), sunucu o isteği SONSUZA KADAR bekliyor, hiçbir zaman panele
+// cevap dönmüyor. Panelin frontend kodu (admin.html) "yükleniyor..." yazısını ancak sunucudan
+// bir cevap (başarı ya da hata) geldiğinde değiştirebiliyor - cevap hiç gelmediği için ekranda
+// asılı kalıyor, sunucu tarafındaki try/catch bloklarının bile devreye girme şansı olmuyor
+// (çünkü hata değil, sonsuz bir BEKLEME yaşanıyor).
+//
+// ÇÖZÜM: Artık dış servislere yapılan HER istek bu fonksiyon üzerinden, belirli bir süre
+// (varsayılan 15 saniye) içinde cevap gelmezse OTOMATİK OLARAK iptal edilecek şekilde
+// yapılıyor. Süre dolduğunda bu bir HATA olarak işleniyor (zaten var olan try/catch'ler
+// bunu yakalıyor) - böylece en kötü ihtimalle panel birkaç saniye içinde "Hata: ..." mesajı
+// gösteriyor ya da (readConfig/readData gibi yerlerde) sessizce yerel diske geri dönüyor,
+// ama ASLA sonsuza kadar "yükleniyor" yazısında takılı kalmıyor. Bu, mesaj gönderme dahil
+// hiçbir mevcut işlevi bozmuyor - sadece "hiç cevap gelmezse ne olacak" sorusuna artık bir
+// üst sınır koyuyor.
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const zamanAsimi = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error(`İstek zaman aşımına uğradı (${timeoutMs / 1000} saniye içinde cevap gelmedi): ${url}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(zamanAsimi);
+  }
+}
+
 // Uygulama ilk açıldığında "veri" branch'i GitHub'da yoksa (ilk kurulum / bu güncellemeden
 // sonraki ilk açılış), "main" branch'inin O ANKİ halinden otomatik olarak oluşturur - telefondan
 // yönetilen bu sistemde kullanıcının GitHub'a girip elle branch oluşturmasına hiç gerek kalmaz.
 async function veriBranchiniGarantiyeAl() {
   if (!GITHUB_TOKEN || !GITHUB_REPO) return;
   try {
-    const kontrolRes = await fetch(
+    const kontrolRes = await fetchWithTimeout(
       `https://api.github.com/repos/${GITHUB_REPO}/git/ref/heads/${GITHUB_DATA_BRANCH}`,
       { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
     );
@@ -75,7 +108,7 @@ async function veriBranchiniGarantiyeAl() {
       return;
     }
 
-    const anaRes = await fetch(
+    const anaRes = await fetchWithTimeout(
       `https://api.github.com/repos/${GITHUB_REPO}/git/ref/heads/${GITHUB_BRANCH}`,
       { headers: { Authorization: `Bearer ${GITHUB_TOKEN}` } }
     );
@@ -87,7 +120,7 @@ async function veriBranchiniGarantiyeAl() {
     const sha = anaData.object && anaData.object.sha;
     if (!sha) return;
 
-    const olusturRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/git/refs`, {
+    const olusturRes = await fetchWithTimeout(`https://api.github.com/repos/${GITHUB_REPO}/git/refs`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ ref: `refs/heads/${GITHUB_DATA_BRANCH}`, sha }),
@@ -168,7 +201,7 @@ function saveData(data) {
 // NOT: "veri" branch'inden okunuyor (GITHUB_BRANCH/"main" değil) - bkz. GITHUB_DATA_BRANCH açıklaması.
 async function fetchGithubData() {
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data.json`;
-  const res = await fetch(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
+  const res = await fetchWithTimeout(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
   });
   if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
@@ -230,13 +263,14 @@ async function mutateData(mutatorFn) {
       const body = { message: 'Gönderim kaydı güncellendi', content, branch: GITHUB_DATA_BRANCH };
       if (sha) body.sha = sha;
 
-      const putRes = await fetch(apiUrl, {
+      const putRes = await fetchWithTimeout(apiUrl, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
       if (putRes.ok) {
+        dataOnbellek = null; // veri değişti - okuma önbelleği artık bayat, bir sonraki okuma taze çeksin
         return data;
       }
       if (putRes.status === 409 || putRes.status === 422) {
@@ -289,7 +323,7 @@ function saveConfigLocal(config) {
 // NOT: "veri" branch'inden okunuyor (GITHUB_BRANCH/"main" değil) - bkz. GITHUB_DATA_BRANCH açıklaması.
 async function fetchGithubConfig() {
   const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
-  const res = await fetch(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
+  const res = await fetchWithTimeout(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
   });
   if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
@@ -359,13 +393,14 @@ async function mutateConfig(mutatorFn) {
       const body = { message: 'Panel üzerinden otomasyon güncellendi', content, branch: GITHUB_DATA_BRANCH };
       if (sha) body.sha = sha;
 
-      const putRes = await fetch(apiUrl, {
+      const putRes = await fetchWithTimeout(apiUrl, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
       if (putRes.ok) {
+        configOnbellek = null; // veri değişti - okuma önbelleği artık bayat, bir sonraki okuma taze çeksin
         return config;
       }
       if (putRes.status === 409 || putRes.status === 422) {
@@ -402,12 +437,30 @@ async function mutateConfig(mutatorFn) {
 // ayarlanmamış, internet/GitHub sorunu vb.) yerel diskteki en son bilinen hale geri dönüyor. Böylece
 // panelde gördüğün her şey, o an GitHub'da GERÇEKTEN duran haliyle birebir eşleşiyor - "acaba bu
 // konteyner kopyası senkronize oldu mu" diye asla merak etmene gerek kalmıyor.
+// ================== BANDWIDTH TASARRUFU: KISA SÜRELİ OKUMA ÖNBELLEĞİ ==================
+// ÖNEMLİ: Render'ın ücretsiz planı ayda sadece 5GB dış trafik (bandwidth) veriyor. Panel
+// her sekme açıldığında/yenilendiğinde readConfig()/readData() GitHub'dan TAM dosyayı
+// çekiyordu - yani telefonundan panelde gezinirken (Gönderiler'e bak, Planlanan'a geç,
+// geri dön...) her tık ayrı bir GitHub isteği demekti. Bu önbellek, art arda birkaç saniye
+// içinde gelen OKUMA isteklerinde GitHub'a tekrar gitmeden az önce çekilen veriyi
+// kullanıyor. "Bayat" veri gösterme riski YOK: mutateConfig/mutateData başarılı her
+// yazışın hemen ardından önbelleği kendisi temizliyor (aşağıda), yani panelin kendi
+// yaptığın bir değişikliği görmemesi gibi bir durum söz konusu değil - sadece PEŞ PEŞE
+// aynı veriyi tekrar tekrar GitHub'dan çekmeyi önlüyoruz.
+const ONBELLEK_SURESI_MS = 60 * 1000; // 60 saniye (bandwidth tasarrufu için 20 saniyeden yükseltildi)
+let configOnbellek = null; // { config, zaman }
+let dataOnbellek = null;   // { data, zaman }
+
 async function readConfig() {
+  if (configOnbellek && Date.now() - configOnbellek.zaman < ONBELLEK_SURESI_MS) {
+    return configOnbellek.config;
+  }
   if (GITHUB_TOKEN && GITHUB_REPO) {
     try {
       const remote = await fetchGithubConfig();
       if (remote) {
         saveConfigLocal(remote.config); // yerel önbelleği de tazele, bir sonraki okuma/restart daha güvenli olsun
+        configOnbellek = { config: remote.config, zaman: Date.now() };
         return remote.config;
       }
     } catch (err) {
@@ -418,11 +471,15 @@ async function readConfig() {
 }
 
 async function readData() {
+  if (dataOnbellek && Date.now() - dataOnbellek.zaman < ONBELLEK_SURESI_MS) {
+    return dataOnbellek.data;
+  }
   if (GITHUB_TOKEN && GITHUB_REPO) {
     try {
       const remote = await fetchGithubData();
       if (remote) {
         saveData(remote.data); // yerel önbelleği de tazele
+        dataOnbellek = { data: remote.data, zaman: Date.now() };
         return remote.data;
       }
     } catch (err) {
@@ -462,7 +519,7 @@ async function refreshAccessToken() {
     return;
   }
   try {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${igAccessToken}`
     );
     const result = await res.json();
@@ -498,7 +555,7 @@ async function persistTokenToRender(token) {
     return;
   }
   try {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `https://api.render.com/v1/services/${RENDER_SERVICE_ID}/env-vars/IG_ACCESS_TOKEN`,
       {
         method: 'PUT',
@@ -555,7 +612,7 @@ setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
 async function takipciSayisiniGetirVeKaydet() {
   if (!igAccessToken || !IG_USER_ID) return;
   try {
-    const res = await fetch(`${IG_GRAPH_BASE}/${IG_USER_ID}?fields=followers_count&access_token=${igAccessToken}`);
+    const res = await fetchWithTimeout(`${IG_GRAPH_BASE}/${IG_USER_ID}?fields=followers_count&access_token=${igAccessToken}`);
     const result = await res.json();
     if (result.error) {
       console.error('⚠️ Takipçi sayısı alınamadı:', result.error.message);
@@ -654,7 +711,7 @@ function buildButtonText(postConfig) {
 // düz metin yöntemine (link metnin içinde) geri döner - hiçbir mesaj kaybolmaz.
 async function trySendButtonMessage(commentId, buttonText, link, buttonTitle) {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
       {
         method: 'POST',
@@ -849,6 +906,24 @@ async function handleComment(value) {
 
   const baseRecord = { ...record, postTitle: postConfig.title || '', mediaId };
 
+  // BANDWIDTH TASARRUFU: Eskiden herkese açık cevap rotasyonu (hangi metin sırada) için
+  // AYRI bir GitHub okuma+yazma turu yapılıyordu (pickNextPublicReply -> kendi mutateData
+  // çağrısı) - yani eşleşen HER yorumda data.json'ın TAMAMI GitHub'a iki kere gidip
+  // geliyordu: bir kere DM kaydı için, bir kere de sadece bu küçük sayaç için. Render'ın
+  // ücretsiz planında ayda sadece 5GB dış trafik hakkı olduğundan, bu gereksiz ikinci tur
+  // kotayı boşuna ikiye katlıyordu. Artık: hangi metnin gönderileceği hızlıca yerel diskten
+  // seçiliyor (secNextPublicReplyMetni - %100 anlık senkron olması gerekmiyor, sadece
+  // "değişen bir cevap" görünmesi için), sayacın KALICI ilerlemesi ise aşağıda zaten
+  // yapılacak olan TEK GitHub yazma işlemine (DM kaydı: logSent/logFailed/addToRetryQueue,
+  // hangisi olacaksa) "ekMutator" olarak bindiriliyor - ekstra bir GitHub gidiş-gelişi yok.
+  let ekMutator = null;
+  let publicReplyMetni = null;
+  if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
+    publicReplyMetni = secNextPublicReplyMetni(mediaId, postConfig.publicReplies);
+    const cevapSayisi = postConfig.publicReplies.length;
+    ekMutator = (data) => ilerletReplyCounter(data, mediaId, cevapSayisi);
+  }
+
   // ---- GÜVENLİ GÖNDERİM SINIRI KONTROLÜ ----
   // Saatlik güvenli tavana (GUVENLI_SAATLIK_LIMIT) ulaşıldıysa DM'yi ŞİMDİ göndermeye
   // ÇALIŞMIYORUZ - mesaj kaybolmuyor, var olan 30 dakikalık tekrar deneme kuyruğuna
@@ -857,7 +932,7 @@ async function handleComment(value) {
   // sınırdan etkilenmez - o farklı bir API uç noktasını (comment replies) kullanıyor.
   if (await saatlikLimitDoluMu()) {
     const message = buildMessage(postConfig, config);
-    await addToRetryQueue(commentId, message, baseRecord, 'rate_limit');
+    await addToRetryQueue(commentId, message, baseRecord, 'rate_limit', ekMutator);
     console.log(`⏳ Saatlik güvenli DM sınırına (${GUVENLI_SAATLIK_LIMIT}/saat) ulaşıldı, mesaj sıraya alındı: @${record.fromUsername}`);
   } else {
     // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
@@ -873,40 +948,49 @@ async function handleComment(value) {
         postConfig.buttonTitle || "PDF'e Ulaş 📎"
       );
       if (sent) {
-        await logSent(baseRecord);
+        await logSent(baseRecord, ekMutator);
         console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
       }
     }
 
     if (!sent) {
       const message = buildMessage(postConfig, config);
-      await attemptSend(commentId, message, baseRecord);
+      await attemptSend(commentId, message, baseRecord, ekMutator);
     }
   }
 
-  // Herkese açık yorum cevabı da gönder (varsa) - dönüşümlü, hep aynısı olmasın
-  if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
-    const publicText = await pickNextPublicReply(mediaId, postConfig.publicReplies);
-    await sendPublicReply(commentId, publicText);
+  // Herkese açık yorum cevabı da gönder (varsa) - metin yukarıda zaten seçildi, sayaç da
+  // yukarıdaki DM kaydıyla birlikte kalıcı olarak ilerletildi.
+  if (publicReplyMetni) {
+    await sendPublicReply(commentId, publicReplyMetni);
   }
 }
 
-// Sırayla, hep aynı cevabı art arda kullanmadan bir sonraki metni seç
-async function pickNextPublicReply(mediaId, replies) {
-  let secilen = replies[0];
-  await mutateData((data) => {
-    if (!data.replyCounters) data.replyCounters = {};
-    const currentIndex = data.replyCounters[mediaId] || 0;
-    secilen = replies[currentIndex % replies.length];
-    data.replyCounters[mediaId] = (currentIndex + 1) % replies.length;
-  });
-  return secilen;
+// Hangi herkese açık cevap metninin gönderileceğini HIZLICA seçer (yerel diskten okuyarak,
+// GitHub'a gitmeden) - dönüşümlü, art arda hep aynısı olmasın diye. Bu seçim %100 anlık
+// senkron olmak zorunda değil (sadece görünüm çeşitliliği için), sayacın KALICI ilerlemesi
+// ayrı olarak ilerletReplyCounter() ile, DM kaydıyla aynı GitHub yazma işlemine bindirilerek
+// yapılıyor (bkz. handleComment içindeki "ekMutator").
+function secNextPublicReplyMetni(mediaId, replies) {
+  const data = loadData();
+  const currentIndex = (data.replyCounters && data.replyCounters[mediaId]) || 0;
+  return replies[currentIndex % replies.length];
+}
+
+// Herkese açık cevap rotasyon sayacını KALICI olarak ilerletir. Kendi başına GitHub'a
+// yazmaz - çağrıldığı mutateData işleminin (logSent/logFailed/addToRetryQueue) BİR PARÇASI
+// olarak, o işlemin zaten taze çektiği GitHub verisi üzerinde çalışır (çakışmaya karşı
+// güvenli).
+function ilerletReplyCounter(data, mediaId, replyCount) {
+  if (!data.replyCounters) data.replyCounters = {};
+  const currentIndex = data.replyCounters[mediaId] || 0;
+  data.replyCounters[mediaId] = (currentIndex + 1) % replyCount;
 }
 
 // Yorumun altına herkese görünecek şekilde cevap yaz
 async function sendPublicReply(commentId, text) {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${commentId}/replies?access_token=${igAccessToken}`,
       {
         method: 'POST',
@@ -924,9 +1008,9 @@ async function sendPublicReply(commentId, text) {
 }
 
 // Yoruma özel mesaj (DM) gönder - Instagram Login / graph.instagram.com üzerinden
-async function attemptSend(commentId, message, record) {
+async function attemptSend(commentId, message, record, ekMutator) {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
       {
         method: 'POST',
@@ -940,7 +1024,7 @@ async function attemptSend(commentId, message, record) {
     const result = await response.json();
 
     if (response.ok && !result.error) {
-      await logSent(record);
+      await logSent(record, ekMutator);
       console.log(`✅ DM gönderildi: @${record.fromUsername}`);
     } else {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
@@ -950,14 +1034,16 @@ async function attemptSend(commentId, message, record) {
         // gelen bir rate-limit hatası - normalde hiç görmememiz gerekir (zaten altında
         // kalıyoruz), görülürse "rateLimited: true" ile işaretleyip Hesap Durumu
         // sayfasında görünür kılıyoruz - bu bir uyarı sinyalidir.
-        await addToRetryQueue(commentId, message, record);
+        // NOT: ekMutator burada (addToRetryQueue) uygulanıyor, aşağıdaki logFailed'a AYRICA
+        // verilmiyor - aksi halde herkese açık cevap sayacı yanlışlıkla iki kez ilerlerdi.
+        await addToRetryQueue(commentId, message, record, undefined, ekMutator);
         await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true });
       } else {
-        await logFailed({ ...record, reason: errorMsg });
+        await logFailed({ ...record, reason: errorMsg }, ekMutator);
       }
     }
   } catch (err) {
-    await logFailed({ ...record, reason: `Bağlantı hatası: ${err.message}` });
+    await logFailed({ ...record, reason: `Bağlantı hatası: ${err.message}` }, ekMutator);
   }
 }
 
@@ -967,18 +1053,24 @@ async function attemptSend(commentId, message, record) {
 // çok sayıda yorum gelmesi) hiçbir kayıt birbirinin üzerine yazıp kaybolmuyor.
 //
 // "sent" ve "failed" listeleri paneldeki "Son Gönderilenler / Başarısız Olanlar"
-// bölümü için son 500/200 kayıtla sınırlı tutuluyor (dosya çok büyümesin diye),
+// bölümü için son 250/100 kayıtla sınırlı tutuluyor (dosya çok büyümesin diye),
 // AMA gerçek toplam sayı (totalSentCount / totalFailedCount) hiçbir zaman
 // sıfırlanmıyor/kırpılmıyor - panelde görünen "Gönderildi" rakamı bu yüzden artık
 // kalıcı ve doğru. Ayrıca "dailyStats" ile hangi gün kaç PDF gönderildiği ve
 // o gün kimlere gönderildiği (kullanıcı adları) ayrı ayrı, kalıcı olarak tutuluyor
 // (son 180 gün) - panelde "Günlük Özet" bu veriden geliyor.
-async function logSent(record) {
+async function logSent(record, ekMutator) {
   const sentAt = new Date().toISOString();
   const gun = istanbulGunAnahtari(sentAt);
   await mutateData((data) => {
     data.sent.push({ ...record, sentAt });
-    if (data.sent.length > 500) data.sent.splice(0, data.sent.length - 500);
+    // BANDWIDTH TASARRUFU: 500'den 250'ye düşürüldü - panelde zaten sadece son 50 kayıt
+    // gösteriliyor (bkz. /admin/api/status), 250 hâlâ bol bol yedek pay bırakıyor. Bu liste
+    // KÜÇÜLDÜKÇE data.json'ın boyutu küçülür, her yazışta (artık yorum başına TEK yazış)
+    // GitHub'a giden/gelen veri de o kadar azalır. NOT: "Dışa Aktar" (CSV) özelliği bu
+    // listeden okuduğu için, geçmişe dönük CSV dışa aktarımı artık en fazla son 250 kaydı
+    // kapsar (toplam sayı - totalSentCount - bundan ETKİLENMEZ, o hep tam ve doğru kalır).
+    if (data.sent.length > 250) data.sent.splice(0, data.sent.length - 250);
     data.totalSentCount = (data.totalSentCount || 0) + 1;
 
     if (!data.dailyStats) data.dailyStats = {};
@@ -1001,17 +1093,23 @@ async function logSent(record) {
       if (!data.postSendCounts) data.postSendCounts = {};
       data.postSendCounts[record.mediaId] = (data.postSendCounts[record.mediaId] || 0) + 1;
     }
+
+    // BANDWIDTH TASARRUFU: bu yorumun herkese açık cevap sayacı da varsa (ekMutator),
+    // ekstra bir GitHub turu açmadan TAM BURADA, aynı yazma işleminin içinde ilerletiliyor.
+    if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
 
-async function logFailed(record) {
+async function logFailed(record, ekMutator) {
   await mutateData((data) => {
     data.failed.push(record);
-    if (data.failed.length > 200) data.failed.splice(0, data.failed.length - 200);
+    // BANDWIDTH TASARRUFU: 200'den 100'e düşürüldü - aynı mantık (bkz. logSent'teki not).
+    if (data.failed.length > 100) data.failed.splice(0, data.failed.length - 100);
     data.totalFailedCount = (data.totalFailedCount || 0) + 1;
     // Başarısız da olsa Meta'ya gerçek bir /messages çağrısı atılmıştır, bu yüzden
     // hız sınırı sayacına o da dahil ediliyor.
     kaydetGonderimZamani(data);
+    if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
 
@@ -1019,12 +1117,13 @@ async function logFailed(record) {
 // proaktif olarak ertelenen bir mesajdır (bir hata DEĞİL) - Hesap Durumu sayfasındaki
 // "sıraya alınıp ertelenen gönderim" sayacına ekleniyor. Meta'nın kendisinden gelen gerçek
 // rate-limit hataları (attemptSend içinde) ayrı ve "rateLimited: true" ile işaretleniyor.
-async function addToRetryQueue(commentId, message, record, sebep) {
+async function addToRetryQueue(commentId, message, record, sebep, ekMutator) {
   await mutateData((data) => {
     data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString(), sebep: sebep || null });
     if (sebep === 'rate_limit') {
       data.totalRateLimitDeferCount = (data.totalRateLimitDeferCount || 0) + 1;
     }
+    if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
 
@@ -1083,7 +1182,7 @@ app.get('/admin', (req, res) => {
 app.get('/admin/api/posts', async (req, res) => {
   try {
     const after = req.query.after ? `&after=${encodeURIComponent(req.query.after)}` : '';
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,media_url,thumbnail_url,timestamp,media_type&limit=25${after}&access_token=${igAccessToken}`
     );
     const result = await response.json();
@@ -1136,7 +1235,7 @@ app.delete('/admin/api/posts/:mediaId', async (req, res) => {
 // alan gelmezse null olarak döner, panel o zaman "—" gösterir, hiçbir şey bozulmaz.
 app.get('/admin/api/post-stats', async (req, res) => {
   try {
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id,caption,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count&limit=50&access_token=${igAccessToken}`
     );
     const result = await response.json();
