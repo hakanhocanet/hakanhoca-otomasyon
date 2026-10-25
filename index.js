@@ -302,9 +302,16 @@ async function mutateDataGercek(mutatorFn) {
           data = remote.data;
           sha = remote.sha;
         }
+        // TEŞHİS (2026-10-25): "OKUNAMADI" hiç loglanmıyor ama PUT'ta hep "sha=YOK!" çıkıyor -
+        // yani okuma BAŞARILI görünüyor ama sha bir şekilde kayboluyor. Bunu kesinleştirmek için
+        // okumanın HEMEN SONUCUNU (remote var mı, sha ne) koşulsuz logluyoruz - başarı/başarısızlık
+        // fark etmeksizin HER zaman bir satır basılacak.
+        console.log(`[TEŞHİS] fetchGithubData sonucu (deneme ${deneme}): remote=${remote ? 'VAR' : 'YOK/null'} | sha="${remote ? remote.sha : 'n/a'}" (tip: ${remote ? typeof remote.sha : 'n/a'})`);
       } catch (err) {
-        console.error('GitHub güncel data.json okunamadı:', err.message);
+        console.error('GitHub güncel data.json okunamadı:', err.message, err.stack ? err.stack.split('\n').slice(0, 3).join(' | ') : '');
       }
+    } else {
+      console.log('[TEŞHİS] hasGithub FALSE - GITHUB_TOKEN veya GITHUB_REPO tanımlı değil!');
     }
     if (!data) data = loadData();
 
