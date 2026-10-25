@@ -220,7 +220,16 @@ async function fetchGithubData() {
   const res = await fetchWithTimeout(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
     headers: { Authorization: `Bearer ${GITHUB_TOKEN}` },
   });
-  if (!res.ok) return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
+  if (!res.ok) {
+    // TEŞHİS (2026-10-25): mutex eklememize RAĞMEN her yazış hâlâ 5/5 çakışıyordu - bu da
+    // "gerçek bir yarış durumu" değil, OKUMA'nın (bu GET isteği) zaten başarısız olup sha'yı
+    // hiç alamadığımızı düşündürüyor (sha olmadan PUT, dosya zaten varken HER ZAMAN 409 döner).
+    // Önceden burası sessizce null dönüyordu, sebebi hiç loglanmıyordu - artık logluyoruz.
+    let gövde = '';
+    try { gövde = await res.text(); } catch (_) {}
+    console.error(`data.json GitHub'dan OKUNAMADI: HTTP ${res.status} ${res.statusText} | ref=${GITHUB_DATA_BRANCH} | repo=${GITHUB_REPO} | yanıt: ${gövde.slice(0, 300)}`);
+    return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
+  }
   const result = await res.json();
   if (!result.content) return null;
   const data = JSON.parse(Buffer.from(result.content, 'base64').toString('utf8'));
@@ -321,7 +330,13 @@ async function mutateDataGercek(mutatorFn) {
         return data;
       }
       if (putRes.status === 409 || putRes.status === 422) {
-        console.log(`data.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}), en güncel hal tekrar çekilip deneniyor...`);
+        // TEŞHİS (2026-10-25): artık GitHub'ın GERÇEK hata metnini de yazdırıyoruz - "sha
+        // uyuşmadı" (gerçek yarış durumu) ile "sha hiç verilmedi" ya da başka bir doğrulama
+        // hatası (mutex'in çözemeyeceği, hep aynı şekilde başarısız olacak bir sorun) arasındaki
+        // farkı AYIRT edebilmek için. "sha" boşsa (aşağıda yazıyor), bu kesin yarış durumu DEĞİL.
+        let çakışmaGövdesi = '';
+        try { çakışmaGövdesi = await putRes.text(); } catch (_) {}
+        console.log(`data.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}, sha=${sha ? sha.slice(0, 8) : 'YOK!'}), HTTP ${putRes.status} | yanıt: ${çakışmaGövdesi.slice(0, 300)} | en güncel hal tekrar çekilip deneniyor...`);
         continue;
       }
       const errText = await putRes.text();
