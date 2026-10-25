@@ -327,16 +327,9 @@ async function mutateDataGercek(mutatorFn) {
           data = remote.data;
           sha = remote.sha;
         }
-        // TEŞHİS (2026-10-25): "OKUNAMADI" hiç loglanmıyor ama PUT'ta hep "sha=YOK!" çıkıyor -
-        // yani okuma BAŞARILI görünüyor ama sha bir şekilde kayboluyor. Bunu kesinleştirmek için
-        // okumanın HEMEN SONUCUNU (remote var mı, sha ne) koşulsuz logluyoruz - başarı/başarısızlık
-        // fark etmeksizin HER zaman bir satır basılacak.
-        console.log(`[TEŞHİS] fetchGithubData sonucu (deneme ${deneme}): remote=${remote ? 'VAR' : 'YOK/null'} | sha="${remote ? remote.sha : 'n/a'}" (tip: ${remote ? typeof remote.sha : 'n/a'})`);
       } catch (err) {
-        console.error('GitHub güncel data.json okunamadı:', err.message, err.stack ? err.stack.split('\n').slice(0, 3).join(' | ') : '');
+        console.error('GitHub güncel data.json okunamadı:', err.message);
       }
-    } else {
-      console.log('[TEŞHİS] hasGithub FALSE - GITHUB_TOKEN veya GITHUB_REPO tanımlı değil!');
     }
     if (!data) data = loadData();
 
@@ -1535,6 +1528,32 @@ app.get('/admin/api/post-stats', async (req, res) => {
   }
 });
 
+// ================== KUYRUKTA BEKLEYENLERİN LİSTESİ (isim + kaç dakikadır bekliyor) ==================
+// İSTEK: kota dolunca kimin ne kadar süredir beklediğini GÖREBİLMEK, hem FIFO sırasının (eskiden
+// gelen önce gider) gerçekten doğru çalıştığını teyit etmek için, hem de "kaç dakikaya kapasite
+// boşalır" hissini vermek için. "retryQueue" zaten FIFO sırasında tutuluyor (bkz. tekrar deneme
+// döngüsündeki "kalanlar kuyruğun BAŞINA eklenir" düzeltmesi) - ama garantiye almak için yine de
+// "addedAt"a göre eskiden yeniye sıralıyoruz. En fazla 100 kişi listeleniyor (kuyruk çok uzarsa
+// cevabı şişirmesin diye) - toplam sayı ayrıca "suAnKuyruktaBekleyen" ile veriliyor.
+// hem /admin/api/account-health (JSON) hem /admin/bekleyenler (görsel sayfa) BU fonksiyonu kullanıyor.
+function hesaplaBekleyenler(retryQueue, simdi) {
+  return (retryQueue || [])
+    .slice()
+    .sort((a, b) => new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime())
+    .slice(0, 100)
+    .map((item, index) => {
+      const dakikaBekliyor = Math.max(0, Math.round((simdi - new Date(item.addedAt).getTime()) / 60000));
+      return {
+        sira: index + 1, // 1 = sırada en önde, bir sonraki boşlukta ilk gidecek olan
+        kullanici: (item.record && item.record.fromUsername) || 'bilinmiyor',
+        yorum: item.record && item.record.commentText ? item.record.commentText.slice(0, 80) : '',
+        dakikaBekliyor,
+        sebep: item.sebep === 'rate_limit' ? 'kota_dolu' : (item.sebep || 'kota_dolu'),
+        kacIncilDeneme: item.deneme || 0,
+      };
+    });
+}
+
 // ================== HESAP DURUMU (ceza/kısıtlama riskini gözle görünür kılan sayfa) ==================
 app.get('/admin/api/account-health', async (req, res) => {
   const config = await readConfig();
@@ -1596,6 +1615,8 @@ app.get('/admin/api/account-health', async (req, res) => {
 
   const sorunVarMi = saatlikGonderim >= GUVENLI_SAATLIK_LIMIT || son24SaatRateLimitHatasi > 0;
 
+  const bekleyenler = hesaplaBekleyenler(data.retryQueue, simdi);
+
   res.json({
     otomasyonDuraklatildiMi: !!config.automationPaused,
     saatlikGonderim,
@@ -1615,6 +1636,7 @@ app.get('/admin/api/account-health', async (req, res) => {
     saatlikBenzersizYorumToplam,
     saatlikYorumBasinaOrtalamaCagri,
     suAnKuyruktaBekleyen: (data.retryQueue || []).length,
+    bekleyenler, // sırayla (en eski/en önde ilk): kullanici, yorum, dakikaBekliyor, sebep
     son24SaatRateLimitHatasi,
     toplamErtelenen: data.totalRateLimitDeferCount || 0,
     saglikli: !sorunVarMi,
