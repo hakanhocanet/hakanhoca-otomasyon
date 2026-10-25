@@ -162,13 +162,26 @@ const DEFAULT_MESSAGE_TEMPLATE = 'Merhaba 👋 Materyali ücretsiz olarak burada
 
 // ================== DM GÜVENLİ GÖNDERİM SINIRI (ceza/kısıtlama riskini önlemek için) ==================
 // Meta'nın resmi Graph API belgelerine göre, burada kullanılan "yoruma özel mesaj" (comment_id
-// üzerinden DM) yöntemi için saatlik sınır 750 çağrı/saat/hesap. Biz bunun belirgin bir miktar
-// altında kalarak (güvenlik payı bırakarak) BU SINIRA ASLA DEĞMEMEYİ hedefliyoruz - sınıra değmek
-// hesabın geçici olarak kısıtlanmasına/cezalandırılmasına yol açabilir. Sınıra yaklaşılırsa
-// mesajlar KAYBOLMAZ, sadece var olan 30 dakikalık "tekrar deneme" döngüsüne ertelenir - bir
-// sonraki uygun anda otomatik olarak gönderilirler.
-const META_SAATLIK_LIMIT = 750; // Meta'nın resmi belgelenmiş sınırı (Private Replies - Posts/Reels)
-const GUVENLI_SAATLIK_LIMIT = 700; // bizim bıraktığımız güvenlik payıyla kendi tavanımız (~%93) - 600'den yükseltildi, kayan pencere sayesinde saat sınırında ani patlama riski yok
+// üzerinden DM / Private Reply) yöntemi için saatlik sınır 750 çağrı/saat/HESAP. ÖNEMLİ: bu sabit
+// bir tavan - takipçi sayısı, "engaged user" sayısı ya da başka bir şey büyüdükçe bu rakam BÜYÜMÜYOR
+// (normal Send API'deki genel mesajlaşma kotasının aksine). Yani bu hesap için "700 kuralını nasıl
+// aşarız" sorusunun resmi/kalıcı bir cevabı yok - 750 Meta'nın tarafında sabit, aşılamaz bir çağrı
+// sınırı. Biz bunun belirgin bir miktar altında kalarak (güvenlik payı bırakarak) BU SINIRA ASLA
+// DEĞMEMEYİ hedefliyoruz - sınıra değmek hesabın geçici olarak kısıtlanmasına/cezalandırılmasına yol
+// açabilir. Sınıra yaklaşılırsa mesajlar KAYBOLMAZ, sadece aşağıdaki (artık çok daha hızlı dönen)
+// "tekrar deneme" döngüsüne ertelenir - bir sonraki uygun anda otomatik olarak gönderilirler.
+//
+// GÜNCELLEME: Kayan pencere (son 60 dakika, saniye hassasiyetinde) zaten ani patlama riskini
+// ortadan kaldırdığı için güvenlik payı 700'den 740'a çekildi - Meta'nın gerçek tavanına (750)
+// hâlâ 10 çağrılık bir tampon bırakıyoruz (Render'ın deploy sırasında kısa süreliğine eski/yeni
+// kopyayı birlikte çalıştırabilmesi ihtimaline karşı bilerek bırakılan pay), ama kullanılabilir
+// kapasiteyi gereksiz yere %93'te bırakmıyoruz. Asıl kapasite artışı burada değil, aşağıdaki iki
+// değişiklikte: (1) tekrar deneme döngüsü artık 30 dakikada bir değil, her dakika kontrol ediyor -
+// kapasite boşaldığı anda (en geç ~1 dakikada) bekleyen mesajlar otomatik gönderiliyor, saatlik
+// 740 hak boşa harcanmıyor; (2) ilk denemede rate-limit DIŞI (geçici/bilinmeyen) bir hatayla
+// karşılaşan mesajlar artık sessizce pes etmiyor, otomatik olarak birkaç kez daha deneniyor.
+const META_SAATLIK_LIMIT = 750; // Meta'nın resmi belgelenmiş sınırı (Private Replies - Posts/Reels) - TEK hesap için sabit, büyümüyor
+const GUVENLI_SAATLIK_LIMIT = 740; // bizim bıraktığımız güvenlik payıyla kendi tavanımız (~%99) - 700'den yükseltildi, kayan pencere sayesinde saat sınırında ani patlama riski yok
 
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
@@ -1028,7 +1041,33 @@ async function sendPublicReply(commentId, text) {
 // gönderiliyor - böylece o cevap hiçbir zaman DM'den önce/yanlış söylenmiş olmuyor. DM
 // yine başarısız olursa (gerçek Meta rate-limit hariç) herkese açık cevap hiç gönderilmez,
 // sıradaki tekrar denemede (kalan "sebep"/ekMutator korunarak) tekrar denenmeye devam edilir.
-async function attemptSend(commentId, message, record, ekMutator, publicReplyMetni) {
+//
+// "deneme" parametresi SADECE rate-limit DIŞI (geçici/bilinmeyen) hatalarda kaç kez daha
+// otomatik denendiğini sayar (kuyruktan geliyorsa dolu, ilk/doğrudan çağrıda boş/0 sayılır).
+// ÖNEMLİ DÜZELTME ("ilk seferde gitmiyor" şikayeti): ESKİDEN rate-limit DIŞINDA bir hata
+// (geçici bağlantı sorunu, Instagram'ın o anki bilinmeyen bir hatası vb.) olduğunda bot
+// SESSİZCE PES EDİYORDU - bir daha hiç denemiyordu. Artık böyle durumlarda mesaj GECICI_HATA_
+// MAX_DENEME kadar (varsayılan 2) daha otomatik olarak tekrar deneme kuyruğuna alınıyor; sadece
+// bu hak da biterse gerçekten "başarısız" olarak kaydedilip vazgeçiliyor. Meta rate-limit
+// hataları (kod 4/17/32) bundan ayrı tutuluyor - onlar zaten kapasite boşalana kadar sınırsız
+// şekilde tekrar deneniyor, bu yeni sayaca hiç dahil edilmiyor.
+async function attemptSend(commentId, message, record, ekMutator, publicReplyMetni, deneme) {
+  const mevcutDeneme = typeof deneme === 'number' ? deneme : 0;
+  const GECICI_HATA_MAX_DENEME = 2;
+
+  // Rate-limit dışı bir hatada ortak davranış: hak varsa sessizce kuyruğa geri koy (bir
+  // sonraki ~1 dakikalık döngüde tekrar denenecek), hak biterse gerçekten vazgeç.
+  async function gecikHataIsle(hataMesaji) {
+    if (mevcutDeneme < GECICI_HATA_MAX_DENEME) {
+      await addToRetryQueue(commentId, message, record, 'gecici_hata', ekMutator, publicReplyMetni, mevcutDeneme + 1);
+      await logFailed({ ...record, reason: `Geçici hata, otomatik olarak tekrar denenecek (deneme ${mevcutDeneme + 1}/${GECICI_HATA_MAX_DENEME}): ${hataMesaji}` });
+    } else {
+      // Gerçekten vazgeçildi - DM hiç gitmedi, bu yüzden herkese açık "gönderdim" cevabı da
+      // KASITLI OLARAK gönderilmiyor (göndermek yanlış olurdu).
+      await logFailed({ ...record, reason: `Geçici hata, ${GECICI_HATA_MAX_DENEME} ek denemeden sonra vazgeçildi: ${hataMesaji}` }, ekMutator);
+    }
+  }
+
   try {
     const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
@@ -1055,7 +1094,7 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
       const errorCode = result.error ? result.error.code : null;
       if (errorCode === 4 || errorCode === 17 || errorCode === 32) {
-        // Bu, BİZİM 700/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
+        // Bu, BİZİM 740/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
         // gelen bir rate-limit hatası - normalde hiç görmememiz gerekir (zaten altında
         // kalıyoruz), görülürse "rateLimited: true" ile işaretleyip Hesap Durumu
         // sayfasında görünür kılıyoruz - bu bir uyarı sinyalidir.
@@ -1063,16 +1102,15 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
         // verilmiyor - aksi halde herkese açık cevap sayacı yanlışlıkla iki kez ilerlerdi.
         // publicReplyMetni de (varsa) kuyruğa GERİ taşınıyor - DM hâlâ gitmediği için
         // "gönderdim" cevabı bu turda da gönderilmiyor, bir sonraki denemeye kalıyor.
-        await addToRetryQueue(commentId, message, record, undefined, ekMutator, publicReplyMetni);
+        // "mevcutDeneme" olduğu gibi korunuyor - rate-limit tekrarları geçici-hata hakkını tüketmez.
+        await addToRetryQueue(commentId, message, record, undefined, ekMutator, publicReplyMetni, mevcutDeneme);
         await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true });
       } else {
-        // Gerçek (rate-limit dışı) bir hata - DM gitmedi, bu yüzden herkese açık "gönderdim"
-        // cevabı da KASITLI OLARAK gönderilmiyor (göndermek yanlış olurdu).
-        await logFailed({ ...record, reason: errorMsg }, ekMutator);
+        await gecikHataIsle(errorMsg);
       }
     }
   } catch (err) {
-    await logFailed({ ...record, reason: `Bağlantı hatası: ${err.message}` }, ekMutator);
+    await gecikHataIsle(`Bağlantı hatası: ${err.message}`);
   }
 }
 
@@ -1150,11 +1188,12 @@ async function logFailed(record, ekMutator) {
 // "publicReplyMetni" (varsa) kuyruk öğesiyle BİRLİKTE saklanıyor - DM bu kuyruktan
 // gerçekten gönderildiğinde (attemptSend içinde), herkese açık "gönderdim" cevabı da
 // TAM O ANDA, birlikte gidecek. Bkz. handleComment'teki dürüstlük notu.
-async function addToRetryQueue(commentId, message, record, sebep, ekMutator, publicReplyMetni) {
+async function addToRetryQueue(commentId, message, record, sebep, ekMutator, publicReplyMetni, deneme) {
   await mutateData((data) => {
     data.retryQueue.push({
       commentId, message, record, addedAt: new Date().toISOString(), sebep: sebep || null,
       publicReplyMetni: publicReplyMetni || null,
+      deneme: typeof deneme === 'number' ? deneme : 0,
     });
     if (sebep === 'rate_limit') {
       data.totalRateLimitDeferCount = (data.totalRateLimitDeferCount || 0) + 1;
@@ -1163,7 +1202,26 @@ async function addToRetryQueue(commentId, message, record, sebep, ekMutator, pub
   });
 }
 
+// ================== TEKRAR DENEME DÖNGÜSÜ (artık her dakika kontrol ediyor) ==================
+// ESKİDEN bu döngü 30 dakikada bir çalışıyordu - yani saatlik kapasite boşaldığı anda değil,
+// en kötü ihtimalle 30 dakika sonra bekleyen mesajlar gönderiliyordu. Bu süre zarfında kapasite
+// boş dururken kuyrukta mesaj bekleyebiliyordu - yani saatlik 740 hak tam kullanılmıyordu.
+// Artık her 1 dakikada bir kontrol ediyor, kapasite boşalır boşalmaz bekleyen mesajlar
+// gönderiliyor.
+//
+// BANDWIDTH TASARRUFU: "her dakika kontrol et" demek "her dakika GitHub'a git" demek DEĞİL.
+// Önce TAMAMEN ÜCRETSİZ (yerel diskten, GitHub'a hiç gitmeden) bir ön-kontrol yapılıyor -
+// kuyrukta gerçekten bekleyen bir şey yoksa (ki çoğu dakika böyledir) fonksiyon hemen çıkıyor,
+// GitHub'a tek bir istek bile gitmiyor. Yerel kopya güvenilir çünkü: (1) sunucu açılışta
+// GitHub ile senkronize oluyor (ilkAcilistaGithubdanSenkronizeEt), (2) her mutateData çağrısı
+// (yani her DM gönderimi/kaydı) sonunda yerel diske de yazıyor. GitHub'a sadece kuyrukta
+// GERÇEKTEN bekleyen bir şey varsa gidiliyor - tıpkı eskisi gibi, sadece çok daha sık kontrol
+// edilerek.
+const TEKRAR_DENEME_ARALIGI_MS = 60 * 1000; // 1 dakika (eskiden 30 dakikaydı)
 setInterval(async () => {
+  const yerelOnKontrol = loadData();
+  if (!yerelOnKontrol.retryQueue || yerelOnKontrol.retryQueue.length === 0) return;
+
   let queue = [];
   await mutateData((data) => {
     queue = [...data.retryQueue];
@@ -1173,7 +1231,7 @@ setInterval(async () => {
   for (let i = 0; i < queue.length; i++) {
     // Bu döngü sırasında da saatlik güvenli sınıra ulaşılmış olabilir (örn. kuyrukta çok
     // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
-    // koyup bu turu burada kesiyoruz, bir sonraki 30 dakikalık döngüde devam edilir.
+    // koyup bu turu burada kesiyoruz, bir sonraki ~1 dakikalık döngüde devam edilir.
     // Hiçbir mesaj kaybolmuyor, sadece güvenli hızda gönderiliyor.
     if (await saatlikLimitDoluMu()) {
       const kalanlar = queue.slice(i);
@@ -1185,13 +1243,12 @@ setInterval(async () => {
     }
     const item = queue[i];
     // NOT: ekMutator burada yine verilmiyor (orijinal yorum anında zaten uygulandı - bkz.
-    // handleComment/addToRetryQueue), ama item.publicReplyMetni veriliyor ki DM bu kez
-    // gerçekten giderse (ya da yine gerçek bir Meta rate-limitine takılıp bir sonraki
-    // döngüye ertelenirse) herkese açık cevap doğru anda, kaybolmadan gönderilsin.
-    await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni);
+    // handleComment/addToRetryQueue), ama item.publicReplyMetni ve item.deneme veriliyor ki
+    // hem herkese açık cevap doğru anda gitsin, hem de geçici-hata deneme sayacı korunsun.
+    await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni, item.deneme);
     await new Promise((r) => setTimeout(r, 2000));
   }
-}, 30 * 60 * 1000);
+}, TEKRAR_DENEME_ARALIGI_MS);
 
 // ================== ADMIN PANEL (telefon tarafı) ==================
 
