@@ -686,6 +686,31 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+// ================== AYNI YORUMUN TEKRAR İŞLENMESİNİ ENGELLEME (dedup) ==================
+// KANIT (account-health teşhisi, 2026-09): bir saatte 20 gerçek Meta /messages çağrısı
+// yapılmış ama bunlar sadece 4 FARKLI yoruma aitmiş (yoruma başına ortalama 5 çağrı!) - ve
+// bunların HİÇBİRİ bizim kendi geçici-hata retry'imizden gelmiyor (saatlikGeciciHata: 0,
+// saatlikMetaLimitHatasi: 0). Yani retry'yle açıklanamaz (o en fazla 3x yapar). Sebep: Meta'nın
+// webhook sistemi "en az bir kez" (at-least-once) teslimat yapar - yani AYNI yorum olayını
+// BİRDEN FAZLA KERE bildirebilir (bu, Meta'nın kendi dokümantasyonunda da belirtilen, normal
+// ve beklenen bir davranış - webhook alıcısının bunu kendisinin idempotent şekilde ele alması
+// gerekir). Biz /webhook'ta zaten HEMEN 200 OK dönüyoruz (res.sendStatus(200) en başta), yani
+// yavaş cevap yüzünden Meta'nın tekrar denemesi değil, doğrudan Meta'nın at-least-once teslimat
+// modeli bu tekrarların sebebi. ÇÖZÜM: bellekte (in-memory), son birkaç dakikada işlenmiş
+// commentId'leri tutup, aynısı tekrar gelirse DM'i TEKRAR GÖNDERMEDEN atlıyoruz. GitHub'a ekstra
+// bir okuma/yazma GEREKMİYOR (bandwidth maliyeti sıfır) - aynı yorumun tekrarları neredeyse
+// her zaman saniyeler/dakikalar içinde geldiği için bellek içi bir pencere yeterli; Render'ın
+// nadir yeniden başlatmaları arasında teorik olarak kaçabilecek çok nadir bir uç durum var ama
+// bu, her yoruma 5 kat DM gitmesinden KIYASLANAMAYACAK kadar küçük bir risk.
+const YAKIN_ZAMANDA_ISLENEN_PENCERE_MS = 15 * 60 * 1000; // 15 dakika
+const yakinZamandaIslenenYorumlar = new Map(); // commentId -> işlendiği an (ms)
+setInterval(() => {
+  const simdi = Date.now();
+  for (const [cid, t] of yakinZamandaIslenenYorumlar) {
+    if (simdi - t > YAKIN_ZAMANDA_ISLENEN_PENCERE_MS) yakinZamandaIslenenYorumlar.delete(cid);
+  }
+}, 5 * 60 * 1000);
+
 // Bir gönderi otomasyonu için gönderilecek son mesaj metnini oluşturur (düz metin sürümü).
 // ÖNEMLİ DÜZELTME: Panelde kendi mesaj metnini yazan (ve linki metnin içine
 // eklemeyi unutan) kullanıcılar için - link alanı dolu olduğu halde mesaj
@@ -847,6 +872,18 @@ async function kaydetEslesmeyenYorum(kayit) {
 
 async function handleComment(value) {
   const commentId = value.id;
+
+  // ---- AYNI YORUMUN TEKRAR İŞLENMESİNİ ENGELLE (bkz. yukarıdaki geniş açıklama) ----
+  // Her şeyden ÖNCE kontrol ediliyor ki, aynı anda/arka arkaya gelen bir tekrar bildirimi hiçbir
+  // ek işe (eşleştirme, GitHub okuma/yazma, DM gönderme) sebep OLMASIN. Map'e ekleme de hemen
+  // (herhangi bir "await"ten ÖNCE) yapılıyor ki iki neredeyse eşzamanlı tekrar bildirimi de
+  // birbirini yarış durumunda (race condition) atlatamasın.
+  if (commentId && yakinZamandaIslenenYorumlar.has(commentId)) {
+    console.log(`🔁 Yorum ${commentId} kısa süre önce zaten işlendi (Meta'nın tekrar webhook bildirimi) - DM TEKRAR gönderilmiyor, atlanıyor.`);
+    return;
+  }
+  if (commentId) yakinZamandaIslenenYorumlar.set(commentId, Date.now());
+
   const commentText = metniTemizle(value.text);
   const mediaId = value.media ? value.media.id : null;
   const fromUsername = value.from ? value.from.username : 'bilinmiyor';
