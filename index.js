@@ -1233,12 +1233,21 @@ setInterval(async () => {
     // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
     // koyup bu turu burada kesiyoruz, bir sonraki ~1 dakikalık döngüde devam edilir.
     // Hiçbir mesaj kaybolmuyor, sadece güvenli hızda gönderiliyor.
+    //
+    // ÖNEMLİ SIRA DÜZELTMESİ ("önce yazana gitmiyor" şikayeti): Bu turun başında kuyruktaki
+    // HER ŞEY yerelden alınıp data.retryQueue BOŞALTILMIŞTI (yukarıda). Bu döngü devam ederken
+    // (birkaç saniye/dakika sürebilir) YENİ gelen yorumlar da kota hâlâ doluysa addToRetryQueue
+    // ile bu (o an BOŞ olan) kuyruğun SONUNA ekleniyordu. ESKİDEN burada kalanlar da ".push()"
+    // ile SONA ekleniyordu - yani az önce gelen yeni biri, saatlerdir bekleyen eski birinin
+    // ÖNÜNE geçebiliyordu (sıra bozuluyordu). DÜZELTME: kalanlar artık kuyruğun BAŞINA
+    // ekleniyor (".push()" değil, en öne eklenecek şekilde) - böylece en eski bekleyen her
+    // zaman en önde kalıyor, gerçek FIFO (ilk giren ilk çıkar) sırası korunuyor.
     if (await saatlikLimitDoluMu()) {
       const kalanlar = queue.slice(i);
       await mutateData((data) => {
-        data.retryQueue.push(...kalanlar);
+        data.retryQueue = [...kalanlar, ...data.retryQueue];
       });
-      console.log(`⏳ Tekrar deneme döngüsünde saatlik güvenli sınıra ulaşıldı, ${kalanlar.length} mesaj bir sonraki döngüye ertelendi.`);
+      console.log(`⏳ Tekrar deneme döngüsünde saatlik güvenli sınıra ulaşıldı, ${kalanlar.length} mesaj (sıradaki en eskiler, kuyruğun BAŞINA) bir sonraki döngüye ertelendi.`);
       break;
     }
     const item = queue[i];
