@@ -1169,7 +1169,11 @@ async function logSent(record, ekMutator) {
 
 async function logFailed(record, ekMutator) {
   await mutateData((data) => {
-    data.failed.push(record);
+    // "failedAt": record.timestamp İLK yorumun geldiği an (retry'lerde de hep aynı kalır,
+    // değişmez) - asıl BAŞARISIZ OLMA anını (ki saatlik sayaca TAM OLARAK bu an ekleniyor)
+    // ayrıca saklıyoruz, yoksa "son 1 saatte kaç başarısız deneme oldu" sorusuna sentAt'deki
+    // gibi doğru cevap veremeyiz (bkz. account-health'teki yeni kırılım).
+    data.failed.push({ ...record, failedAt: new Date().toISOString() });
     // BANDWIDTH TASARRUFU: 200'den 100'e düşürüldü - aynı mantık (bkz. logSent'teki not).
     if (data.failed.length > 100) data.failed.splice(0, data.failed.length - 100);
     data.totalFailedCount = (data.totalFailedCount || 0) + 1;
@@ -1375,6 +1379,34 @@ app.get('/admin/api/account-health', async (req, res) => {
   const zamanlar = (data.mesajGonderimZamanlari || []).filter((t) => simdi - t < 60 * 60 * 1000);
   const saatlikGonderim = zamanlar.length;
 
+  // ================== "740'ın İÇİNDE NE VAR" KIRILIMI ==================
+  // Panelde "X/740 dolu" rakamına güvenin sarsıldığı bir anı yaşadık: gerçekten gönderilen DM
+  // sayısı (sent listesi) ile saatlik sayaç (mesajGonderimZamanlari) arasında BÜYÜK bir fark
+  // görüldü. Bunu tahminle değil, rakamla çözmek için: aynı 60 dakikalık pencerede kaç tanesi
+  // GERÇEKTEN başarılı gönderim (sent -> sentAt), kaç tanesi başarısız/tekrar denenen (failed ->
+  // failedAt, Meta rate-limit mi yoksa geçici hata mı diye de ayrılmış) - ayrı ayrı sayılıp
+  // "saatlikGonderim" ile yan yana konuyor. İkisi toplamı saatlikGonderim'e EŞİT ÇIKMIYORSA
+  // (yani "sent + failed" sayısı "saatlikGonderim"den belirgin şekilde azsa), bu mesajGonderim
+  // Zamanlari dizisinde sent/failed'de hiç karşılığı olmayan "fazladan" kayıtlar olduğu anlamına
+  // gelir - örneğin Instagram'ın aynı yorumu webhook üzerinden birden fazla kez bildirmesi
+  // (bkz. daha önce konuşulan "tekrar işleme koruması" - şu an sistemde YOK, bilerek eklenmedi)
+  // gibi bir sebep araştırılmalı demektir.
+  //
+  // NOT: "sent" (son 250) ve "failed" (son 100) listeleri sınırlı tutulduğu için, eğer bu
+  // pencerede GERÇEKTEN 250'den fazla başarılı ya da 100'den fazla başarısız olmuşsa, en eskiler
+  // listeden düşmüş olabilir ve bu kırılım biraz eksik sayabilir - ama senin bahsettiğin gibi
+  // 200 civarı bir hacimde bu sınırlara değilmiyoruz, yani şu an için güvenilir bir kıyas olur.
+  const saatlikBasariliGonderim = (data.sent || []).filter((s) => {
+    return s.sentAt && (simdi - new Date(s.sentAt).getTime()) < 60 * 60 * 1000;
+  }).length;
+  const saatlikBasarisizListesi = (data.failed || []).filter((f) => {
+    return f.failedAt && (simdi - new Date(f.failedAt).getTime()) < 60 * 60 * 1000;
+  });
+  const saatlikBasarisizGonderim = saatlikBasarisizListesi.length;
+  const saatlikMetaLimitHatasi = saatlikBasarisizListesi.filter((f) => f.rateLimited).length;
+  const saatlikGeciciHata = saatlikBasarisizListesi.filter((f) => !f.rateLimited).length;
+  const saatlikAciklanamayanFark = saatlikGonderim - (saatlikBasariliGonderim + saatlikBasarisizGonderim);
+
   const son24SaatRateLimitHatasi = (data.failed || []).filter((f) => {
     return f.rateLimited && f.timestamp && (simdi - new Date(f.timestamp).getTime()) < 24 * 60 * 60 * 1000;
   }).length;
@@ -1386,6 +1418,14 @@ app.get('/admin/api/account-health', async (req, res) => {
     saatlikGonderim,
     saatlikGuvenliLimit: GUVENLI_SAATLIK_LIMIT,
     metaResmiLimit: META_SAATLIK_LIMIT,
+    // Kırılım: saatlikBasariliGonderim + saatlikBasarisizGonderim, saatlikGonderim'e yakın
+    // çıkmalı. Yakın çıkmıyorsa saatlikAciklanamayanFark bunu gösterir (0'a yakın olmalı).
+    saatlikBasariliGonderim,
+    saatlikBasarisizGonderim,
+    saatlikMetaLimitHatasi,
+    saatlikGeciciHata,
+    saatlikAciklanamayanFark,
+    suAnKuyruktaBekleyen: (data.retryQueue || []).length,
     son24SaatRateLimitHatasi,
     toplamErtelenen: data.totalRateLimitDeferCount || 0,
     saglikli: !sorunVarMi,
