@@ -231,8 +231,33 @@ async function fetchGithubData() {
     return null; // dosya yok ya da erişilemedi - ilk oluşturma senaryosu
   }
   const result = await res.json();
-  if (!result.content) return null;
-  const data = JSON.parse(Buffer.from(result.content, 'base64').toString('utf8'));
+  // ================== ASIL SEBEP BULUNDU (2026-10-25, [TEŞHİS] logları) ==================
+  // "remote=YOK/null" HER denemede çıkıyordu ama "OKUNAMADI" (HTTP hatası) HİÇ çıkmıyordu - yani
+  // istek (res.ok) BAŞARILI dönüyordu ama "result.content" boş geliyordu, biz de bunu "okuma
+  // başarısız" sayıp null dönüyorduk (hiç loglamadan!). Sebebi: GitHub'ın Contents API'si SADECE
+  // 1MB'ın ALTINDAKİ dosyalar için içeriği (content) doğrudan JSON içine gömüyor - "sha" METADATA'sı
+  // dosya boyutundan BAĞIMSIZ olarak her zaman geliyor, ama 1MB'ı geçen dosyalarda "content" alanı
+  // BOŞ/yok oluyor (GitHub'ın belgelenmiş, bilinen bir davranışı). data.json zamanla (özellikle
+  // dailyStats içindeki günlük "users" listeleri - her gün gelen HER benzersiz kullanıcı adı,
+  // 180 güne kadar, hiç sınırsız) büyüyüp 1MB'ı geçmiş olmalı. Çözüm: "content" yoksa (ama "sha"
+  // varsa, yani dosya gerçekten var), AYNI dosyayı "raw" media type ile İKİNCİ bir istekle çekip
+  // ham içeriği öyle alıyoruz - bu yöntem 100MB'a kadar çalışıyor.
+  if (!result.sha) return null; // sha bile gelmiyorsa gerçekten okunamamış demektir
+  let rawMetin;
+  if (result.content) {
+    rawMetin = Buffer.from(result.content, 'base64').toString('utf8');
+  } else {
+    console.log('data.json 1MB sınırını geçmiş görünüyor (content boş geldi) - ham içerik ikinci bir istekle (raw) çekiliyor...');
+    const rawRes = await fetchWithTimeout(`${apiUrl}?ref=${GITHUB_DATA_BRANCH}`, {
+      headers: { Authorization: `Bearer ${GITHUB_TOKEN}`, Accept: 'application/vnd.github.raw' },
+    });
+    if (!rawRes.ok) {
+      console.error(`data.json ham (raw) içerik de OKUNAMADI: HTTP ${rawRes.status} ${rawRes.statusText}`);
+      return null;
+    }
+    rawMetin = await rawRes.text();
+  }
+  const data = JSON.parse(rawMetin);
   if (!data.sent) data.sent = [];
   if (!data.failed) data.failed = [];
   if (!data.retryQueue) data.retryQueue = [];
@@ -1274,8 +1299,17 @@ async function logSent(record, ekMutator) {
       data.dailyStats[gun] = { count: 0, users: [] };
     }
     data.dailyStats[gun].count += 1;
+    // BOYUT TASARRUFU (2026-10-25): bu liste SINIRSIZDI (her gün gelen HER benzersiz kullanıcı
+    // adı, 180 güne kadar saklanan) - data.json'ın GitHub'ın 1MB inline-içerik sınırını aşmasının
+    // ana sebebi büyük ihtimalle buydu (bkz. fetchGithubData'daki geniş açıklama - bu artık raw
+    // istekle 100MB'a kadar düzgün okunuyor, ama yine de dosyayı gereksiz şişirmeyelim). "count"
+    // (toplam gönderim) zaten AYRI tutulduğu için bu sınırlamadan ETKİLENMİYOR - sadece çok
+    // yoğun bir günde "kimler yazdı" listesindeki en SON 300 kişiden öncekiler listelenmeyebilir.
     if (record.fromUsername && !data.dailyStats[gun].users.includes(record.fromUsername)) {
       data.dailyStats[gun].users.push(record.fromUsername);
+      if (data.dailyStats[gun].users.length > 300) {
+        data.dailyStats[gun].users.splice(0, data.dailyStats[gun].users.length - 300);
+      }
     }
 
     // Hız sınırı takibi: bu, Instagram'a atılmış gerçek bir /messages çağrısı -
