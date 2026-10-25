@@ -249,7 +249,36 @@ async function fetchGithubData() {
 // aniden sıfırlanması TAM OLARAK buydu. Artık config.json ile birebir aynı güvenli
 // yöntemle (önce GitHub'daki güncel hali çek, değişikliği uygula, çakışma olursa
 // tekrar dene) data.json da GitHub'a kalıcı olarak yazılıyor - bir daha sıfırlanmaz.
+// ================== GERÇEK SEBEP BULUNDU (2026-10-25, Render logları) ==================
+// Panelde "5 gönderime 1 gerçek yorum" gibi tuhaf oranlar görüldü (saatlikYorumBasinaOrtalamaCagri
+// hep TAM OLARAK 5 çıkıyordu - MAX_DENEME de 5). Render loglarına bakınca sebep netleşti: HER TEK
+// gönderimde "data.json GitHub üzerinde çakıştı (deneme 1/5)...(deneme 5/5)" ardından "GitHub ile
+// senkronize edilemedi, son deneme yerel diske kaydedildi" görülüyor - yani data.json'a yapılan
+// GitHub yazışlarının NEREDEYSE HİÇBİRİ başarılı olmuyor, hepsi sadece yerel diske düşüyor (Render
+// ücretsiz planında yerel disk KALICI DEĞİL - her restart/redeploy'da silinir, veri kaybı riski!).
+//
+// Bu kadar sistematik (her seferinde 5/5) bir çakışmanın asıl sebebi şu: Express/Node tek bir
+// süreç olsa da, aynı anda gelen BİRDEN FAZLA webhook isteği (her biri ayrı bir HTTP POST, Meta'dan
+// art arda/yakın zamanlı birden fazla yorum bildirimi) birbirini beklemeden EŞ ZAMANLI çalışabilir
+// (await'ler arasında Node'un event loop'u diğer isteklere de sıra verir). Yani 2-3 yorum neredeyse
+// aynı anda gelirse, her biri KENDİ mutateData() çağrısıyla AYNI ANDA GitHub'daki data.json'ı
+// okuyup-değiştirip-yazmaya çalışıyor - biri kazanıyor, diğerleri "sha uyuştu" hatası (409) alıp
+// tekrar deniyor, ama YENİDEN DENEDİKLERİNDE DE başka bir eş zamanlı yazış araya girebiliyor, bu
+// da üst üste 5 kez çakışmaya (ve sonunda pes edip sadece yerel diske yazmaya) sebep oluyor.
+//
+// ÇÖZÜM: bu SÜRECİN KENDİ İÇİNDEKİ yazışları artık birbirini beklemeye (sıraya) alıyoruz - aşağıdaki
+// basit "mutex" (kilit) ile, aynı anda sadece BİR mutateData (ve ayrı olarak bir mutateConfig)
+// işlemi GitHub'a gidiyor, bir sonraki işlem öncekinin tamamen bitmesini bekliyor. Böylece bu
+// SÜRECİN kendi kendine çakışması artık İMKANSIZ hale geliyor (dışarıdan, örn. bir deploy sırasında
+// eski/yeni kopyanın çakışması gibi NADİR durumlar için retry mekanizması zaten duruyor, o kalıyor).
+let mutateDataKuyrugu = Promise.resolve();
 async function mutateData(mutatorFn) {
+  const sonraki = mutateDataKuyrugu.then(() => mutateDataGercek(mutatorFn));
+  // Önceki işlem hata fırlatsa bile kuyruk TIKANMASIN - bir sonraki işlem yine de başlayabilsin.
+  mutateDataKuyrugu = sonraki.catch(() => {});
+  return sonraki;
+}
+async function mutateDataGercek(mutatorFn) {
   const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
   const MAX_DENEME = 5;
 
@@ -379,7 +408,16 @@ async function fetchGithubConfig() {
 // "mutatorFn" bu yüzden İDEMPOTENT olmalı: aynı mantıksal işlemi (örn. "şu id'li planı
 // ekle", "şu mediaId'yi eğer henüz bağlı değilse şu şablona bağla") her denemede güvenle
 // tekrar uygulayabilmeli - aşağıdaki tüm kullanım yerleri buna göre yazıldı.
+// Aynı "mutex" (kilit) çözümü config.json için de - bkz. mutateData'nın üstündeki geniş not.
+// data.json ve config.json AYRI dosyalar olduğu için ayrı bir kuyruk kullanıyoruz (biri diğerini
+// gereksiz yere beklemesin - data.json yazışları ile config.json yazışları birbirinden bağımsız).
+let mutateConfigKuyrugu = Promise.resolve();
 async function mutateConfig(mutatorFn) {
+  const sonraki = mutateConfigKuyrugu.then(() => mutateConfigGercek(mutatorFn));
+  mutateConfigKuyrugu = sonraki.catch(() => {});
+  return sonraki;
+}
+async function mutateConfigGercek(mutatorFn) {
   const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
   const MAX_DENEME = 5;
 
