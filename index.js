@@ -192,6 +192,7 @@ function loadData() {
       followerHistory: {},
       mesajGonderimZamanlari: [], postSendCounts: {}, eslesmeyenYorumlar: [],
       totalRateLimitDeferCount: 0,
+      basariliZamanlari: [], basarisizZamanlariDetay: [],
     };
   }
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
@@ -201,6 +202,8 @@ function loadData() {
   if (!data.mesajGonderimZamanlari) data.mesajGonderimZamanlari = [];
   if (!data.postSendCounts) data.postSendCounts = {};
   if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
+  if (!data.basariliZamanlari) data.basariliZamanlari = [];
+  if (!data.basarisizZamanlariDetay) data.basarisizZamanlariDetay = [];
   if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent ? data.sent.length : 0;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed ? data.failed.length : 0;
@@ -230,6 +233,8 @@ async function fetchGithubData() {
   if (!data.mesajGonderimZamanlari) data.mesajGonderimZamanlari = [];
   if (!data.postSendCounts) data.postSendCounts = {};
   if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
+  if (!data.basariliZamanlari) data.basariliZamanlari = [];
+  if (!data.basarisizZamanlariDetay) data.basarisizZamanlariDetay = [];
   if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent.length;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed.length;
@@ -783,6 +788,31 @@ function kaydetGonderimZamani(data) {
   data.mesajGonderimZamanlari = data.mesajGonderimZamanlari.filter((t) => simdi - t < 65 * 60 * 1000);
 }
 
+// "740'ın içinde ne var" kırılımı (account-health) ESKİDEN data.sent/data.failed listelerini
+// filtreliyordu - ama o listeler BANDWIDTH için 250/100 kayıtla SINIRLI (zamana göre değil,
+// adede göre kesiliyor). Saatlik hacim bu sınırları geçince (örn. 355 gönderim > 250 kapasite)
+// en eski ama hâlâ "son 1 saat" içindeki kayıtlar listeden düşüyor ve kırılım yanlış bir "fark"
+// gösteriyordu (gerçek bir sorun yokken). Çözüm: success/fail için AYRI, adede göre SINIRLANMAYAN,
+// sadece ZAMANA göre (65 dakika) temizlenen iki ayrı dizi. Bunlar data.sent/data.failed'in
+// yerini almıyor (o listeler panelde/CSV'de gösterim için hâlâ duruyor), sadece saatlik
+// kırılım hesabının kaynağı olarak bunlar kullanılıyor.
+// "commentId" de tutuluyor ki, aynı yorumun kaç kez gerçek bir Meta API çağrısına sebep
+// olduğunu (bizim kendi geçici-hata retry'lerimiz mi, yoksa Instagram'ın aynı yorumu
+// webhook'tan BİRDEN FAZLA kez bildirmesi mi) sonradan AYIRT edebilelim - "saatlikGonderim"
+// (toplam çağrı) ile "benzersiz yorum sayısı" arasındaki fark bunun doğrudan kanıtı olur.
+function kaydetBasariliZamani(data, commentId) {
+  if (!data.basariliZamanlari) data.basariliZamanlari = [];
+  const simdi = Date.now();
+  data.basariliZamanlari.push({ t: simdi, commentId: commentId || null });
+  data.basariliZamanlari = data.basariliZamanlari.filter((x) => simdi - x.t < 65 * 60 * 1000);
+}
+function kaydetBasarisizZamani(data, rateLimited, commentId) {
+  if (!data.basarisizZamanlariDetay) data.basarisizZamanlariDetay = [];
+  const simdi = Date.now();
+  data.basarisizZamanlariDetay.push({ t: simdi, rateLimited: !!rateLimited, commentId: commentId || null });
+  data.basarisizZamanlariDetay = data.basarisizZamanlariDetay.filter((x) => simdi - x.t < 65 * 60 * 1000);
+}
+
 // ================== YORUM/ANAHTAR KELİME KARŞILAŞTIRMA ÖNCESİ TEMİZLİK ==================
 // ŞİKAYET: "PDF" yazıp hemen ardına emoji ekleyen bazı kullanıcılara mesaj gitmiyor. Eşleştirme
 // zaten esnek (yorumun İÇİNDE anahtar kelime geçiyor mu diye bakıyor, tam eşleşme aramıyor) -
@@ -1154,6 +1184,8 @@ async function logSent(record, ekMutator) {
     // Hız sınırı takibi: bu, Instagram'a atılmış gerçek bir /messages çağrısı -
     // saatlik güvenli sınır hesaplaması (saatlikLimitDoluMu) bu zaman damgalarını sayıyor.
     kaydetGonderimZamani(data);
+    // Saatlik kırılım (account-health) için AYRI, sınırsız (sadece zamana göre temizlenen) kayıt.
+    kaydetBasariliZamani(data, record.commentId);
 
     // Gönderi bazlı istatistik (İstatistikler sayfası): bu gönderiden toplam kaç DM gitti.
     if (record.mediaId) {
@@ -1180,6 +1212,8 @@ async function logFailed(record, ekMutator) {
     // Başarısız da olsa Meta'ya gerçek bir /messages çağrısı atılmıştır, bu yüzden
     // hız sınırı sayacına o da dahil ediliyor.
     kaydetGonderimZamani(data);
+    // Saatlik kırılım (account-health) için AYRI, sınırsız (sadece zamana göre temizlenen) kayıt.
+    kaydetBasarisizZamani(data, record.rateLimited, record.commentId);
     if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
@@ -1381,31 +1415,49 @@ app.get('/admin/api/account-health', async (req, res) => {
 
   // ================== "740'ın İÇİNDE NE VAR" KIRILIMI ==================
   // Panelde "X/740 dolu" rakamına güvenin sarsıldığı bir anı yaşadık: gerçekten gönderilen DM
-  // sayısı (sent listesi) ile saatlik sayaç (mesajGonderimZamanlari) arasında BÜYÜK bir fark
-  // görüldü. Bunu tahminle değil, rakamla çözmek için: aynı 60 dakikalık pencerede kaç tanesi
-  // GERÇEKTEN başarılı gönderim (sent -> sentAt), kaç tanesi başarısız/tekrar denenen (failed ->
-  // failedAt, Meta rate-limit mi yoksa geçici hata mı diye de ayrılmış) - ayrı ayrı sayılıp
-  // "saatlikGonderim" ile yan yana konuyor. İkisi toplamı saatlikGonderim'e EŞİT ÇIKMIYORSA
-  // (yani "sent + failed" sayısı "saatlikGonderim"den belirgin şekilde azsa), bu mesajGonderim
-  // Zamanlari dizisinde sent/failed'de hiç karşılığı olmayan "fazladan" kayıtlar olduğu anlamına
-  // gelir - örneğin Instagram'ın aynı yorumu webhook üzerinden birden fazla kez bildirmesi
-  // (bkz. daha önce konuşulan "tekrar işleme koruması" - şu an sistemde YOK, bilerek eklenmedi)
-  // gibi bir sebep araştırılmalı demektir.
+  // sayısı ile saatlik sayaç (mesajGonderimZamanlari) arasında BÜYÜK bir fark görüldü. Bunu
+  // tahminle değil, rakamla çözmek için: aynı 60 dakikalık pencerede kaç tanesi GERÇEKTEN
+  // başarılı gönderim, kaç tanesi başarısız/tekrar denenen (Meta rate-limit mi yoksa geçici
+  // hata mı diye de ayrılmış) - ayrı ayrı sayılıp "saatlikGonderim" ile yan yana konuyor.
   //
-  // NOT: "sent" (son 250) ve "failed" (son 100) listeleri sınırlı tutulduğu için, eğer bu
-  // pencerede GERÇEKTEN 250'den fazla başarılı ya da 100'den fazla başarısız olmuşsa, en eskiler
-  // listeden düşmüş olabilir ve bu kırılım biraz eksik sayabilir - ama senin bahsettiğin gibi
-  // 200 civarı bir hacimde bu sınırlara değilmiyoruz, yani şu an için güvenilir bir kıyas olur.
-  const saatlikBasariliGonderim = (data.sent || []).filter((s) => {
-    return s.sentAt && (simdi - new Date(s.sentAt).getTime()) < 60 * 60 * 1000;
-  }).length;
-  const saatlikBasarisizListesi = (data.failed || []).filter((f) => {
-    return f.failedAt && (simdi - new Date(f.failedAt).getTime()) < 60 * 60 * 1000;
-  });
+  // ÖNEMLİ DÜZELTME: bu kırılım İLK HALİNDE data.sent/data.failed listelerini filtreliyordu -
+  // ama o listeler BANDWIDTH tasarrufu için adede göre SINIRLI (sent: son 250, failed: son 100;
+  // zamana göre değil!). Saatlik hacim bu sınırları geçince (örn. 355 gönderim > 250 kapasite)
+  // en eski ama hâlâ "son 1 saat" içindeki kayıtlar listeden düşüyor ve kırılım GERÇEKTE sorun
+  // yokken yanlış bir "açıklanamayan fark" gösteriyordu. Bunun yerine şimdi success/fail için
+  // AYRI, adede göre SINIRLANMAYAN, sadece ZAMANA göre (65 dakika) temizlenen iki ayrı dizi
+  // kullanılıyor (basariliZamanlari / basarisizZamanlariDetay - bkz. kaydetBasariliZamani /
+  // kaydetBasarisizZamani, logSent/logFailed içinden doldurulan). Bunlar data.sent/data.failed'in
+  // yerini almıyor (o listeler panelde/CSV'de gösterim için hâlâ duruyor), sadece bu kırılımın
+  // kaynağı değişti - artık hacim ne kadar yüksek olursa olsun eksik saymaz.
+  const saatlikBasariliListesi = (data.basariliZamanlari || []).filter((x) => simdi - x.t < 60 * 60 * 1000);
+  const saatlikBasariliGonderim = saatlikBasariliListesi.length;
+  const saatlikBasarisizListesi = (data.basarisizZamanlariDetay || []).filter((x) => simdi - x.t < 60 * 60 * 1000);
   const saatlikBasarisizGonderim = saatlikBasarisizListesi.length;
-  const saatlikMetaLimitHatasi = saatlikBasarisizListesi.filter((f) => f.rateLimited).length;
-  const saatlikGeciciHata = saatlikBasarisizListesi.filter((f) => !f.rateLimited).length;
+  const saatlikMetaLimitHatasi = saatlikBasarisizListesi.filter((x) => x.rateLimited).length;
+  const saatlikGeciciHata = saatlikBasarisizListesi.filter((x) => !x.rateLimited).length;
   const saatlikAciklanamayanFark = saatlikGonderim - (saatlikBasariliGonderim + saatlikBasarisizGonderim);
+
+  // ================== YENİ TEŞHİS: "GERÇEKTE KAÇ FARKLI YORUMA ÇAĞRI YAPILDI" ==================
+  // 20:22-20:32 arası elle sayılan gerçek DM sayısı (34-35) ile paneldeki ham sayaç artışı
+  // arasında BÜYÜK bir fark görüldü (~169 çağrı / 10 dakika, ama ~35 gerçek DM). Bunun sebebi
+  // ya BİZİM KENDİ geçici-hata retry mekanizmamız (aynı yorum için en fazla 1 orijinal + 2 ek
+  // deneme = en fazla 3 gerçek Meta çağrısı) ya da Instagram'ın AYNI yorumu webhook'tan birden
+  // fazla kez bildirmesi (gerçek bir "tekrar işleme" sorunu) olabilir. Tahminle değil, rakamla
+  // ayırt etmek için: "commentId" bazında BENZERSİZ yorum sayısını, toplam çağrı sayısıyla
+  // yan yana koyuyoruz. Fark 3x'in (retry hakkının üstü) belirgin biçimde üzerindeyse, bu
+  // tek başına retry mekanizmasıyla açıklanamaz - gerçek bir tekrar-işleme sorununa işaret eder.
+  const saatlikBenzersizBasariliYorum = new Set(saatlikBasariliListesi.map((x) => x.commentId).filter(Boolean)).size;
+  const saatlikBenzersizBasarisizYorum = new Set(saatlikBasarisizListesi.map((x) => x.commentId).filter(Boolean)).size;
+  const saatlikBenzersizYorumToplam = new Set(
+    [...saatlikBasariliListesi, ...saatlikBasarisizListesi].map((x) => x.commentId).filter(Boolean)
+  ).size;
+  // Her benzersiz yorum için ortalama kaç gerçek Meta çağrısı yapılmış - 1.0'a yakın olmalı,
+  // retry'ler yüzünden ~1.0-1.3 arası normal sayılabilir, bunun belirgin üzerinde (örn. 3+)
+  // çıkması tekrar-işleme (duplicate webhook) şüphesini kanıtlar.
+  const saatlikYorumBasinaOrtalamaCagri = saatlikBenzersizYorumToplam > 0
+    ? Number((saatlikGonderim / saatlikBenzersizYorumToplam).toFixed(2))
+    : 0;
 
   const son24SaatRateLimitHatasi = (data.failed || []).filter((f) => {
     return f.rateLimited && f.timestamp && (simdi - new Date(f.timestamp).getTime()) < 24 * 60 * 60 * 1000;
@@ -1425,6 +1477,12 @@ app.get('/admin/api/account-health', async (req, res) => {
     saatlikMetaLimitHatasi,
     saatlikGeciciHata,
     saatlikAciklanamayanFark,
+    // Yeni teşhis: aynı yoruma kaç kez gerçek Meta çağrısı yapıldığını gösterir - yukarıdaki
+    // açıklamaya bak. saatlikYorumBasinaOrtalamaCagri ~1.0-1.3 normal, belirgin üzeri şüpheli.
+    saatlikBenzersizBasariliYorum,
+    saatlikBenzersizBasarisizYorum,
+    saatlikBenzersizYorumToplam,
+    saatlikYorumBasinaOrtalamaCagri,
     suAnKuyruktaBekleyen: (data.retryQueue || []).length,
     son24SaatRateLimitHatasi,
     toplamErtelenen: data.totalRateLimitDeferCount || 0,
