@@ -168,7 +168,7 @@ const DEFAULT_MESSAGE_TEMPLATE = 'Merhaba 👋 Materyali ücretsiz olarak burada
 // mesajlar KAYBOLMAZ, sadece var olan 30 dakikalık "tekrar deneme" döngüsüne ertelenir - bir
 // sonraki uygun anda otomatik olarak gönderilirler.
 const META_SAATLIK_LIMIT = 750; // Meta'nın resmi belgelenmiş sınırı (Private Replies - Posts/Reels)
-const GUVENLI_SAATLIK_LIMIT = 600; // bizim bıraktığımız güvenlik payıyla kendi tavanımız (~%80)
+const GUVENLI_SAATLIK_LIMIT = 700; // bizim bıraktığımız güvenlik payıyla kendi tavanımız (~%93) - 600'den yükseltildi, kayan pencere sayesinde saat sınırında ani patlama riski yok
 
 // ---- Basit dosya tabanlı veri saklama ----
 function loadData() {
@@ -751,8 +751,8 @@ async function trySendButtonMessage(commentId, buttonText, link, buttonTitle) {
 
 // Saatlik güvenli DM gönderim sınırına (GUVENLI_SAATLIK_LIMIT) şu an ulaşılmış mı diye bakar.
 // Yerel diskteki (loadData) veriyle hızlıca kontrol ediyoruz - saniye hassasiyetinde kusursuz
-// olması gerekmiyor, çünkü Meta'nın gerçek sınırının (750) belirgin altında (600) durarak zaten
-// geniş bir güvenlik payı bırakıyoruz.
+// olması gerekmiyor, çünkü Meta'nın gerçek sınırının (750) altında (700) durarak zaten
+// bir güvenlik payı bırakıyoruz.
 async function saatlikLimitDoluMu() {
   const data = loadData();
   const simdi = Date.now();
@@ -928,39 +928,52 @@ async function handleComment(value) {
   // Saatlik güvenli tavana (GUVENLI_SAATLIK_LIMIT) ulaşıldıysa DM'yi ŞİMDİ göndermeye
   // ÇALIŞMIYORUZ - mesaj kaybolmuyor, var olan 30 dakikalık tekrar deneme kuyruğuna
   // ertelenip bir sonraki uygun anda otomatik olarak gönderiliyor. Bu sayede Meta'nın
-  // 750/saat sınırına asla değmiyoruz. NOT: Herkese açık yorum cevabı (aşağıda) bu
-  // sınırdan etkilenmez - o farklı bir API uç noktasını (comment replies) kullanıyor.
+  // 750/saat sınırına asla değmiyoruz.
+  //
+  // ÖNEMLİ DÜZELTME (dürüstlük sorunu - "yazdım ama gelmedi" şikayetlerinin asıl sebebi):
+  // ESKİDEN, DM sıraya alınsa bile yorumun altındaki herkese açık cevap HEMEN, "mesajı
+  // gönderdim/ilettim" diyerek gidiyordu - yani DM daha Instagram'a hiç gitmeden bot
+  // "gönderdim" diyordu. Kullanıcı bunu görüp DM kutusuna bakıyor, bir şey yok, kafası
+  // karışıyordu. ARTIK: DM sıraya alınırsa, herkese açık cevap da AYNI ANDA gönderilmiyor -
+  // ikisi birlikte, DM GERÇEKTEN Instagram'a gönderildiği anda (aşağıdaki tekrar deneme
+  // döngüsünde) gidiyor. Böylece "gönderdim" cevabı HER ZAMAN doğru olduğu an söylenmiş
+  // oluyor - 1-2 saat gecikebilir ama asla erken/yanlış söylenmez.
   if (await saatlikLimitDoluMu()) {
     const message = buildMessage(postConfig, config);
-    await addToRetryQueue(commentId, message, baseRecord, 'rate_limit', ekMutator);
-    console.log(`⏳ Saatlik güvenli DM sınırına (${GUVENLI_SAATLIK_LIMIT}/saat) ulaşıldı, mesaj sıraya alındı: @${record.fromUsername}`);
-  } else {
-    // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
-    // (Meta bu gönderim yolunda desteklemiyorsa) otomatik olarak eski, garanti çalışan
-    // düz metin yöntemine (link mesajın içinde) geri dönülür - kullanıcı hiçbir ayar
-    // yapmadan en iyi sonucu alır.
-    let sent = false;
-    if (postConfig.link) {
-      sent = await trySendButtonMessage(
-        commentId,
-        buildButtonText(postConfig),
-        postConfig.link,
-        postConfig.buttonTitle || "PDF'e Ulaş 📎"
-      );
-      if (sent) {
-        await logSent(baseRecord, ekMutator);
-        console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
-      }
-    }
+    await addToRetryQueue(commentId, message, baseRecord, 'rate_limit', ekMutator, publicReplyMetni);
+    console.log(`⏳ Saatlik güvenli DM sınırına (${GUVENLI_SAATLIK_LIMIT}/saat) ulaşıldı, mesaj (ve varsa herkese açık cevabı) sıraya alındı: @${record.fromUsername}`);
+    // NOT: herkese açık cevap burada KASITLI OLARAK gönderilmiyor - DM gerçekten
+    // gönderildiğinde (tekrar deneme döngüsü içindeki attemptSend) birlikte gidecek.
+    return;
+  }
 
-    if (!sent) {
-      const message = buildMessage(postConfig, config);
-      await attemptSend(commentId, message, baseRecord, ekMutator);
+  // ---- ANINDA GÖNDERİM YOLU (saatlik sınıra henüz ulaşılmadı) ----
+  // Önce tıklanabilir "PDF'e Ulaş" butonlu mesaj göndermeyi dene. Bu başarısız olursa
+  // (Meta bu gönderim yolunda desteklemiyorsa) otomatik olarak eski, garanti çalışan
+  // düz metin yöntemine (link mesajın içinde) geri dönülür - kullanıcı hiçbir ayar
+  // yapmadan en iyi sonucu alır.
+  let sent = false;
+  if (postConfig.link) {
+    sent = await trySendButtonMessage(
+      commentId,
+      buildButtonText(postConfig),
+      postConfig.link,
+      postConfig.buttonTitle || "PDF'e Ulaş 📎"
+    );
+    if (sent) {
+      await logSent(baseRecord, ekMutator);
+      console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
     }
   }
 
+  if (!sent) {
+    const message = buildMessage(postConfig, config);
+    await attemptSend(commentId, message, baseRecord, ekMutator);
+  }
+
   // Herkese açık yorum cevabı da gönder (varsa) - metin yukarıda zaten seçildi, sayaç da
-  // yukarıdaki DM kaydıyla birlikte kalıcı olarak ilerletildi.
+  // yukarıdaki DM kaydıyla birlikte kalıcı olarak ilerletildi. DM ŞİMDİ gönderilmeye
+  // çalışıldığı (sıraya alınmadığı) için bu cevap da hemen, DM ile aynı anda gidiyor.
   if (publicReplyMetni) {
     await sendPublicReply(commentId, publicReplyMetni);
   }
@@ -1008,7 +1021,14 @@ async function sendPublicReply(commentId, text) {
 }
 
 // Yoruma özel mesaj (DM) gönder - Instagram Login / graph.instagram.com üzerinden
-async function attemptSend(commentId, message, record, ekMutator) {
+//
+// "publicReplyMetni" parametresi SADECE kuyruktan (tekrar deneme döngüsünden) gelen
+// çağrılarda doluyor - bkz. handleComment'teki "dürüstlük" notu. DM burada GERÇEKTEN
+// başarıyla gönderilirse, herkese açık "gönderdim" cevabı da TAM O ANDA, hemen ardından
+// gönderiliyor - böylece o cevap hiçbir zaman DM'den önce/yanlış söylenmiş olmuyor. DM
+// yine başarısız olursa (gerçek Meta rate-limit hariç) herkese açık cevap hiç gönderilmez,
+// sıradaki tekrar denemede (kalan "sebep"/ekMutator korunarak) tekrar denenmeye devam edilir.
+async function attemptSend(commentId, message, record, ekMutator, publicReplyMetni) {
   try {
     const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${IG_USER_ID}/messages?access_token=${igAccessToken}`,
@@ -1026,19 +1046,28 @@ async function attemptSend(commentId, message, record, ekMutator) {
     if (response.ok && !result.error) {
       await logSent(record, ekMutator);
       console.log(`✅ DM gönderildi: @${record.fromUsername}`);
+      // DM GERÇEKTEN şimdi gitti - kuyruktan geliyorsa (publicReplyMetni doluysa), herkese
+      // açık "gönderdim" cevabı da TAM BU ANDA, DM ile birlikte gönderiliyor.
+      if (publicReplyMetni) {
+        await sendPublicReply(commentId, publicReplyMetni);
+      }
     } else {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
       const errorCode = result.error ? result.error.code : null;
       if (errorCode === 4 || errorCode === 17 || errorCode === 32) {
-        // Bu, BİZİM 600/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
+        // Bu, BİZİM 700/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
         // gelen bir rate-limit hatası - normalde hiç görmememiz gerekir (zaten altında
         // kalıyoruz), görülürse "rateLimited: true" ile işaretleyip Hesap Durumu
         // sayfasında görünür kılıyoruz - bu bir uyarı sinyalidir.
         // NOT: ekMutator burada (addToRetryQueue) uygulanıyor, aşağıdaki logFailed'a AYRICA
         // verilmiyor - aksi halde herkese açık cevap sayacı yanlışlıkla iki kez ilerlerdi.
-        await addToRetryQueue(commentId, message, record, undefined, ekMutator);
+        // publicReplyMetni de (varsa) kuyruğa GERİ taşınıyor - DM hâlâ gitmediği için
+        // "gönderdim" cevabı bu turda da gönderilmiyor, bir sonraki denemeye kalıyor.
+        await addToRetryQueue(commentId, message, record, undefined, ekMutator, publicReplyMetni);
         await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true });
       } else {
+        // Gerçek (rate-limit dışı) bir hata - DM gitmedi, bu yüzden herkese açık "gönderdim"
+        // cevabı da KASITLI OLARAK gönderilmiyor (göndermek yanlış olurdu).
         await logFailed({ ...record, reason: errorMsg }, ekMutator);
       }
     }
@@ -1113,13 +1142,20 @@ async function logFailed(record, ekMutator) {
   });
 }
 
-// "sebep" 'rate_limit' olarak verilirse, bu BİZİM kendi 600/saat güvenlik tavanımıza takılıp
+// "sebep" 'rate_limit' olarak verilirse, bu BİZİM kendi 700/saat güvenlik tavanımıza takılıp
 // proaktif olarak ertelenen bir mesajdır (bir hata DEĞİL) - Hesap Durumu sayfasındaki
 // "sıraya alınıp ertelenen gönderim" sayacına ekleniyor. Meta'nın kendisinden gelen gerçek
 // rate-limit hataları (attemptSend içinde) ayrı ve "rateLimited: true" ile işaretleniyor.
-async function addToRetryQueue(commentId, message, record, sebep, ekMutator) {
+//
+// "publicReplyMetni" (varsa) kuyruk öğesiyle BİRLİKTE saklanıyor - DM bu kuyruktan
+// gerçekten gönderildiğinde (attemptSend içinde), herkese açık "gönderdim" cevabı da
+// TAM O ANDA, birlikte gidecek. Bkz. handleComment'teki dürüstlük notu.
+async function addToRetryQueue(commentId, message, record, sebep, ekMutator, publicReplyMetni) {
   await mutateData((data) => {
-    data.retryQueue.push({ commentId, message, record, addedAt: new Date().toISOString(), sebep: sebep || null });
+    data.retryQueue.push({
+      commentId, message, record, addedAt: new Date().toISOString(), sebep: sebep || null,
+      publicReplyMetni: publicReplyMetni || null,
+    });
     if (sebep === 'rate_limit') {
       data.totalRateLimitDeferCount = (data.totalRateLimitDeferCount || 0) + 1;
     }
@@ -1148,7 +1184,11 @@ setInterval(async () => {
       break;
     }
     const item = queue[i];
-    await attemptSend(item.commentId, item.message, item.record);
+    // NOT: ekMutator burada yine verilmiyor (orijinal yorum anında zaten uygulandı - bkz.
+    // handleComment/addToRetryQueue), ama item.publicReplyMetni veriliyor ki DM bu kez
+    // gerçekten giderse (ya da yine gerçek bir Meta rate-limitine takılıp bir sonraki
+    // döngüye ertelenirse) herkese açık cevap doğru anda, kaybolmadan gönderilsin.
+    await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni);
     await new Promise((r) => setTimeout(r, 2000));
   }
 }, 30 * 60 * 1000);
