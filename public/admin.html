@@ -534,6 +534,23 @@ function closeMenu() {
   document.getElementById('navOverlay').classList.remove('open');
 }
 
+// "Hesap Durumu" sekmesi (kota göstergesi + kuyrukta bekleyenler listesi) açıkken, kapasite
+// her dakika otomatik kontrol edildiği için sayılar sürekli değişiyor olabilir - manuel
+// sekme değiştirip geri gelmek zorunda kalmadan, sekme açık olduğu sürece kendiliğinden
+// tazelensin diye 20 saniyede bir otomatik yenileniyor. Başka bir sekmeye geçilince
+// (ya da sayfadan ayrılınca) gereksiz yere arka planda çalışmaya devam etmesin diye durduruluyor.
+let hesapDurumuYenilemeId = null;
+function hesapDurumuOtoYenilemeyiBaslat() {
+  if (hesapDurumuYenilemeId) clearInterval(hesapDurumuYenilemeId);
+  hesapDurumuYenilemeId = setInterval(loadAccountHealth, 20000);
+}
+function hesapDurumuOtoYenilemeyiDurdur() {
+  if (hesapDurumuYenilemeId) {
+    clearInterval(hesapDurumuYenilemeId);
+    hesapDurumuYenilemeId = null;
+  }
+}
+
 function showTab(tab, el) {
   ['posts', 'pending', 'templates', 'status', 'followers', 'poststats', 'accounthealth', 'settings'].forEach((t) => {
     document.getElementById(t + 'Tab').style.display = (t === tab) ? 'block' : 'none';
@@ -548,6 +565,9 @@ function showTab(tab, el) {
   if (tab === 'poststats') loadPostStats();
   if (tab === 'accounthealth') loadAccountHealth();
   if (tab === 'settings') loadSettings();
+
+  if (tab === 'accounthealth') hesapDurumuOtoYenilemeyiBaslat();
+  else hesapDurumuOtoYenilemeyiDurdur();
 }
 
 // Bir gönderinin/planın "Mesaj metni" alanını, varsayılan DM şablonuyla
@@ -1310,6 +1330,17 @@ function renderAccountHealth(data) {
 
   const blacklist = data.blacklist || [];
   const eslesmeyenler = data.eslesmeyenYorumlar || [];
+  const bekleyenler = data.bekleyenler || [];
+
+  const bekleyenlerHtml = bekleyenler.length === 0
+    ? '<div class="empty-state"><span class="icon">✅</span>Kuyrukta kimse yok, her şey anlık gidiyor.</div>'
+    : bekleyenler.map((b) => `
+      <div class="log-item">
+        <span class="reply-number" style="display:inline-flex;width:20px;height:20px;font-size:10px;margin-right:6px;vertical-align:middle;">${b.sira}</span>
+        <span class="user">@${b.kullanici}</span>${b.yorum ? ` <span class="comment-text">— "${b.yorum}"</span>` : ''}
+        <div class="reason" style="color:${b.sebep === 'kota_dolu' ? 'var(--warning)' : 'var(--danger)'}">⏱️ ${b.dakikaBekliyor} dakikadır bekliyor ${b.sebep === 'kota_dolu' ? '(kota dolu, sırasını bekliyor)' : '(geçici hata, otomatik tekrar denenecek)'}</div>
+      </div>
+    `).join('');
 
   container.innerHTML = `
     <div class="card">
@@ -1332,6 +1363,12 @@ function renderAccountHealth(data) {
         <div class="gauge-bar"><div class="gauge-fill ${gaugeRenk}" style="width:${yuzde}%"></div></div>
         <div class="gauge-note">Meta'nın resmi sınırı yoruma-özel-mesaj için <b>saatte ${data.metaResmiLimit}</b>. Biz güvenlik payı bırakmak için <b>${data.saatlikGuvenliLimit}'de</b> durup kalanları otomatik olarak sıraya alıyoruz — sınıra hiç değmiyoruz.</div>
       </div>
+    </div>
+
+    <div class="section-title">⏳ Kuyrukta Bekleyenler${bekleyenler.length ? ' (' + data.suAnKuyruktaBekleyen + ')' : ''}</div>
+    <div class="hint">Kota dolunca mesajlar burada sıraya girer — en üstteki, en eski yazan kişidir; kapasite boşalınca İLK O'NA gider (FIFO sırası). Kapasite her dakika otomatik kontrol ediliyor, elle bir şey yapmana gerek yok.</div>
+    <div class="card">
+      ${bekleyenlerHtml}
     </div>
 
     <div class="card">
