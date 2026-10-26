@@ -2253,15 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18626560072060915",
-      "mediaId": "18094081037432930",
-      "fromUsername": "eeliff2x",
-      "commentText": "@elifsibeld PDF",
-      "timestamp": "2026-09-15T14:08:40.985Z",
-      "postTitle": "TAKİP",
-      "reason": "An unknown error has occurred."
-    },
-    {
       "commentId": "17958642375236287",
       "mediaId": "18186410950408908",
       "fromUsername": "remiyec",
@@ -3163,6 +3154,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-10-26T18:46:24.915Z"
+    },
+    {
+      "commentId": "18061855784543700",
+      "mediaId": "18022788146930779",
+      "fromUsername": "bilalseydasimsek",
+      "commentText": "Pdf formatında alabilirmiyim cevap anahtarı ile birlikte teşekkürler",
+      "timestamp": "2026-10-26T19:10:02.848Z",
+      "postTitle": "Süreç 3.6",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-10-26T19:10:10.008Z"
     }
   ],
   "retryQueue": [
@@ -41900,7 +41901,7 @@
     }
   },
   "totalSentCount": 49402,
-  "totalFailedCount": 129,
+  "totalFailedCount": 130,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -41955,8 +41956,6 @@
     "2026-10-26": 77795
   },
   "mesajGonderimZamanlari": [
-    1793037905812,
-    1793037909463,
     1793037917317,
     1793037920549,
     1793037941712,
@@ -42376,7 +42375,8 @@
     1793041783023,
     1793041793676,
     1793041796682,
-    1793041803719
+    1793041803719,
+    1793041810008
   ],
   "postSendCounts": {
     "17878053039624914": 239,
@@ -44511,21 +44511,6 @@
   ],
   "basarisizZamanlariDetay": [
     {
-      "t": 1793037470535,
-      "rateLimited": false,
-      "commentId": "17957782302257978"
-    },
-    {
-      "t": 1793037508412,
-      "rateLimited": false,
-      "commentId": "17957782302257978"
-    },
-    {
-      "t": 1793037569998,
-      "rateLimited": false,
-      "commentId": "17957782302257978"
-    },
-    {
       "t": 1793040273527,
       "rateLimited": false,
       "commentId": "17989091520076523"
@@ -44539,6 +44524,11 @@
       "t": 1793040384915,
       "rateLimited": false,
       "commentId": "17989091520076523"
+    },
+    {
+      "t": 1793041810009,
+      "rateLimited": false,
+      "commentId": "18061855784543700"
     }
   ]
 }
