@@ -2253,15 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18071001014555871",
-      "mediaId": "18103495010206887",
-      "fromUsername": "ibrahimvefa1661",
-      "commentText": "@eliffogretmen_ Pdf",
-      "timestamp": "2026-09-17T18:27:08.691Z",
-      "postTitle": "Tavşan ",
-      "reason": "An unknown error has occurred."
-    },
-    {
       "commentId": "18091227884651857",
       "mediaId": "18339591256250913",
       "fromUsername": "azizerdoqan",
@@ -3165,6 +3156,16 @@
       "postTitle": "Süreç 3.6",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-10-26T19:10:29.807Z"
+    },
+    {
+      "commentId": "18061855784543700",
+      "mediaId": "18022788146930779",
+      "fromUsername": "bilalseydasimsek",
+      "commentText": "Pdf formatında alabilirmiyim cevap anahtarı ile birlikte teşekkürler",
+      "timestamp": "2026-10-26T19:10:02.848Z",
+      "postTitle": "Süreç 3.6",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-10-26T19:11:25.682Z"
     }
   ],
   "retryQueue": [],
@@ -41885,7 +41886,7 @@
     }
   },
   "totalSentCount": 49405,
-  "totalFailedCount": 131,
+  "totalFailedCount": 132,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -41940,8 +41941,6 @@
     "2026-10-26": 77795
   },
   "mesajGonderimZamanlari": [
-    1793037980522,
-    1793037982734,
     1793037989627,
     1793038000808,
     1793038022214,
@@ -42359,7 +42358,8 @@
     1793041827620,
     1793041829807,
     1793041841505,
-    1793041876505
+    1793041876505,
+    1793041885682
   ],
   "postSendCounts": {
     "17878053039624914": 239,
@@ -44499,6 +44499,11 @@
     },
     {
       "t": 1793041829904,
+      "rateLimited": false,
+      "commentId": "18061855784543700"
+    },
+    {
+      "t": 1793041885682,
       "rateLimited": false,
       "commentId": "18061855784543700"
     }
