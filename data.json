@@ -2253,15 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18010322624763803",
-      "mediaId": "18005002016975100",
-      "fromUsername": "yaprak2002",
-      "commentText": "@elifkirtoglu PDF",
-      "timestamp": "2026-09-13T16:54:08.832Z",
-      "postTitle": "Kediler poster",
-      "reason": "An unknown error has occurred."
-    },
-    {
       "commentId": "18626560072060915",
       "mediaId": "18094081037432930",
       "fromUsername": "eeliff2x",
@@ -3162,6 +3153,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-10-26T18:45:29.404Z"
+    },
+    {
+      "commentId": "17989091520076523",
+      "mediaId": "18120892015985623",
+      "fromUsername": "tugba1617",
+      "commentText": "@elifmestandogru  PDF",
+      "timestamp": "2026-10-26T18:44:25.653Z",
+      "postTitle": "Kızılay",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-10-26T18:46:24.915Z"
     }
   ],
   "retryQueue": [],
@@ -41882,7 +41883,7 @@
     }
   },
   "totalSentCount": 49286,
-  "totalFailedCount": 128,
+  "totalFailedCount": 129,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -41937,7 +41938,6 @@
     "2026-10-26": 77795
   },
   "mesajGonderimZamanlari": [
-    1793036480213,
     1793036500300,
     1793036513111,
     1793036532341,
@@ -42390,7 +42390,8 @@
     1793040358208,
     1793040371106,
     1793040375987,
-    1793040378738
+    1793040378738,
+    1793040384915
   ],
   "postSendCounts": {
     "17878053039624914": 239,
@@ -44666,6 +44667,11 @@
     },
     {
       "t": 1793040329404,
+      "rateLimited": false,
+      "commentId": "17989091520076523"
+    },
+    {
+      "t": 1793040384915,
       "rateLimited": false,
       "commentId": "17989091520076523"
     }
