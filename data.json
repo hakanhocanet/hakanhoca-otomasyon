@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17909818026562018",
-      "mediaId": "18154659655536615",
-      "fromUsername": "hhanimhamali",
-      "commentText": "Pdf",
-      "timestamp": "2026-10-27T18:38:02.694Z",
-      "postTitle": "Süreç 27",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The requested user cannot be found.",
-      "failedAt": "2026-10-27T18:41:30.250Z"
-    },
-    {
       "commentId": "18642217417013781",
       "mediaId": "18022788146930779",
       "fromUsername": "ozge_fatih",
@@ -3251,6 +3241,16 @@
       "postTitle": "İzinde",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
       "failedAt": "2026-10-27T18:53:28.692Z"
+    },
+    {
+      "commentId": "18131230735840700",
+      "mediaId": "18099351929376060",
+      "fromUsername": "lalekaan",
+      "commentText": "PDF",
+      "timestamp": "2026-10-27T18:51:57.746Z",
+      "postTitle": "İzinde",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The thread owner has archived or deleted this conversation, or the thread does not exist.",
+      "failedAt": "2026-10-27T18:53:34.052Z"
     }
   ],
   "retryQueue": [
@@ -42296,7 +42296,7 @@
     }
   },
   "totalSentCount": 52653,
-  "totalFailedCount": 350,
+  "totalFailedCount": 351,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -42352,7 +42352,6 @@
     "2026-10-27": 78683
   },
   "mesajGonderimZamanlari": [
-    1793123308701,
     1793123332349,
     1793123348123,
     1793123354725,
@@ -42942,7 +42941,8 @@
     1793127182215,
     1793127192376,
     1793127195012,
-    1793127208692
+    1793127208692,
+    1793127214052
   ],
   "postSendCounts": {
     "17878053039624914": 240,
@@ -45988,6 +45988,11 @@
       "t": 1793127208692,
       "rateLimited": false,
       "commentId": "18123759637936582"
+    },
+    {
+      "t": 1793127214052,
+      "rateLimited": false,
+      "commentId": "18131230735840700"
     }
   ]
 }
