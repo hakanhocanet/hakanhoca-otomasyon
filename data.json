@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18192610903361756",
-      "mediaId": "18099351929376060",
-      "fromUsername": "yazki",
-      "commentText": "Pdf",
-      "timestamp": "2026-10-27T19:29:55.374Z",
-      "postTitle": "İzinde",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The thread owner has archived or deleted this conversation, or the thread does not exist.",
-      "failedAt": "2026-10-27T19:31:40.436Z"
-    },
-    {
       "commentId": "18138552178726606",
       "mediaId": "18099351929376060",
       "fromUsername": "ayseadaarda",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3.6",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
       "failedAt": "2026-10-27T19:44:18.215Z"
+    },
+    {
+      "commentId": "17955595392271157",
+      "mediaId": "18099351929376060",
+      "fromUsername": "gurbuztamturk",
+      "commentText": "Pdf alabilir miyim",
+      "timestamp": "2026-10-27T19:43:10.833Z",
+      "postTitle": "İzinde",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
+      "failedAt": "2026-10-27T19:44:20.676Z"
     }
   ],
   "retryQueue": [
@@ -42424,7 +42424,7 @@
     }
   },
   "totalSentCount": 52821,
-  "totalFailedCount": 695,
+  "totalFailedCount": 696,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -42480,7 +42480,6 @@
     "2026-10-27": 78683
   },
   "mesajGonderimZamanlari": [
-    1793126358847,
     1793126361699,
     1793126364542,
     1793126370110,
@@ -43162,7 +43161,8 @@
     1793130245397,
     1793130248076,
     1793130250452,
-    1793130258215
+    1793130258215,
+    1793130260676
   ],
   "postSendCounts": {
     "17878053039624914": 241,
@@ -44503,11 +44503,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793126358847,
-      "rateLimited": false,
-      "commentId": "17954123979280111"
-    },
     {
       "t": 1793126364542,
       "rateLimited": false,
@@ -46837,6 +46832,11 @@
       "t": 1793130258215,
       "rateLimited": false,
       "commentId": "18114328280607758"
+    },
+    {
+      "t": 1793130260677,
+      "rateLimited": false,
+      "commentId": "17955595392271157"
     }
   ]
 }
