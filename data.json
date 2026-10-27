@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18118947938067139",
-      "mediaId": "18154659655536615",
-      "fromUsername": "aselmervegunaydin",
-      "commentText": "PDF",
-      "timestamp": "2026-10-27T18:52:38.620Z",
-      "postTitle": "Süreç 27",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The requested user cannot be found.",
-      "failedAt": "2026-10-27T18:54:56.809Z"
-    },
-    {
       "commentId": "17886605655624933",
       "mediaId": "18154659655536615",
       "fromUsername": "aselmervegunaydin",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
       "failedAt": "2026-10-27T19:09:45.577Z"
+    },
+    {
+      "commentId": "18119434190050668",
+      "mediaId": "18121202050997933",
+      "fromUsername": "sanal.gulsum",
+      "commentText": "Pdf 2. Sinif",
+      "timestamp": "2026-10-27T19:08:33.605Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
+      "failedAt": "2026-10-27T19:09:47.936Z"
     }
   ],
   "retryQueue": [
@@ -42360,7 +42360,7 @@
     }
   },
   "totalSentCount": 52707,
-  "totalFailedCount": 459,
+  "totalFailedCount": 460,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -43073,7 +43073,8 @@
     1793128168106,
     1793128176799,
     1793128179003,
-    1793128185577
+    1793128185577,
+    1793128187936
   ],
   "postSendCounts": {
     "17878053039624914": 240,
@@ -46496,6 +46497,11 @@
       "t": 1793128185577,
       "rateLimited": false,
       "commentId": "17912074908309079"
+    },
+    {
+      "t": 1793128187936,
+      "rateLimited": false,
+      "commentId": "18119434190050668"
     }
   ]
 }
