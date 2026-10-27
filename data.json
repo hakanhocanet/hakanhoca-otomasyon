@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17909818026562018",
-      "mediaId": "18154659655536615",
-      "fromUsername": "hhanimhamali",
-      "commentText": "Pdf",
-      "timestamp": "2026-10-27T18:38:02.694Z",
-      "postTitle": "Süreç 27",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
-      "failedAt": "2026-10-27T18:38:22.821Z"
-    },
-    {
       "commentId": "18430709626146657",
       "mediaId": "18095527004659399",
       "fromUsername": "snmez_ikra",
@@ -3251,6 +3241,16 @@
       "postTitle": "İzinde",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
       "failedAt": "2026-10-27T18:49:05.424Z"
+    },
+    {
+      "commentId": "18071350913504835",
+      "mediaId": "18154659655536615",
+      "fromUsername": "sonerr_tan",
+      "commentText": "PDF",
+      "timestamp": "2026-10-27T18:47:20.200Z",
+      "postTitle": "Süreç 27",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The thread owner has archived or deleted this conversation, or the thread does not exist.",
+      "failedAt": "2026-10-27T18:49:27.204Z"
     }
   ],
   "retryQueue": [],
@@ -42279,7 +42279,7 @@
     }
   },
   "totalSentCount": 52637,
-  "totalFailedCount": 317,
+  "totalFailedCount": 318,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -42335,10 +42335,6 @@
     "2026-10-27": 78683
   },
   "mesajGonderimZamanlari": [
-    1793123050496,
-    1793123052729,
-    1793123057438,
-    1793123063011,
     1793123068049,
     1793123073973,
     1793123080015,
@@ -42911,7 +42907,8 @@
     1793126934461,
     1793126942564,
     1793126945424,
-    1793126948883
+    1793126948883,
+    1793126967204
   ],
   "postSendCounts": {
     "17878053039624914": 240,
@@ -45864,6 +45861,11 @@
       "t": 1793126945424,
       "rateLimited": false,
       "commentId": "18441914917196547"
+    },
+    {
+      "t": 1793126967204,
+      "rateLimited": false,
+      "commentId": "18071350913504835"
     }
   ]
 }
