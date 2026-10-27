@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18014872904763626",
-      "mediaId": "18154659655536615",
-      "fromUsername": "umran1008",
-      "commentText": "Pdf",
-      "timestamp": "2026-10-27T19:53:22.703Z",
-      "postTitle": "Süreç 27",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
-      "failedAt": "2026-10-27T19:53:38.096Z"
-    },
-    {
       "commentId": "18667803127046910",
       "mediaId": "18149052754483391",
       "fromUsername": "zekiyegurbey",
@@ -3251,6 +3241,16 @@
       "postTitle": "Rengarenk vazo",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The thread owner has archived or deleted this conversation, or the thread does not exist.",
       "failedAt": "2026-10-27T20:08:33.246Z"
+    },
+    {
+      "commentId": "18085433330328433",
+      "mediaId": "18348232003280594",
+      "fromUsername": "serap.okmuscyln",
+      "commentText": "Pdf",
+      "timestamp": "2026-10-27T20:07:49.204Z",
+      "postTitle": "Online sınav ",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The requested user cannot be found.",
+      "failedAt": "2026-10-27T20:08:42.115Z"
     }
   ],
   "retryQueue": [
@@ -42296,7 +42296,7 @@
     }
   },
   "totalSentCount": 52878,
-  "totalFailedCount": 891,
+  "totalFailedCount": 892,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -42352,8 +42352,6 @@
     "2026-10-27": 78683
   },
   "mesajGonderimZamanlari": [
-    1793127815312,
-    1793127818005,
     1793127823139,
     1793127828105,
     1793127834696,
@@ -43016,7 +43014,8 @@
     1793131682575,
     1793131687258,
     1793131707664,
-    1793131713246
+    1793131713246,
+    1793131722115
   ],
   "postSendCounts": {
     "17878053039624914": 241,
@@ -44237,11 +44236,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793127818005,
-      "rateLimited": false,
-      "commentId": "18177423019447097"
-    },
     {
       "t": 1793127823139,
       "rateLimited": false,
@@ -46631,6 +46625,11 @@
       "t": 1793131713246,
       "rateLimited": false,
       "commentId": "18115879124163722"
+    },
+    {
+      "t": 1793131722116,
+      "rateLimited": false,
+      "commentId": "18085433330328433"
     }
   ]
 }
