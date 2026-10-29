@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18413629930081281",
-      "mediaId": "18607834138066891",
-      "fromUsername": "emineevrankocak",
-      "commentText": "PDF",
-      "timestamp": "2026-10-27T20:41:15.317Z",
-      "postTitle": "Kırmızı beyaz pano",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The thread owner has archived or deleted this conversation, or the thread does not exist.",
-      "failedAt": "2026-10-27T20:41:21.798Z"
-    },
-    {
       "commentId": "18101076836436739",
       "mediaId": "18099351929376060",
       "fromUsername": "asli_ogretmen58",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3.7",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-10-29T18:54:37.697Z"
+    },
+    {
+      "commentId": "17900150757413838",
+      "mediaId": "18112673143887230",
+      "fromUsername": "bilalseydasimsek",
+      "commentText": "Pdf formatında alabilirmiyim cevap anahtarı ile birlikte teşekkürler",
+      "timestamp": "2026-10-29T18:53:49.124Z",
+      "postTitle": "Süreç 3.7",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-10-29T18:55:39.336Z"
     }
   ],
   "retryQueue": [],
@@ -42896,7 +42896,7 @@
     }
   },
   "totalSentCount": 58436,
-  "totalFailedCount": 1150,
+  "totalFailedCount": 1151,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -42954,7 +42954,6 @@
     "2026-10-29": 80787
   },
   "mesajGonderimZamanlari": [
-    1793296238653,
     1793296241742,
     1793296248889,
     1793296256126,
@@ -43339,7 +43338,8 @@
     1793300115093,
     1793300117648,
     1793300130226,
-    1793300132784
+    1793300132784,
+    1793300139336
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -45350,6 +45350,11 @@
     },
     {
       "t": 1793300077697,
+      "rateLimited": false,
+      "commentId": "17900150757413838"
+    },
+    {
+      "t": 1793300139336,
       "rateLimited": false,
       "commentId": "17900150757413838"
     }
