@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18114864056115291",
-      "mediaId": "18095527004659399",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T22:34:00.096Z",
-      "postTitle": "Kısa paragraf",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:49:56.478Z"
-    },
-    {
       "commentId": "18334459843276701",
       "mediaId": "18348232003280594",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-02T22:58:47.444Z"
+    },
+    {
+      "commentId": "17970191933964523",
+      "mediaId": "18095527004659399",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF ?",
+      "timestamp": "2026-11-02T22:31:58.809Z",
+      "postTitle": "Kısa paragraf",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:58:55.842Z"
     }
   ],
   "retryQueue": [
@@ -44281,7 +44281,7 @@
     }
   },
   "totalSentCount": 71186,
-  "totalFailedCount": 4196,
+  "totalFailedCount": 4197,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44343,7 +44343,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793656429131,
     1793656438434,
     1793656445347,
     1793656448024,
@@ -45103,7 +45102,8 @@
     1793660315919,
     1793660318661,
     1793660324430,
-    1793660327444
+    1793660327444,
+    1793660335842
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49305,6 +49305,11 @@
       "t": 1793660327444,
       "rateLimited": false,
       "commentId": "17948715726069843"
+    },
+    {
+      "t": 1793660335842,
+      "rateLimited": false,
+      "commentId": "17970191933964523"
     }
   ],
   "takipTemizlik": {
