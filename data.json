@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18469122283184871",
-      "mediaId": "18382352725228110",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T19:57:05.425Z",
-      "postTitle": "Nezaket",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:14:23.193Z"
-    },
-    {
       "commentId": "18119038955325721",
       "mediaId": "18072190781713832",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3-2",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T20:24:29.431Z"
+    },
+    {
+      "commentId": "18120864868963652",
+      "mediaId": "18115225094031640",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:23:57.200Z",
+      "postTitle": "Süreç 3-2",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:24:31.823Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70874,
-  "totalFailedCount": 2626,
+  "totalFailedCount": 2627,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45008,7 +45008,8 @@
     1793651060457,
     1793651063067,
     1793651066371,
-    1793651069431
+    1793651069431,
+    1793651071823
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49200,6 +49201,11 @@
       "t": 1793651069431,
       "rateLimited": false,
       "commentId": "18119300606469832"
+    },
+    {
+      "t": 1793651071823,
+      "rateLimited": false,
+      "commentId": "18120864868963652"
     }
   ],
   "takipTemizlik": {
@@ -49493,6 +49499,6 @@
     "18185118574419892": 1793650996951,
     "18110619599608526": 1793651010753,
     "18013927184761241": 1793651034102,
-    "18120864868963652": 1793651049815
+    "18120864868963652": 1793651071823
   }
 }
