@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17887562658501617",
-      "mediaId": "18120629626941537",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T22:52:26.136Z",
-      "postTitle": "Cam susleri",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:59:53.572Z"
-    },
-    {
       "commentId": "17966452880983163",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T23:09:56.747Z"
+    },
+    {
+      "commentId": "17966586596979485",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T23:09:09.354Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T23:09:59.244Z"
     }
   ],
   "retryQueue": [
@@ -44301,7 +44301,7 @@
     }
   },
   "totalSentCount": 71196,
-  "totalFailedCount": 4310,
+  "totalFailedCount": 4311,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45146,7 +45146,8 @@
     1793660988708,
     1793660991485,
     1793660994206,
-    1793660996747
+    1793660996747,
+    1793660999244
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49477,6 +49478,11 @@
       "t": 1793660996747,
       "rateLimited": false,
       "commentId": "17899451415396088"
+    },
+    {
+      "t": 1793660999244,
+      "rateLimited": false,
+      "commentId": "17966586596979485"
     }
   ],
   "takipTemizlik": {
@@ -50485,6 +50491,6 @@
     "18167983087484602": 1793660991488,
     "18413101684093406": 1793660994206,
     "17899451415396088": 1793660996747,
-    "17966586596979485": 1793660986272
+    "17966586596979485": 1793660999244
   }
 }
