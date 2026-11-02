@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18112987976579637",
-      "mediaId": "18094502003658095",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T22:45:53.179Z",
-      "postTitle": "Vücut okuma anlama",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-02T22:46:29.325Z"
-    },
-    {
       "commentId": "18139483387713606",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Online sınav ",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T22:55:37.047Z"
+    },
+    {
+      "commentId": "18092989574214115",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:44:16.954Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-02T22:55:42.559Z"
     }
   ],
   "retryQueue": [],
@@ -44263,7 +44263,7 @@
     }
   },
   "totalSentCount": 71182,
-  "totalFailedCount": 4160,
+  "totalFailedCount": 4161,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44325,7 +44325,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793656239079,
     1793656244553,
     1793656249866,
     1793656252183,
@@ -45086,7 +45085,8 @@
     1793660129045,
     1793660131815,
     1793660134637,
-    1793660137047
+    1793660137047,
+    1793660142559
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49289,6 +49289,11 @@
       "t": 1793660137047,
       "rateLimited": false,
       "commentId": "17894068077614148"
+    },
+    {
+      "t": 1793660142559,
+      "rateLimited": false,
+      "commentId": "18092989574214115"
     }
   ],
   "takipTemizlik": {
