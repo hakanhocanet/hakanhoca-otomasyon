@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18383136556234916",
-      "mediaId": "17960773242235913",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T23:44:18.814Z",
-      "postTitle": "Portre ",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-02T23:45:43.996Z"
-    },
-    {
       "commentId": "18123344236899348",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Buluslar",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T23:53:50.539Z"
+    },
+    {
+      "commentId": "17886125031512192",
+      "mediaId": "18142251151525380",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf lütfen",
+      "timestamp": "2026-11-02T23:32:46.594Z",
+      "postTitle": "Buluslar",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T23:53:58.807Z"
     }
   ],
   "retryQueue": [
@@ -44426,7 +44426,7 @@
     }
   },
   "totalSentCount": 71222,
-  "totalFailedCount": 4794,
+  "totalFailedCount": 4795,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44488,7 +44488,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793659731906,
     1793659748520,
     1793659753945,
     1793659763469,
@@ -45249,7 +45248,8 @@
     1793663618997,
     1793663622108,
     1793663624821,
-    1793663630539
+    1793663630539,
+    1793663638807
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49522,6 +49522,11 @@
       "t": 1793663630539,
       "rateLimited": false,
       "commentId": "18137725792743346"
+    },
+    {
+      "t": 1793663638808,
+      "rateLimited": false,
+      "commentId": "17886125031512192"
     }
   ],
   "takipTemizlik": {
