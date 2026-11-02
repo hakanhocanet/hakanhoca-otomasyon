@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18138917137645020",
-      "mediaId": "18087170252301146",
-      "fromUsername": "bilinmiyor",
-      "commentText": "@tugbaerdiertugmiray pdf alabilir miyim",
-      "timestamp": "2026-11-02T20:56:31.160Z",
-      "postTitle": "Pano cumhriyt",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:15:46.550Z"
-    },
-    {
       "commentId": "17905752720667872",
       "mediaId": "17891341242455317",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Vücut okuma anlama",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T22:24:34.052Z"
+    },
+    {
+      "commentId": "17971243793962457",
+      "mediaId": "18094502003658095",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:24:01.757Z",
+      "postTitle": "Vücut okuma anlama",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:24:36.703Z"
     }
   ],
   "retryQueue": [],
@@ -44246,7 +44246,7 @@
     }
   },
   "totalSentCount": 71146,
-  "totalFailedCount": 3809,
+  "totalFailedCount": 3810,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44308,7 +44308,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793654375344,
     1793654384468,
     1793654387133,
     1793654389874,
@@ -45102,7 +45101,8 @@
     1793658263251,
     1793658266186,
     1793658268545,
-    1793658274052
+    1793658274052,
+    1793658276703
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46110,11 +46110,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793654375344,
-      "rateLimited": false,
-      "commentId": "18373793071210568"
-    },
     {
       "t": 1793654384468,
       "rateLimited": false,
@@ -49424,6 +49419,11 @@
       "t": 1793658274052,
       "rateLimited": false,
       "commentId": "18105792623371023"
+    },
+    {
+      "t": 1793658276703,
+      "rateLimited": false,
+      "commentId": "17971243793962457"
     }
   ],
   "takipTemizlik": {
@@ -50205,6 +50205,6 @@
     "18113269036893997": 1793658238633,
     "18356096047218493": 1793658258066,
     "18176762308450600": 1793658266186,
-    "17971243793962457": 1793658260477
+    "17971243793962457": 1793658276703
   }
 }
