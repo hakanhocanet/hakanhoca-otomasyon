@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18119038955325721",
-      "mediaId": "18072190781713832",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-02T19:31:45.830Z",
-      "postTitle": "3 hazirlik",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:13:04.250Z"
-    },
-    {
       "commentId": "18469122283184871",
       "mediaId": "18382352725228110",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3-2",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:22:53.884Z"
+    },
+    {
+      "commentId": "18652104553021627",
+      "mediaId": "18638691811003394",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:20:57.884Z",
+      "postTitle": "Türk büyükleri okuma anlama",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:22:56.256Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70868,
-  "totalFailedCount": 2612,
+  "totalFailedCount": 2613,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44207,7 +44207,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793647073964,
     1793647079103,
     1793647081862,
     1793647084596,
@@ -45010,7 +45009,8 @@
     1793650965323,
     1793650969012,
     1793650971052,
-    1793650973884
+    1793650973884,
+    1793650976256
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49215,6 +49215,11 @@
       "t": 1793650973884,
       "rateLimited": false,
       "commentId": "18119300606469832"
+    },
+    {
+      "t": 1793650976256,
+      "rateLimited": false,
+      "commentId": "18652104553021627"
     }
   ],
   "takipTemizlik": {
