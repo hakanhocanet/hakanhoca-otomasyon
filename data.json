@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18134729098736992",
-      "mediaId": "18120629626941537",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf👏",
-      "timestamp": "2026-11-02T22:36:08.405Z",
-      "postTitle": "Cam susleri",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
-      "failedAt": "2026-11-02T23:00:13.566Z"
-    },
-    {
       "commentId": "18137681965653577",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Volgens het beleid voor privéantwoorden is de opmerking te oud om een antwoord te krijgen.",
       "failedAt": "2026-11-02T23:10:32.402Z"
+    },
+    {
+      "commentId": "18024594587925078",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "pdf",
+      "timestamp": "2026-11-02T23:09:58.660Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T23:10:34.855Z"
     }
   ],
   "retryQueue": [
@@ -44429,7 +44429,7 @@
     }
   },
   "totalSentCount": 71196,
-  "totalFailedCount": 4315,
+  "totalFailedCount": 4316,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45277,7 +45277,8 @@
     1793661024600,
     1793661027353,
     1793661029851,
-    1793661032402
+    1793661032402,
+    1793661034855
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49623,6 +49624,11 @@
       "t": 1793661032402,
       "rateLimited": false,
       "commentId": "18442363945179722"
+    },
+    {
+      "t": 1793661034855,
+      "rateLimited": false,
+      "commentId": "18024594587925078"
     }
   ],
   "takipTemizlik": {
@@ -50635,6 +50641,6 @@
     "17920985910453456": 1793661027353,
     "18141777403719478": 1793661029851,
     "18442363945179722": 1793661032402,
-    "18024594587925078": 1793661022069
+    "18024594587925078": 1793661034855
   }
 }
