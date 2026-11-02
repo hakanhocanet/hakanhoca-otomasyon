@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17967530351982747",
-      "mediaId": "18165827437486932",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T20:37:31.418Z",
-      "postTitle": "Süreç 4-2",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:37:53.057Z"
-    },
-    {
       "commentId": "17944585881091757",
       "mediaId": "18141773674601633",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Bcbx",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T20:48:22.538Z"
+    },
+    {
+      "commentId": "17967067224216541",
+      "mediaId": "17891318820447856",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:47:45.064Z",
+      "postTitle": "Ülkeler okuma anlama",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:48:25.124Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70953,
-  "totalFailedCount": 2863,
+  "totalFailedCount": 2864,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44989,7 +44989,8 @@
     1793652487879,
     1793652494290,
     1793652499658,
-    1793652502538
+    1793652502538,
+    1793652505124
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49138,6 +49139,11 @@
       "t": 1793652502538,
       "rateLimited": false,
       "commentId": "17953254729326766"
+    },
+    {
+      "t": 1793652505125,
+      "rateLimited": false,
+      "commentId": "17967067224216541"
     }
   ],
   "takipTemizlik": {
@@ -49520,6 +49526,6 @@
     "17917394931532333": 1793652459567,
     "17893740639614344": 1793652462501,
     "17927342385205009": 1793652468306,
-    "17967067224216541": 1793652471884
+    "17967067224216541": 1793652505125
   }
 }
