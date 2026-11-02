@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18649915987029245",
-      "mediaId": "18140125810514319",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T19:45:58.786Z",
-      "postTitle": "Toplama 1",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:36:05.688Z"
-    },
-    {
       "commentId": "18425728645156213",
       "mediaId": "18094543028140307",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Masallar okuma anlama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:46:16.616Z"
+    },
+    {
+      "commentId": "17873123379641268",
+      "mediaId": "18068457488775698",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:46:02.211Z",
+      "postTitle": "Bcbx",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:46:19.287Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70951,
-  "totalFailedCount": 2843,
+  "totalFailedCount": 2844,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44207,7 +44207,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793648477466,
     1793648480092,
     1793648482806,
     1793648485558,
@@ -45004,7 +45003,8 @@
     1793652354334,
     1793652359515,
     1793652362724,
-    1793652376616
+    1793652376616,
+    1793652379287
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49206,6 +49206,11 @@
       "t": 1793652376617,
       "rateLimited": false,
       "commentId": "18431988355151745"
+    },
+    {
+      "t": 1793652379287,
+      "rateLimited": false,
+      "commentId": "17873123379641268"
     }
   ],
   "takipTemizlik": {
@@ -49579,7 +49584,7 @@
     "18137358601650208": 1793652348940,
     "18058410332572939": 1793652359515,
     "18473875900191529": 1793652362724,
-    "17873123379641268": 1793652368729,
+    "17873123379641268": 1793652379287,
     "18012670265993703": 1793652374076
   }
 }
