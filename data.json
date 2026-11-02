@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17992673244069160",
-      "mediaId": "18348232003280594",
-      "fromUsername": "bilinmiyor",
-      "commentText": "pdf",
-      "timestamp": "2026-11-02T21:59:25.001Z",
-      "postTitle": "Online sınav ",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:53:58.818Z"
-    },
-    {
       "commentId": "18012139880977535",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Okuma anlama antik uygarlıklar",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T23:03:01.785Z"
+    },
+    {
+      "commentId": "18117083747276331",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:58:27.030Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-02T23:03:04.805Z"
     }
   ],
   "retryQueue": [
@@ -44362,7 +44362,7 @@
     }
   },
   "totalSentCount": 71192,
-  "totalFailedCount": 4242,
+  "totalFailedCount": 4243,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45180,7 +45180,8 @@
     1793660572265,
     1793660575697,
     1793660578925,
-    1793660581785
+    1793660581785,
+    1793660584805
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49378,6 +49379,11 @@
       "t": 1793660581785,
       "rateLimited": false,
       "commentId": "18006420770793489"
+    },
+    {
+      "t": 1793660584805,
+      "rateLimited": false,
+      "commentId": "18117083747276331"
     }
   ],
   "takipTemizlik": {
