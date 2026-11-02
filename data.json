@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18014136533988134",
-      "mediaId": "18141773674601633",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T19:30:05.111Z",
-      "postTitle": "Deyim",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:42:27.346Z"
-    },
-    {
       "commentId": "17993463843059867",
       "mediaId": "18115979632878309",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Yazim",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T19:54:23.916Z"
+    },
+    {
+      "commentId": "18102401744434485",
+      "mediaId": "17985014811061943",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T19:54:30.998Z",
+      "postTitle": "Matematik onluk bozmadan",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T19:54:44.755Z"
     }
   ],
   "retryQueue": [
@@ -44161,7 +44161,7 @@
     }
   },
   "totalSentCount": 70760,
-  "totalFailedCount": 2424,
+  "totalFailedCount": 2425,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44223,7 +44223,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793645378702,
     1793645390167,
     1793645402826,
     1793645405414,
@@ -44975,7 +44974,8 @@
     1793649255852,
     1793649263916,
     1793649270407,
-    1793649273269
+    1793649273269,
+    1793649284755
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48884,6 +48884,11 @@
       "t": 1793649263916,
       "rateLimited": false,
       "commentId": "18143980486611649"
+    },
+    {
+      "t": 1793649284755,
+      "rateLimited": false,
+      "commentId": "18102401744434485"
     }
   ],
   "takipTemizlik": {
@@ -49065,6 +49070,6 @@
     "17984225309899125": 1793649240012,
     "18127386658924303": 1793649249403,
     "18143980486611649": 1793649263916,
-    "18102401744434485": 1793649281742
+    "18102401744434485": 1793649284755
   }
 }
