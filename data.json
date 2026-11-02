@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18119833954780245",
-      "mediaId": "18182861188423425",
-      "fromUsername": "bilinmiyor",
-      "commentText": "pdf",
-      "timestamp": "2026-11-02T20:41:30.931Z",
-      "postTitle": "Masallar okuma anlama",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:41:37.368Z"
-    },
-    {
       "commentId": "18127884052901142",
       "mediaId": "18182861188423425",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Ülkeler okuma anlama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:52:41.853Z"
+    },
+    {
+      "commentId": "17917394931532333",
+      "mediaId": "17891318820447856",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:47:18.936Z",
+      "postTitle": "Ülkeler okuma anlama",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:52:45.457Z"
     }
   ],
   "retryQueue": [
@@ -44193,7 +44193,7 @@
     }
   },
   "totalSentCount": 70971,
-  "totalFailedCount": 2904,
+  "totalFailedCount": 2905,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44255,7 +44255,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793648863522,
     1793648866627,
     1793648869586,
     1793648872525,
@@ -45038,7 +45037,8 @@
     1793652749018,
     1793652751598,
     1793652755218,
-    1793652761853
+    1793652761853,
+    1793652765457
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49190,6 +49190,11 @@
       "t": 1793652761853,
       "rateLimited": false,
       "commentId": "18080489336720548"
+    },
+    {
+      "t": 1793652765457,
+      "rateLimited": false,
+      "commentId": "17917394931532333"
     }
   ],
   "takipTemizlik": {
