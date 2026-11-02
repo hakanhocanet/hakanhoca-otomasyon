@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18126441392295936",
-      "mediaId": "18094543028140307",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T20:31:09.149Z",
-      "postTitle": "Okuma anlama bilim insan",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:34:00.939Z"
-    },
-    {
       "commentId": "18113112014332662",
       "mediaId": "18103495010206887",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Masallar okuma anlama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:43:32.709Z"
+    },
+    {
+      "commentId": "18097820336410593",
+      "mediaId": "18182861188423425",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T20:42:58.573Z",
+      "postTitle": "Masallar okuma anlama",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:43:51.199Z"
     }
   ],
   "retryQueue": [],
@@ -44128,7 +44128,7 @@
     }
   },
   "totalSentCount": 70947,
-  "totalFailedCount": 2820,
+  "totalFailedCount": 2821,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44190,7 +44190,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793648330904,
     1793648336934,
     1793648339806,
     1793648354722,
@@ -44989,7 +44988,8 @@
     1793652207363,
     1793652212709,
     1793652220307,
-    1793652228383
+    1793652228383,
+    1793652231199
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46577,31 +46577,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793648314368,
-      "rateLimited": false,
-      "commentId": "18567743752076287"
-    },
-    {
-      "t": 1793648317159,
-      "rateLimited": false,
-      "commentId": "18160940182547029"
-    },
-    {
-      "t": 1793648320050,
-      "rateLimited": false,
-      "commentId": "18118252291825812"
-    },
-    {
-      "t": 1793648322842,
-      "rateLimited": false,
-      "commentId": "18102021161552154"
-    },
-    {
-      "t": 1793648330906,
-      "rateLimited": false,
-      "commentId": "18103095449530793"
-    },
     {
       "t": 1793648336934,
       "rateLimited": false,
@@ -49209,6 +49184,11 @@
     },
     {
       "t": 1793652212709,
+      "rateLimited": false,
+      "commentId": "18097820336410593"
+    },
+    {
+      "t": 1793652231199,
       "rateLimited": false,
       "commentId": "18097820336410593"
     }
