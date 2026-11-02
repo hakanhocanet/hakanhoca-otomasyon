@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18113079857145603",
-      "mediaId": "18104239877172554",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T19:33:48.786Z",
-      "postTitle": "Kaçıncı dersteyiz",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:28:13.195Z"
-    },
-    {
       "commentId": "18029225531702222",
       "mediaId": "18094543028140307",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Yapboz",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T20:37:47.273Z"
+    },
+    {
+      "commentId": "17967530351982747",
+      "mediaId": "18165827437486932",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:37:31.418Z",
+      "postTitle": "Süreç 4-2",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:37:53.057Z"
     }
   ],
   "retryQueue": [],
@@ -44128,7 +44128,7 @@
     }
   },
   "totalSentCount": 70927,
-  "totalFailedCount": 2763,
+  "totalFailedCount": 2764,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44190,7 +44190,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793647968954,
     1793647977051,
     1793647985000,
     1793647990134,
@@ -44990,7 +44989,8 @@
     1793651853607,
     1793651856541,
     1793651861715,
-    1793651867273
+    1793651867273,
+    1793651873057
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49207,6 +49207,11 @@
       "t": 1793651867273,
       "rateLimited": false,
       "commentId": "18572633296072344"
+    },
+    {
+      "t": 1793651873057,
+      "rateLimited": false,
+      "commentId": "17967530351982747"
     }
   ],
   "takipTemizlik": {
@@ -49538,6 +49543,6 @@
     "18050889875816558": 1793651828252,
     "18231713464333554": 1793651848044,
     "17979283851139611": 1793651861720,
-    "17967530351982747": 1793651864600
+    "17967530351982747": 1793651873057
   }
 }
