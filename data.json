@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18160940182547029",
-      "mediaId": "18141773674601633",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T19:31:03.990Z",
-      "postTitle": "Deyim",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:38:37.159Z"
-    },
-    {
       "commentId": "18118252291825812",
       "mediaId": "17878053039624914",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Hareket sınıf kural",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T19:51:03.373Z"
+    },
+    {
+      "commentId": "17895175365432190",
+      "mediaId": "18186410950408908",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T19:50:56.781Z",
+      "postTitle": "Hareket sınıf kural",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T19:51:09.010Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70741,
-  "totalFailedCount": 2394,
+  "totalFailedCount": 2395,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44933,7 +44933,8 @@
     1793649054827,
     1793649057670,
     1793649060588,
-    1793649063373
+    1793649063373,
+    1793649069010
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48708,6 +48709,11 @@
       "t": 1793649063374,
       "rateLimited": false,
       "commentId": "18126263810475108"
+    },
+    {
+      "t": 1793649069010,
+      "rateLimited": false,
+      "commentId": "17895175365432190"
     }
   ],
   "takipTemizlik": {
@@ -48877,6 +48883,6 @@
     "18639276577057582": 1793648988981,
     "18126263810475108": 1793649063374,
     "18155837932523552": 1793649054827,
-    "17895175365432190": 1793649066107
+    "17895175365432190": 1793649069010
   }
 }
