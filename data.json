@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17902840791378676",
-      "mediaId": "18130647685700453",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF lütfen",
-      "timestamp": "2026-11-02T21:27:20.476Z",
-      "postTitle": "Aborjin",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T21:39:01.385Z"
-    },
-    {
       "commentId": "18098862725673982",
       "mediaId": "18373242811241077",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Yaprak boyama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T21:47:38.234Z"
+    },
+    {
+      "commentId": "17965290930214891",
+      "mediaId": "17934038964144327",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T21:46:56.632Z",
+      "postTitle": "Yaprak boyama",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:47:40.803Z"
     }
   ],
   "retryQueue": [
@@ -44339,7 +44339,7 @@
     }
   },
   "totalSentCount": 71087,
-  "totalFailedCount": 3463,
+  "totalFailedCount": 3464,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44401,7 +44401,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793652159801,
     1793652165550,
     1793652176411,
     1793652178961,
@@ -45196,7 +45195,8 @@
     1793656042073,
     1793656049905,
     1793656052706,
-    1793656058234
+    1793656058234,
+    1793656060803
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49513,6 +49513,11 @@
       "t": 1793656058234,
       "rateLimited": false,
       "commentId": "18108786338195575"
+    },
+    {
+      "t": 1793656060803,
+      "rateLimited": false,
+      "commentId": "17965290930214891"
     }
   ],
   "takipTemizlik": {
@@ -50125,6 +50130,6 @@
     "17915469408501158": 1793656013514,
     "18098448020407216": 1793656049905,
     "18096844304248961": 1793656052706,
-    "17965290930214891": 1793656047090
+    "17965290930214891": 1793656060804
   }
 }
