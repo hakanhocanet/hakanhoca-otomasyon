@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17908311054662106",
-      "mediaId": "17906590086591544",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T20:59:44.112Z",
-      "postTitle": "Cumhuriyet yazılı pano",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T21:31:03.951Z"
-    },
-    {
       "commentId": "18132280981697262",
       "mediaId": "18014263976755154",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Tarihel kültürel miras",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T21:40:06.802Z"
+    },
+    {
+      "commentId": "18189890227366833",
+      "mediaId": "18130647685700453",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T21:25:14.375Z",
+      "postTitle": "Aborjin",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:40:09.521Z"
     }
   ],
   "retryQueue": [
@@ -44231,7 +44231,7 @@
     }
   },
   "totalSentCount": 71075,
-  "totalFailedCount": 3373,
+  "totalFailedCount": 3374,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44293,7 +44293,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793651708325,
     1793651711048,
     1793651713703,
     1793651719560,
@@ -45085,7 +45084,8 @@
     1793655590303,
     1793655595937,
     1793655601212,
-    1793655606802
+    1793655606802,
+    1793655609521
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49374,6 +49374,11 @@
       "t": 1793655606802,
       "rateLimited": false,
       "commentId": "17943947202371527"
+    },
+    {
+      "t": 1793655609521,
+      "rateLimited": false,
+      "commentId": "18189890227366833"
     }
   ],
   "takipTemizlik": {
