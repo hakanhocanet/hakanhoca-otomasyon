@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17899755741393890",
-      "mediaId": "18141773674601633",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T19:30:59.690Z",
-      "postTitle": "Deyim",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:55:05.160Z"
-    },
-    {
       "commentId": "18119340557102200",
       "mediaId": "18098740604633568",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "1-2 okuma anlama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:14:13.968Z"
+    },
+    {
+      "commentId": "18469122283184871",
+      "mediaId": "18382352725228110",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T19:57:05.425Z",
+      "postTitle": "Nezaket",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:14:23.193Z"
     }
   ],
   "retryQueue": [
@@ -44145,7 +44145,7 @@
     }
   },
   "totalSentCount": 70835,
-  "totalFailedCount": 2526,
+  "totalFailedCount": 2527,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44207,9 +44207,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793646554553,
-    1793646559846,
-    1793646562029,
     1793646563848,
     1793646566420,
     1793646571674,
@@ -45012,7 +45009,8 @@
     1793650437792,
     1793650448276,
     1793650451082,
-    1793650453968
+    1793650453968,
+    1793650463193
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49215,6 +49213,11 @@
       "t": 1793650453968,
       "rateLimited": false,
       "commentId": "17878123806572854"
+    },
+    {
+      "t": 1793650463193,
+      "rateLimited": false,
+      "commentId": "18469122283184871"
     }
   ],
   "takipTemizlik": {
