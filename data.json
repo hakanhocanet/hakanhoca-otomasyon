@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18101896790356185",
-      "mediaId": "18114562912840582",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T20:54:55.583Z",
-      "postTitle": "Takip czl",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T21:12:45.294Z"
-    },
-    {
       "commentId": "17932130586421945",
       "mediaId": "18130647685700453",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cumhuriyet yazılı pano",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T21:22:13.605Z"
+    },
+    {
+      "commentId": "18139126270642106",
+      "mediaId": "18130647685700453",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T21:21:41.512Z",
+      "postTitle": "Aborjin",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:22:19.396Z"
     }
   ],
   "retryQueue": [
@@ -44330,7 +44330,7 @@
     }
   },
   "totalSentCount": 71026,
-  "totalFailedCount": 3171,
+  "totalFailedCount": 3172,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44392,8 +44392,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793650634927,
-    1793650637299,
     1793650645733,
     1793650648194,
     1793650650600,
@@ -45185,7 +45183,8 @@
     1793654520347,
     1793654523351,
     1793654526021,
-    1793654533605
+    1793654533605,
+    1793654539396
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49468,6 +49467,11 @@
       "t": 1793654533605,
       "rateLimited": false,
       "commentId": "17908311054662106"
+    },
+    {
+      "t": 1793654539396,
+      "rateLimited": false,
+      "commentId": "18139126270642106"
     }
   ],
   "takipTemizlik": {
@@ -49983,7 +49987,7 @@
     "17975210322168193": 1793654526029,
     "18287812489289100": 1793654497995,
     "18149377390566467": 1793654492956,
-    "18139126270642106": 1793654528299,
+    "18139126270642106": 1793654539396,
     "18346088245284309": 1793654536331
   }
 }
