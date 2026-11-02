@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18136316110773080",
-      "mediaId": "18348232003280594",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T21:59:00.486Z",
-      "postTitle": "Online sınav ",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T21:59:20.308Z"
-    },
-    {
       "commentId": "18153832006550646",
       "mediaId": "18348232003280594",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "4. Hafta 2. Sınıf ",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T22:13:00.869Z"
+    },
+    {
+      "commentId": "18100850087419518",
+      "mediaId": "18094502003658095",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T22:10:52.170Z",
+      "postTitle": "Vücut okuma anlama",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:13:05.161Z"
     }
   ],
   "retryQueue": [
@@ -44288,7 +44288,7 @@
     }
   },
   "totalSentCount": 71136,
-  "totalFailedCount": 3672,
+  "totalFailedCount": 3673,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44350,7 +44350,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793653684603,
     1793653691734,
     1793653694867,
     1793653700503,
@@ -45146,7 +45145,8 @@
     1793657567449,
     1793657570404,
     1793657576261,
-    1793657580869
+    1793657580869,
+    1793657585161
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49473,6 +49473,11 @@
       "t": 1793657580869,
       "rateLimited": false,
       "commentId": "18288946201293789"
+    },
+    {
+      "t": 1793657585161,
+      "rateLimited": false,
+      "commentId": "18100850087419518"
     }
   ],
   "takipTemizlik": {
