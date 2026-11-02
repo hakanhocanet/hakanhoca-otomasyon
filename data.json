@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17932973706162316",
-      "mediaId": "18141773674601633",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T19:29:28.660Z",
-      "postTitle": "Deyim",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:30:41.739Z"
-    },
-    {
       "commentId": "18106547783331118",
       "mediaId": "18001504460988953",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "TAKİP",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T19:41:04.075Z"
+    },
+    {
+      "commentId": "17932973706162316",
+      "mediaId": "18141773674601633",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T19:29:28.660Z",
+      "postTitle": "Deyim",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T19:41:36.156Z"
     }
   ],
   "retryQueue": [],
@@ -44128,7 +44128,7 @@
     }
   },
   "totalSentCount": 70683,
-  "totalFailedCount": 2320,
+  "totalFailedCount": 2321,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44190,7 +44190,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793644595160,
     1793644600404,
     1793644605035,
     1793644608918,
@@ -44837,7 +44836,8 @@
     1793648485558,
     1793648488527,
     1793648491121,
-    1793648493640
+    1793648493640,
+    1793648496156
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48222,6 +48222,11 @@
       "t": 1793648464075,
       "rateLimited": false,
       "commentId": "18128451619911001"
+    },
+    {
+      "t": 1793648496156,
+      "rateLimited": false,
+      "commentId": "17932973706162316"
     }
   ],
   "takipTemizlik": {
