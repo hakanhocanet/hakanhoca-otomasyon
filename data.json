@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18373602202246007",
-      "mediaId": "18068457488775698",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T20:46:24.886Z",
-      "postTitle": "Bcbx",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:52:31.598Z"
-    },
-    {
       "commentId": "18132942491503944",
       "mediaId": "18118407370756371",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3.3.",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T21:05:51.348Z"
+    },
+    {
+      "commentId": "17986562214082057",
+      "mediaId": "18115501061106539",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf alabilir miyim lütfen",
+      "timestamp": "2026-11-02T21:05:37.218Z",
+      "postTitle": "Süreç 3.3.",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:05:56.849Z"
     }
   ],
   "retryQueue": [
@@ -44200,7 +44200,7 @@
     }
   },
   "totalSentCount": 70988,
-  "totalFailedCount": 3001,
+  "totalFailedCount": 3002,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45027,7 +45027,8 @@
     1793653533631,
     1793653536203,
     1793653538775,
-    1793653551348
+    1793653551348,
+    1793653556849
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49121,6 +49122,11 @@
       "t": 1793653551348,
       "rateLimited": false,
       "commentId": "17992828205859663"
+    },
+    {
+      "t": 1793653556849,
+      "rateLimited": false,
+      "commentId": "17986562214082057"
     }
   ],
   "takipTemizlik": {
@@ -49573,7 +49579,7 @@
     "18026761013922413": 1793653519841,
     "17992828205859663": 1793653533631,
     "18183006139433154": 1793653536203,
-    "17986562214082057": 1793653543470,
+    "17986562214082057": 1793653556850,
     "18053716331807646": 1793653546040
   }
 }
