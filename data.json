@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18114556811584692",
-      "mediaId": "17960529687215429",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T22:25:47.666Z",
-      "postTitle": "Rozet",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
-      "failedAt": "2026-11-02T22:29:32.104Z"
-    },
-    {
       "commentId": "18143651719611374",
       "mediaId": "18373242811241077",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kısa paragraf",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T22:38:10.197Z"
+    },
+    {
+      "commentId": "17932795041420126",
+      "mediaId": "18095527004659399",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:29:51.516Z",
+      "postTitle": "Kısa paragraf",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:38:12.895Z"
     }
   ],
   "retryQueue": [
@@ -44369,7 +44369,7 @@
     }
   },
   "totalSentCount": 71160,
-  "totalFailedCount": 3965,
+  "totalFailedCount": 3966,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45205,7 +45205,8 @@
     1793659073253,
     1793659076739,
     1793659084620,
-    1793659090197
+    1793659090197,
+    1793659092895
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49483,6 +49484,11 @@
       "t": 1793659090197,
       "rateLimited": false,
       "commentId": "18024659417929380"
+    },
+    {
+      "t": 1793659092895,
+      "rateLimited": false,
+      "commentId": "17932795041420126"
     }
   ],
   "takipTemizlik": {
