@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17984225309899125",
-      "mediaId": "17965155756155757",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-02T19:53:48.484Z",
-      "postTitle": "Yazim",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:21:55.502Z"
-    },
-    {
       "commentId": "18155837932523552",
       "mediaId": "18186410950408908",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Okuma anlama bilim insan",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T20:32:00.428Z"
+    },
+    {
+      "commentId": "18483565657114528",
+      "mediaId": "18094543028140307",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T20:28:40.777Z",
+      "postTitle": "Okuma anlama bilim insan",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:32:03.024Z"
     }
   ],
   "retryQueue": [
@@ -44225,7 +44225,7 @@
     }
   },
   "totalSentCount": 70908,
-  "totalFailedCount": 2701,
+  "totalFailedCount": 2702,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44287,7 +44287,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793647621858,
     1793647624225,
     1793647627259,
     1793647629954,
@@ -45089,7 +45088,8 @@
     1793651512457,
     1793651515452,
     1793651517707,
-    1793651520428
+    1793651520428,
+    1793651523024
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49303,6 +49303,11 @@
       "t": 1793651520428,
       "rateLimited": false,
       "commentId": "18500846209096196"
+    },
+    {
+      "t": 1793651523024,
+      "rateLimited": false,
+      "commentId": "18483565657114528"
     }
   ],
   "takipTemizlik": {
