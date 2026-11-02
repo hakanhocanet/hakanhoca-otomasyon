@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18014954420974801",
-      "mediaId": "18072877454444253",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF alabilirmiyim",
-      "timestamp": "2026-11-02T19:10:31.605Z",
-      "postTitle": "2 okuma anlama",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:13:31.733Z"
-    },
-    {
       "commentId": "18090753623329481",
       "mediaId": "18621997249042695",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "2 zor problem ",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T19:25:28.071Z"
+    },
+    {
+      "commentId": "18042845504837490",
+      "mediaId": "18211573642359212",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF alabilirmiyim",
+      "timestamp": "2026-11-02T19:14:35.182Z",
+      "postTitle": "2 zor problem ",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T19:25:33.743Z"
     }
   ],
   "retryQueue": [
@@ -44177,7 +44177,7 @@
     }
   },
   "totalSentCount": 70615,
-  "totalFailedCount": 2170,
+  "totalFailedCount": 2171,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44239,8 +44239,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793643630736,
-    1793643633413,
     1793643638379,
     1793643657566,
     1793643660386,
@@ -44783,7 +44781,8 @@
     1793647520301,
     1793647522893,
     1793647525502,
-    1793647528071
+    1793647528071,
+    1793647533743
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -47606,6 +47605,11 @@
       "t": 1793647528071,
       "rateLimited": false,
       "commentId": "18117643547086141"
+    },
+    {
+      "t": 1793647533743,
+      "rateLimited": false,
+      "commentId": "18042845504837490"
     }
   ],
   "takipTemizlik": {
