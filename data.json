@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18120540002076912",
-      "mediaId": "18131492248839227",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T21:11:10.065Z",
-      "postTitle": "4.sinid hafta 3",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T21:16:01.309Z"
-    },
-    {
       "commentId": "18454297093125776",
       "mediaId": "18130647685700453",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "2 hafta 3",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T21:25:09.808Z"
+    },
+    {
+      "commentId": "18494295856111756",
+      "mediaId": "18130647685700453",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF lütfen",
+      "timestamp": "2026-11-02T21:24:41.473Z",
+      "postTitle": "Aborjin",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:25:12.178Z"
     }
   ],
   "retryQueue": [
@@ -44205,7 +44205,7 @@
     }
   },
   "totalSentCount": 71032,
-  "totalFailedCount": 3206,
+  "totalFailedCount": 3207,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45060,7 +45060,8 @@
     1793654696903,
     1793654699703,
     1793654702396,
-    1793654709808
+    1793654709808,
+    1793654712178
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49339,6 +49340,11 @@
       "t": 1793654709808,
       "rateLimited": false,
       "commentId": "18117447884043095"
+    },
+    {
+      "t": 1793654712178,
+      "rateLimited": false,
+      "commentId": "18494295856111756"
     }
   ],
   "takipTemizlik": {
@@ -49866,6 +49872,6 @@
     "18148283695559332": 1793654670820,
     "17951730711300317": 1793654679056,
     "18034709168675159": 1793654702397,
-    "18494295856111756": 1793654704816
+    "18494295856111756": 1793654712178
   }
 }
