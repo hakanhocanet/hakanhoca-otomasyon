@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17989830728877855",
-      "mediaId": "18131946379727507",
-      "fromUsername": "bilinmiyor",
-      "commentText": "@yazcfeyza PDF🙏",
-      "timestamp": "2026-11-02T19:30:23.691Z",
-      "postTitle": "4.sinif okuma anlama",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T19:33:10.134Z"
-    },
-    {
       "commentId": "17883211758629161",
       "mediaId": "18089399759676287",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızma birader",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T19:44:47.302Z"
+    },
+    {
+      "commentId": "17989830728877855",
+      "mediaId": "18131946379727507",
+      "fromUsername": "bilinmiyor",
+      "commentText": "@yazcfeyza PDF🙏",
+      "timestamp": "2026-11-02T19:30:23.691Z",
+      "postTitle": "4.sinif okuma anlama",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T19:44:52.766Z"
     }
   ],
   "retryQueue": [
@@ -44161,7 +44161,7 @@
     }
   },
   "totalSentCount": 70712,
-  "totalFailedCount": 2342,
+  "totalFailedCount": 2343,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44223,7 +44223,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793644790648,
     1793644799872,
     1793644802762,
     1793644805555,
@@ -44896,7 +44895,8 @@
     1793648675154,
     1793648678258,
     1793648681254,
-    1793648687302
+    1793648687302,
+    1793648692766
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48407,6 +48407,11 @@
       "t": 1793648687302,
       "rateLimited": false,
       "commentId": "18091966538214692"
+    },
+    {
+      "t": 1793648692766,
+      "rateLimited": false,
+      "commentId": "17989830728877855"
     }
   ],
   "takipTemizlik": {
