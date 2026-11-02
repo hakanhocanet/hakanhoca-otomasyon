@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18116143856467991",
-      "mediaId": "17934038964144327",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-02T21:48:48.896Z",
-      "postTitle": "Yaprak boyama",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:17:56.947Z"
-    },
-    {
       "commentId": "18051958067815367",
       "mediaId": "18094502003658095",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Vücut okuma anlama",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T22:26:49.956Z"
+    },
+    {
+      "commentId": "18129752776886007",
+      "mediaId": "18094502003658095",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:24:21.283Z",
+      "postTitle": "Vücut okuma anlama",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:26:58.499Z"
     }
   ],
   "retryQueue": [
@@ -44280,7 +44280,7 @@
     }
   },
   "totalSentCount": 71149,
-  "totalFailedCount": 3835,
+  "totalFailedCount": 3836,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45132,7 +45132,8 @@
     1793658393380,
     1793658395708,
     1793658409956,
-    1793658415282
+    1793658415282,
+    1793658418499
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49441,6 +49442,11 @@
       "t": 1793658409956,
       "rateLimited": false,
       "commentId": "18129786337869925"
+    },
+    {
+      "t": 1793658418499,
+      "rateLimited": false,
+      "commentId": "18129752776886007"
     }
   ],
   "takipTemizlik": {
