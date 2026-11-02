@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18011483804995710",
-      "mediaId": "18120629626941537",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-02T22:56:31.670Z",
-      "postTitle": "Cam susleri",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:57:24.479Z"
-    },
-    {
       "commentId": "18190986346410125",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-02T23:06:22.782Z"
+    },
+    {
+      "commentId": "18602387020068336",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T22:46:36.859Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-02T23:06:41.669Z"
     }
   ],
   "retryQueue": [
@@ -44348,7 +44348,7 @@
     }
   },
   "totalSentCount": 71195,
-  "totalFailedCount": 4278,
+  "totalFailedCount": 4279,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44410,7 +44410,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793656886742,
     1793657005153,
     1793657010234,
     1793657013035,
@@ -45167,7 +45166,8 @@
     1793660757662,
     1793660761179,
     1793660764895,
-    1793660782782
+    1793660782782,
+    1793660801669
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -45951,11 +45951,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793656886742,
-      "rateLimited": false,
-      "commentId": "18101527229414525"
-    },
     {
       "t": 1793657013035,
       "rateLimited": false,
@@ -49380,6 +49375,11 @@
       "t": 1793660782782,
       "rateLimited": false,
       "commentId": "17887739061622893"
+    },
+    {
+      "t": 1793660801669,
+      "rateLimited": false,
+      "commentId": "18602387020068336"
     }
   ],
   "takipTemizlik": {
