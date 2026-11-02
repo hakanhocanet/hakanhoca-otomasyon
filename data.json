@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18170452051476294",
-      "mediaId": "18107589038326561",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T19:36:28.349Z",
-      "postTitle": "1-2 okuma anlama",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:13:55.187Z"
-    },
-    {
       "commentId": "18117853532048935",
       "mediaId": "18595422247066025",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 3-2",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T20:23:54.066Z"
+    },
+    {
+      "commentId": "18170019976475889",
+      "mediaId": "18184959172411645",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T19:57:32.468Z",
+      "postTitle": "Panda cam",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T20:24:00.614Z"
     }
   ],
   "retryQueue": [
@@ -44177,7 +44177,7 @@
     }
   },
   "totalSentCount": 70871,
-  "totalFailedCount": 2622,
+  "totalFailedCount": 2623,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44239,8 +44239,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793647136225,
-    1793647138930,
     1793647141769,
     1793647147564,
     1793647149818,
@@ -45042,7 +45040,8 @@
     1793651019379,
     1793651022247,
     1793651031521,
-    1793651034066
+    1793651034066,
+    1793651040614
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49246,6 +49245,11 @@
       "t": 1793651034066,
       "rateLimited": false,
       "commentId": "18013927184761241"
+    },
+    {
+      "t": 1793651040614,
+      "rateLimited": false,
+      "commentId": "18170019976475889"
     }
   ],
   "takipTemizlik": {
