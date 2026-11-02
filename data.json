@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18114794809845188",
-      "mediaId": "18120629626941537",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF🙏",
-      "timestamp": "2026-11-02T23:08:37.473Z",
-      "postTitle": "Cam susleri",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T23:09:04.936Z"
-    },
-    {
       "commentId": "17887562658501617",
       "mediaId": "18120629626941537",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-02T23:19:39.548Z"
+    },
+    {
+      "commentId": "18641562187049676",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T22:54:19.496Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T23:19:42.272Z"
     }
   ],
   "retryQueue": [
@@ -44368,7 +44368,7 @@
     }
   },
   "totalSentCount": 71201,
-  "totalFailedCount": 4398,
+  "totalFailedCount": 4399,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45196,7 +45196,8 @@
     1793661555118,
     1793661557404,
     1793661559743,
-    1793661579548
+    1793661579548,
+    1793661582272
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49462,6 +49463,11 @@
       "t": 1793661579548,
       "rateLimited": false,
       "commentId": "17864489832695247"
+    },
+    {
+      "t": 1793661582272,
+      "rateLimited": false,
+      "commentId": "18641562187049676"
     }
   ],
   "takipTemizlik": {
