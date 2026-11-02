@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17887366962504217",
-      "mediaId": "18095527004659399",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T22:31:29.100Z",
-      "postTitle": "Kısa paragraf",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-02T22:38:26.574Z"
-    },
-    {
       "commentId": "18125020105846952",
       "mediaId": "17960529687215429",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cam susleri",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-02T22:47:04.728Z"
+    },
+    {
+      "commentId": "18602387020068336",
+      "mediaId": "18120629626941537",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T22:46:36.859Z",
+      "postTitle": "Cam susleri",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:47:07.146Z"
     }
   ],
   "retryQueue": [
@@ -44625,7 +44625,7 @@
     }
   },
   "totalSentCount": 71167,
-  "totalFailedCount": 4068,
+  "totalFailedCount": 4069,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45447,7 +45447,8 @@
     1793659616623,
     1793659619155,
     1793659621859,
-    1793659624728
+    1793659624728,
+    1793659627146
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49642,6 +49643,11 @@
       "t": 1793659624728,
       "rateLimited": false,
       "commentId": "17878798635566949"
+    },
+    {
+      "t": 1793659627146,
+      "rateLimited": false,
+      "commentId": "18602387020068336"
     }
   ],
   "takipTemizlik": {
@@ -50541,7 +50547,7 @@
     "18222315316341545": 1793659594837,
     "17949689928358687": 1793659597752,
     "17878798635566949": 1793659624729,
-    "18602387020068336": 1793659613945,
+    "18602387020068336": 1793659627146,
     "18179022649444342": 1793659616624
   }
 }
