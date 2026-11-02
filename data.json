@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18092095874229597",
-      "mediaId": "17906590086591544",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-02T20:58:40.667Z",
-      "postTitle": "Cumhuriyet yazılı pano",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T20:59:03.516Z"
-    },
-    {
       "commentId": "18117447884043095",
       "mediaId": "18118407370756371",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Takip czl",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-02T21:12:45.294Z"
+    },
+    {
+      "commentId": "17932130586421945",
+      "mediaId": "18130647685700453",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T21:12:34.685Z",
+      "postTitle": "Aborjin",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T21:12:50.836Z"
     }
   ],
   "retryQueue": [
@@ -44375,7 +44375,7 @@
     }
   },
   "totalSentCount": 71004,
-  "totalFailedCount": 3072,
+  "totalFailedCount": 3073,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44437,7 +44437,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793650070820,
     1793650073510,
     1793650081594,
     1793650084489,
@@ -45239,7 +45238,8 @@
     1793653955085,
     1793653957556,
     1793653960466,
-    1793653965294
+    1793653965294,
+    1793653970836
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49563,6 +49563,11 @@
       "t": 1793653965294,
       "rateLimited": false,
       "commentId": "18101896790356185"
+    },
+    {
+      "t": 1793653970836,
+      "rateLimited": false,
+      "commentId": "17932130586421945"
     }
   ],
   "takipTemizlik": {
@@ -50043,7 +50048,7 @@
     "18345571567286402": 1793653928461,
     "18113730503065584": 1793653952648,
     "18078700460746728": 1793653957558,
-    "17932130586421945": 1793653962817,
+    "17932130586421945": 1793653970836,
     "17993676762116665": 1793653967958
   }
 }
