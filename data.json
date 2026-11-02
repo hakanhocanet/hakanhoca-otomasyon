@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18409711081092357",
-      "mediaId": "18094502003658095",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T22:22:19.846Z",
-      "postTitle": "Vücut okuma anlama",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-02T22:24:47.580Z"
-    },
-    {
       "commentId": "18118935128061385",
       "mediaId": "18094502003658095",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Rozet",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-02T22:33:45.777Z"
+    },
+    {
+      "commentId": "18196477912395652",
+      "mediaId": "18095527004659399",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-02T22:29:01.185Z",
+      "postTitle": "Kısa paragraf",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-02T22:33:48.740Z"
     }
   ],
   "retryQueue": [
@@ -44287,7 +44287,7 @@
     }
   },
   "totalSentCount": 71158,
-  "totalFailedCount": 3911,
+  "totalFailedCount": 3912,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44349,7 +44349,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793654926468,
     1793654928863,
     1793654931708,
     1793654934454,
@@ -45129,7 +45128,8 @@
     1793658812032,
     1793658814155,
     1793658817393,
-    1793658825777
+    1793658825777,
+    1793658828740
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49395,6 +49395,11 @@
       "t": 1793658825777,
       "rateLimited": false,
       "commentId": "18126631673484371"
+    },
+    {
+      "t": 1793658828742,
+      "rateLimited": false,
+      "commentId": "18196477912395652"
     }
   ],
   "takipTemizlik": {
