@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18123927566288495",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF 2. Sınıf lütfen💐",
-      "timestamp": "2026-11-03T05:35:53.696Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:44:00 PST.",
-      "failedAt": "2026-11-03T05:44:15.612Z"
-    },
-    {
       "commentId": "17979484953145098",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T05:55:10.144Z"
+    },
+    {
+      "commentId": "18096944930139104",
+      "mediaId": "17882891364536305",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T02:29:39.319Z",
+      "postTitle": "Okuma anlama hayvan",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:43:24 PST.",
+      "failedAt": "2026-11-03T05:55:19.552Z"
     }
   ],
   "retryQueue": [
@@ -44450,7 +44450,7 @@
     }
   },
   "totalSentCount": 71492,
-  "totalFailedCount": 8634,
+  "totalFailedCount": 8635,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45259,7 +45259,8 @@
     1793685295572,
     1793685298384,
     1793685304376,
-    1793685310144
+    1793685310144,
+    1793685319552
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49380,6 +49381,11 @@
       "t": 1793685310144,
       "rateLimited": false,
       "commentId": "18180447208450518"
+    },
+    {
+      "t": 1793685319552,
+      "rateLimited": false,
+      "commentId": "18096944930139104"
     }
   ],
   "takipTemizlik": {
