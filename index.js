@@ -1262,6 +1262,10 @@ async function sendPublicReply(commentId, text, deneme = 0) {
         return sendPublicReply(commentId, text, deneme + 1);
       }
       console.error('Herkese açık cevap gönderilemedi:', hataMesaji);
+    } else {
+      // Başarı da loglanıyor - önceden sadece hatalar görünüyordu, bu da "aslında kaç tanesi
+      // gerçekten gidiyor" sorusuna loglardan cevap verebilmek için eklendi.
+      console.log(`✅ Herkese açık cevap gönderildi (yorum ${commentId}${deneme > 0 ? `, ${deneme + 1}. denemede` : ''})`);
     }
   } catch (err) {
     console.error('Herkese açık cevap bağlantı hatası:', err.message);
@@ -1276,8 +1280,11 @@ async function sendPublicReply(commentId, text, deneme = 0) {
 // her çağrı, öncekinin bitişinden HERKESE_ACIK_CEVAP_MIN_ARALIK_MS kadar sonra sıraya giriyor.
 // Böylece limite hiç yaklaşılmadan, doğal bir hızda gönderim yapılıyor; limite yine de
 // çarpılırsa yukarıdaki sendPublicReply'ın kendi iç tekrar deneme mantığı hâlâ devrede.
+// DÜZELTME (2026-11-03, 2. tur devamı): Canlı log kanıtı - 1000ms aralıkla bile yoğun
+// patlama anında limite birkaç kez çarpıldığı görüldü (iç tekrar deneme mekanizması
+// kurtardı, ama "hiç çarpılmasın" hedefine daha fazla pay bırakmak için 2000ms'e çıkarıldı).
 let herkeseAcikCevapKuyrugu = Promise.resolve();
-const HERKESE_ACIK_CEVAP_MIN_ARALIK_MS = 1000;
+const HERKESE_ACIK_CEVAP_MIN_ARALIK_MS = 2000;
 async function sendPublicReplyPaced(commentId, text) {
   const calistir = async () => {
     await sendPublicReply(commentId, text);
