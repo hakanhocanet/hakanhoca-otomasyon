@@ -1588,11 +1588,37 @@ async function taramaYap(mediaId, postConfig) {
 // Otomasyonu tanımlı olan TÜM gönderileri sırayla tarar (periyodik görev + panelden
 // "Tümünü Tara" için). Gönderiler arasına küçük bir bekleme konuyor ki Instagram'ın
 // Graph API'sini art arda, hızlıca döverek gereksiz bir hız sınırına takılmayalım.
+// DUZELTME (2026-11-03, "502 / 30 dakika asildi" krizi): Gonderi sayisi 170'e, bazilarinin
+// yorum sayisi 5000+'a cikinca TUMUNU taramak hem Cloud Scheduler'in HTTP isleri icin ASILAMAYAN
+// sabit 30 dakikalik ust sinirina carpiyordu (her 30 dakikalik otomatik tarama 1800.00 saniyede
+// tam kesiliyordu - bu Cloud Run'in timeout ayariyla degismez, Scheduler'in kendi tavani), hem de
+// dusuk bellekte (256Mi) cokmeye (502) yol aciyordu. Eski gonderilere pratikte yeni yorum
+// gelmedigi icin, otomatik taramayi SADECE Instagram'daki en yeni N gonderiyle siniriyoruz.
+// Eski/nadir bir gonderi icin elle tarama hala /admin/api/posts/:mediaId/tara ile mumkun.
+const TARAMA_SON_KAC_GONDERI = 40;
+
+async function sonGonderiIdleriniGetir(limit) {
+  const response = await fetchWithTimeout(
+    `${IG_GRAPH_BASE}/${IG_USER_ID}/media?fields=id&limit=${limit}&access_token=${igAccessToken}`
+  );
+  const result = await response.json();
+  if (result.error) throw new Error(result.error.message);
+  return (result.data || []).map((p) => p.id);
+}
+
 async function tumGonderileriTara() {
-  const config = loadConfig();
-  const mediaIdleri = Object.keys(config.posts || {});
+  const config = await readConfig();
+  let hedefMediaIdleri;
+  try {
+    const sonGonderiler = await sonGonderiIdleriniGetir(TARAMA_SON_KAC_GONDERI);
+    const sonGonderiSeti = new Set(sonGonderiler);
+    hedefMediaIdleri = Object.keys(config.posts || {}).filter((id) => sonGonderiSeti.has(id));
+  } catch (err) {
+    console.log(`\u26a0\ufe0f Son gonderi listesi alinamadi, tum yapilandirilmis gonderiler taranacak: ${err.message}`);
+    hedefMediaIdleri = Object.keys(config.posts || {});
+  }
   const sonuclar = {};
-  for (const mediaId of mediaIdleri) {
+  for (const mediaId of hedefMediaIdleri) {
     sonuclar[mediaId] = await taramaYap(mediaId, config.posts[mediaId]);
     await new Promise((r) => setTimeout(r, 1500));
   }
