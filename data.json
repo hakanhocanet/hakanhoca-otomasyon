@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18164979652492276",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Gelmiyor malesef pdf ler",
-      "timestamp": "2026-11-03T02:08:02.394Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T02:09:21.579Z"
-    },
-    {
       "commentId": "18132635155759388",
       "mediaId": "18348496705255003",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Deneme sınavı 1",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T02:18:34.303Z"
+    },
+    {
+      "commentId": "18108162689184815",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T01:43:21.205Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T02:18:37.220Z"
     }
   ],
   "retryQueue": [
@@ -44839,7 +44839,7 @@
     }
   },
   "totalSentCount": 71281,
-  "totalFailedCount": 6384,
+  "totalFailedCount": 6385,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45662,7 +45662,8 @@
     1793672295350,
     1793672308484,
     1793672311183,
-    1793672314303
+    1793672314303,
+    1793672317220
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49923,6 +49924,11 @@
       "t": 1793672314303,
       "rateLimited": false,
       "commentId": "18090816158269157"
+    },
+    {
+      "t": 1793672317220,
+      "rateLimited": false,
+      "commentId": "18108162689184815"
     }
   ],
   "takipTemizlik": {
