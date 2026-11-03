@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17977810304938099",
-      "mediaId": "18120892015985623",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T03:29:19.395Z",
-      "postTitle": "Kızılay",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T03:30:22.245Z"
-    },
-    {
       "commentId": "18132617422760943",
       "mediaId": "18074452643581110",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T03:39:31.245Z"
+    },
+    {
+      "commentId": "18099950927097277",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T01:57:39.033Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T03:39:34.497Z"
     }
   ],
   "retryQueue": [
@@ -44568,7 +44568,7 @@
     }
   },
   "totalSentCount": 71325,
-  "totalFailedCount": 7258,
+  "totalFailedCount": 7259,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45347,7 +45347,8 @@
     1793677163208,
     1793677166048,
     1793677168674,
-    1793677171245
+    1793677171245,
+    1793677174497
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49369,6 +49370,11 @@
       "t": 1793677171245,
       "rateLimited": false,
       "commentId": "18139981393733492"
+    },
+    {
+      "t": 1793677174497,
+      "rateLimited": false,
+      "commentId": "18099950927097277"
     }
   ],
   "takipTemizlik": {
