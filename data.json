@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18077818595462062",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf Sayın hocam 🌹",
-      "timestamp": "2026-11-03T01:42:09.533Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T01:47:46.657Z"
-    },
-    {
       "commentId": "18643595884018216",
       "mediaId": "18348496705255003",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 2.5",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T01:55:49.132Z"
+    },
+    {
+      "commentId": "18095464553250720",
+      "mediaId": "17874520257638019",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T01:54:33.557Z",
+      "postTitle": "Çarpma",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T01:55:56.585Z"
     }
   ],
   "retryQueue": [
@@ -44307,7 +44307,7 @@
     }
   },
   "totalSentCount": 71264,
-  "totalFailedCount": 6136,
+  "totalFailedCount": 6137,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45093,7 +45093,8 @@
     1793670938137,
     1793670940714,
     1793670943587,
-    1793670949133
+    1793670949133,
+    1793670956585
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49178,6 +49179,11 @@
       "t": 1793670949133,
       "rateLimited": false,
       "commentId": "18089514968269769"
+    },
+    {
+      "t": 1793670956585,
+      "rateLimited": false,
+      "commentId": "18095464553250720"
     }
   ],
   "takipTemizlik": {
@@ -51111,7 +51117,7 @@
     "18084782846705539": 1793670913160,
     "17906281623349613": 1793670918858,
     "18073435214768221": 1793670899972,
-    "18095464553250720": 1793670905424,
+    "18095464553250720": 1793670956585,
     "17926957062200913": 1793670954252
   }
 }
