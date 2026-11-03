@@ -1221,8 +1221,14 @@ function ilerletReplyCounter(data, mediaId, replyCount) {
   data.replyCounters[mediaId] = (currentIndex + 1) % replyCount;
 }
 
+const PUBLIC_REPLY_RETRY_GECIKMELERI_MS = [2000, 6000, 15000];
+function herkeseAcikCevapLimitHatasiMi(result) {
+  const mesaj = String((result && result.error && result.error.message) || '').toLowerCase();
+  const kod = result && result.error && result.error.code;
+  return mesaj.includes('limit') || kod === 4 || kod === 17 || kod === 32 || kod === 613;
+}
 // Yorumun altına herkese görünecek şekilde cevap yaz
-async function sendPublicReply(commentId, text) {
+async function sendPublicReply(commentId, text, deneme = 0) {
   try {
     const response = await fetchWithTimeout(
       `${IG_GRAPH_BASE}/${commentId}/replies?access_token=${igAccessToken}`,
@@ -1234,7 +1240,14 @@ async function sendPublicReply(commentId, text) {
     );
     const result = await response.json();
     if (!response.ok || result.error) {
-      console.error('Herkese açık cevap gönderilemedi:', result.error ? result.error.message : 'bilinmeyen hata');
+      const hataMesaji = result.error ? result.error.message : 'bilinmeyen hata';
+      if (herkeseAcikCevapLimitHatasiMi(result) && deneme < PUBLIC_REPLY_RETRY_GECIKMELERI_MS.length) {
+        const gecikme = PUBLIC_REPLY_RETRY_GECIKMELERI_MS[deneme];
+        console.log(`Herkese açık cevap hız sınırına takıldı, ${gecikme}ms sonra tekrar denenecek (deneme ${deneme + 1}/${PUBLIC_REPLY_RETRY_GECIKMELERI_MS.length}): ${hataMesaji}`);
+        await new Promise((r) => setTimeout(r, gecikme));
+        return sendPublicReply(commentId, text, deneme + 1);
+      }
+      console.error('Herkese açık cevap gönderilemedi:', hataMesaji);
     }
   } catch (err) {
     console.error('Herkese açık cevap bağlantı hatası:', err.message);
