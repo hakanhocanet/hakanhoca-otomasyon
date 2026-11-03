@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18133999064490694",
-      "mediaId": "17882891364536305",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T02:20:36.618Z",
-      "postTitle": "Okuma anlama hayvan",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T04:27:30.349Z"
-    },
-    {
       "commentId": "17921266254240810",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T04:36:43.349Z"
+    },
+    {
+      "commentId": "18011988965774412",
+      "mediaId": "18131322805816168",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T01:25:48.069Z",
+      "postTitle": "Sürec 4.4",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T04:36:52.614Z"
     }
   ],
   "retryQueue": [
@@ -44640,7 +44640,7 @@
     }
   },
   "totalSentCount": 71381,
-  "totalFailedCount": 7843,
+  "totalFailedCount": 7844,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45430,7 +45430,8 @@
     1793680595106,
     1793680597874,
     1793680600460,
-    1793680603349
+    1793680603349,
+    1793680612614
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49487,6 +49488,11 @@
       "t": 1793680603349,
       "rateLimited": false,
       "commentId": "18119821276786557"
+    },
+    {
+      "t": 1793680612614,
+      "rateLimited": false,
+      "commentId": "18011988965774412"
     }
   ],
   "takipTemizlik": {
