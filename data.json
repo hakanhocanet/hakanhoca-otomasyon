@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18106536272312300",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:45:09.665Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:45:20.758Z"
-    },
-    {
       "commentId": "18440901901196429",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:54:17.513Z"
+    },
+    {
+      "commentId": "18384864640233078",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "pdf",
+      "timestamp": "2026-11-03T16:54:07.044Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:54:20.344Z"
     }
   ],
   "retryQueue": [
@@ -44466,7 +44466,7 @@
     }
   },
   "totalSentCount": 71821,
-  "totalFailedCount": 15161,
+  "totalFailedCount": 15162,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44529,7 +44529,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793720957746,
     1793720963373,
     1793720969237,
     1793720974935,
@@ -45260,7 +45259,8 @@
     1793724838224,
     1793724843761,
     1793724846269,
-    1793724857513
+    1793724857513,
+    1793724860344
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49317,6 +49317,11 @@
       "t": 1793724857513,
       "rateLimited": false,
       "commentId": "17906374596351515"
+    },
+    {
+      "t": 1793724860344,
+      "rateLimited": false,
+      "commentId": "18384864640233078"
     }
   ],
   "takipTemizlik": {
@@ -53097,6 +53102,6 @@
     "18122775749472869": 1793724838224,
     "18082160750362432": 1793724843761,
     "17906374596351515": 1793724857513,
-    "18384864640233078": 1793724855000
+    "18384864640233078": 1793724860344
   }
 }
