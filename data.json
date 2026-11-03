@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18119198504054157",
-      "mediaId": "17954152596319607",
-      "fromUsername": "izzet.demir1",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T06:39:26.881Z",
-      "postTitle": "Kesir",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:03:13.239Z"
-    },
-    {
       "commentId": "18036365693669664",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Deneme sınavı 1",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Volgens het beleid voor privéantwoorden is de opmerking te oud om een antwoord te krijgen.",
       "failedAt": "2026-11-03T16:15:30.583Z"
+    },
+    {
+      "commentId": "18130943359870714",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T16:01:09.259Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): De eigenaar van de thread heeft dit gesprek gearchiveerd of verwijderd, of de thread bestaat niet.",
+      "failedAt": "2026-11-03T16:15:33.309Z"
     }
   ],
   "retryQueue": [
@@ -44530,7 +44530,7 @@
     }
   },
   "totalSentCount": 71804,
-  "totalFailedCount": 14725,
+  "totalFailedCount": 14726,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45081,7 +45081,8 @@
     1793722518729,
     1793722521462,
     1793722524628,
-    1793722530583
+    1793722530583,
+    1793722533309
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -47693,6 +47694,11 @@
       "t": 1793722530614,
       "rateLimited": false,
       "commentId": "18093804149691131"
+    },
+    {
+      "t": 1793722533309,
+      "rateLimited": false,
+      "commentId": "18130943359870714"
     }
   ],
   "takipTemizlik": {
@@ -51272,7 +51278,7 @@
     "18128570056905512": 1793721664567,
     "18318487966304672": 1793721673009,
     "17964076782217444": 1793722497531,
-    "18130943359870714": 1793722527837,
+    "18130943359870714": 1793722533309,
     "17965477125235065": 1793721691221,
     "17995842903105617": 1793721720170,
     "18038560355889779": 1793721700026,
