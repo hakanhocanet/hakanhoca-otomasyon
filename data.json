@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18642302005015170",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf 4",
-      "timestamp": "2026-11-03T05:39:16.503Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:39:16 PST.",
-      "failedAt": "2026-11-03T05:40:29.485Z"
-    },
-    {
       "commentId": "18438536197181155",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Meslekler",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T05:48:42.676Z"
+    },
+    {
+      "commentId": "18142408057714783",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T05:04:24.723Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T05:48:48.532Z"
     }
   ],
   "retryQueue": [
@@ -44468,7 +44468,7 @@
     }
   },
   "totalSentCount": 71466,
-  "totalFailedCount": 8591,
+  "totalFailedCount": 8592,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45284,7 +45284,8 @@
     1793684913810,
     1793684919923,
     1793684922676,
-    1793684925661
+    1793684925661,
+    1793684928532
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46064,11 +46065,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793681023978,
-      "rateLimited": false,
-      "commentId": "18074453207782573"
-    },
     {
       "t": 1793681030295,
       "rateLimited": false,
@@ -49463,6 +49459,11 @@
       "t": 1793684922676,
       "rateLimited": false,
       "commentId": "18141031567615700"
+    },
+    {
+      "t": 1793684928532,
+      "rateLimited": false,
+      "commentId": "18142408057714783"
     }
   ],
   "takipTemizlik": {
