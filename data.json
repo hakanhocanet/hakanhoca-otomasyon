@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17901358080387328",
-      "mediaId": "17909027472588465",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T02:38:53.343Z",
-      "postTitle": "Süreç 3.5",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T05:48:07.149Z"
-    },
-    {
       "commentId": "17977817037069738",
       "mediaId": "17965155756155757",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T06:01:02.446Z"
+    },
+    {
+      "commentId": "18180623401460510",
+      "mediaId": "17882891364536305",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T02:23:47.386Z",
+      "postTitle": "Okuma anlama hayvan",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:52:42 PST.",
+      "failedAt": "2026-11-03T06:01:05.948Z"
     }
   ],
   "retryQueue": [
@@ -44546,7 +44546,7 @@
     }
   },
   "totalSentCount": 71492,
-  "totalFailedCount": 8684,
+  "totalFailedCount": 8685,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45331,7 +45331,8 @@
     1793685641032,
     1793685650887,
     1793685658750,
-    1793685662446
+    1793685662446,
+    1793685665948
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49352,6 +49353,11 @@
       "t": 1793685662446,
       "rateLimited": false,
       "commentId": "18128570056905512"
+    },
+    {
+      "t": 1793685665948,
+      "rateLimited": false,
+      "commentId": "18180623401460510"
     }
   ],
   "takipTemizlik": {
