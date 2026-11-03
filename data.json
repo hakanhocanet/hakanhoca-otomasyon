@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18102325322367545",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:39:08.979Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:39:16.843Z"
-    },
-    {
       "commentId": "18060492875803562",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:48:28.575Z"
+    },
+    {
+      "commentId": "18152799091505064",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T16:35:43.986Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:48:32.395Z"
     }
   ],
   "retryQueue": [
@@ -44738,7 +44738,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15094,
+  "totalFailedCount": 15095,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44801,7 +44801,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793720610896,
     1793720616529,
     1793720626226,
     1793720628851,
@@ -45522,7 +45521,8 @@
     1793724490642,
     1793724500194,
     1793724502896,
-    1793724508576
+    1793724508576,
+    1793724512395
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -50000,6 +50000,11 @@
       "t": 1793724508576,
       "rateLimited": false,
       "commentId": "17911081983577488"
+    },
+    {
+      "t": 1793724512395,
+      "rateLimited": false,
+      "commentId": "18152799091505064"
     }
   ],
   "takipTemizlik": {
@@ -53694,7 +53699,7 @@
     "18151223953564021": 1793724333299,
     "18379239160240945": 1793724025334,
     "18642520321034145": 1793724466038,
-    "18152799091505064": 1793724075687,
+    "18152799091505064": 1793724512395,
     "18002054741812603": 1793724098381,
     "18100347371557515": 1793724137937,
     "18108164852344563": 1793724434227,
