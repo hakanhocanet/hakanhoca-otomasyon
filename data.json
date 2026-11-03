@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18248154187311935",
-      "mediaId": "18079904099456913",
-      "fromUsername": "ozlemm_eren",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T10:11:37.807Z",
-      "postTitle": "Cep kitabı",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 02:11:38 PST.",
-      "failedAt": "2026-11-03T10:19:24.858Z"
-    },
-    {
       "commentId": "18178946377445631",
       "mediaId": "18099351929376060",
       "fromUsername": "ozgenercann",
@@ -3251,6 +3241,16 @@
       "postTitle": "Çarpma",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 02:20:39 PST.",
       "failedAt": "2026-11-03T10:27:08.216Z"
+    },
+    {
+      "commentId": "18096283337161389",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T01:39:28.144Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 02:23:57 PST.",
+      "failedAt": "2026-11-03T10:27:13.520Z"
     }
   ],
   "retryQueue": [
@@ -44450,7 +44450,7 @@
     }
   },
   "totalSentCount": 71492,
-  "totalFailedCount": 11609,
+  "totalFailedCount": 11610,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44513,7 +44513,6 @@
     "2026-11-03": 86031
   },
   "mesajGonderimZamanlari": [
-    1793697732550,
     1793697738451,
     1793697745165,
     1793697753146,
@@ -45203,7 +45202,8 @@
     1793701609562,
     1793701617707,
     1793701623138,
-    1793701628216
+    1793701628216,
+    1793701633520
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46075,11 +46075,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793697732550,
-      "rateLimited": false,
-      "commentId": "18120943081973791"
-    },
     {
       "t": 1793697738451,
       "rateLimited": false,
@@ -49529,6 +49524,11 @@
       "t": 1793701628216,
       "rateLimited": false,
       "commentId": "18140541505729581"
+    },
+    {
+      "t": 1793701633520,
+      "rateLimited": false,
+      "commentId": "18096283337161389"
     }
   ],
   "takipTemizlik": {
