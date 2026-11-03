@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18171797884482290",
-      "mediaId": "18079904099456913",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:16:07.026Z",
-      "postTitle": "Cep kitabı",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:25:06.043Z"
-    },
-    {
       "commentId": "18117316682152436",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:34:18.887Z"
+    },
+    {
+      "commentId": "18094545653483623",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T16:34:16.549Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:34:28.366Z"
     }
   ],
   "retryQueue": [
@@ -44482,7 +44482,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 14940,
+  "totalFailedCount": 14941,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45257,7 +45257,8 @@
     1793723639782,
     1793723652534,
     1793723655982,
-    1793723658887
+    1793723658887,
+    1793723668366
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48980,6 +48981,11 @@
       "t": 1793723658887,
       "rateLimited": false,
       "commentId": "18109236053260460"
+    },
+    {
+      "t": 1793723668366,
+      "rateLimited": false,
+      "commentId": "18094545653483623"
     }
   ],
   "takipTemizlik": {
@@ -52668,6 +52674,6 @@
     "18095849141159875": 1793723622624,
     "18645744088005321": 1793723636784,
     "18131444068836589": 1793723652536,
-    "18094545653483623": 1793723662091
+    "18094545653483623": 1793723668366
   }
 }
