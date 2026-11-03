@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18134789929816637",
-      "mediaId": "18120892015985623",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T03:51:16.525Z",
-      "postTitle": "Kızılay",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T03:53:23.609Z"
-    },
-    {
       "commentId": "18133254283811986",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Uzay ",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T04:02:14.473Z"
+    },
+    {
+      "commentId": "18114498812272564",
+      "mediaId": "18074452643581110",
+      "fromUsername": "bilinmiyor",
+      "commentText": "@fundaergisibagiroz pdf lütfen",
+      "timestamp": "2026-11-03T03:24:39.505Z",
+      "postTitle": "Uzay ",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T04:02:17.294Z"
     }
   ],
   "retryQueue": [
@@ -44342,7 +44342,7 @@
     }
   },
   "totalSentCount": 71346,
-  "totalFailedCount": 7508,
+  "totalFailedCount": 7509,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44405,7 +44405,6 @@
     "2026-11-03": 86031
   },
   "mesajGonderimZamanlari": [
-    1793674635379,
     1793674637796,
     1793674640569,
     1793674646209,
@@ -45105,7 +45104,8 @@
     1793678523389,
     1793678525857,
     1793678528781,
-    1793678534473
+    1793678534473,
+    1793678537294
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -45809,11 +45809,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793674635379,
-      "rateLimited": false,
-      "commentId": "18201710644376919"
-    },
     {
       "t": 1793674637796,
       "rateLimited": false,
@@ -49031,6 +49026,11 @@
     },
     {
       "t": 1793678534473,
+      "rateLimited": false,
+      "commentId": "18114498812272564"
+    },
+    {
+      "t": 1793678537294,
       "rateLimited": false,
       "commentId": "18114498812272564"
     }
