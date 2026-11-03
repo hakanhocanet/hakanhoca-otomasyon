@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18097177862425437",
-      "mediaId": "18079904099456913",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T03:14:56.452Z",
-      "postTitle": "Cep kitabı",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 03:51:55 PST.",
-      "failedAt": "2026-11-03T11:52:29.159Z"
-    },
-    {
       "commentId": "17895710691435716",
       "mediaId": "18099351929376060",
       "fromUsername": "betulderinbagci",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 03:58:26 PST.",
       "failedAt": "2026-11-03T12:00:10.379Z"
+    },
+    {
+      "commentId": "18115569665115080",
+      "mediaId": "18121202050997933",
+      "fromUsername": "kumsal_aysel",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T11:51:49.081Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 03:58:29 PST.",
+      "failedAt": "2026-11-03T12:00:13.141Z"
     }
   ],
   "retryQueue": [
@@ -44466,7 +44466,7 @@
     }
   },
   "totalSentCount": 71492,
-  "totalFailedCount": 12748,
+  "totalFailedCount": 12749,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45314,7 +45314,8 @@
     1793707195946,
     1793707201443,
     1793707207175,
-    1793707210379
+    1793707210379,
+    1793707213141
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -50115,6 +50116,11 @@
       "t": 1793707210379,
       "rateLimited": false,
       "commentId": "18361499095223328"
+    },
+    {
+      "t": 1793707213141,
+      "rateLimited": false,
+      "commentId": "18115569665115080"
     }
   ],
   "takipTemizlik": {
