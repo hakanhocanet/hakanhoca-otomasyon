@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18137729686655465",
-      "mediaId": "18079904099456913",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T03:06:31.095Z",
-      "postTitle": "Cep kitabı",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
-      "failedAt": "2026-11-03T03:26:08.902Z"
-    },
-    {
       "commentId": "18481093639114051",
       "mediaId": "18074452643581110",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T03:35:20.006Z"
+    },
+    {
+      "commentId": "18212058040371488",
+      "mediaId": "18079904099456913",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf gönderir misiniz hocam🌸",
+      "timestamp": "2026-11-03T03:05:21.428Z",
+      "postTitle": "Cep kitabı",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T03:35:22.963Z"
     }
   ],
   "retryQueue": [
@@ -44568,7 +44568,7 @@
     }
   },
   "totalSentCount": 71323,
-  "totalFailedCount": 7211,
+  "totalFailedCount": 7212,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45354,7 +45354,8 @@
     1793676912067,
     1793676914724,
     1793676917213,
-    1793676920006
+    1793676920006,
+    1793676922963
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49413,6 +49414,11 @@
       "t": 1793676920006,
       "rateLimited": false,
       "commentId": "18416387011083492"
+    },
+    {
+      "t": 1793676922964,
+      "rateLimited": false,
+      "commentId": "18212058040371488"
     }
   ],
   "takipTemizlik": {
