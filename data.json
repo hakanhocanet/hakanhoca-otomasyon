@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18094069964689497",
-      "mediaId": "18120892015985623",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T04:21:18.981Z",
-      "postTitle": "Kızılay",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T05:33:51.667Z"
-    },
-    {
       "commentId": "17878990785651415",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:42:16 PST.",
       "failedAt": "2026-11-03T05:42:31.263Z"
+    },
+    {
+      "commentId": "17935542183145873",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf 2. Sinif",
+      "timestamp": "2026-11-03T05:42:03.609Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:42:03 PST.",
+      "failedAt": "2026-11-03T05:42:33.881Z"
     }
   ],
   "retryQueue": [
@@ -44429,7 +44429,7 @@
     }
   },
   "totalSentCount": 71457,
-  "totalFailedCount": 8512,
+  "totalFailedCount": 8513,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45230,7 +45230,8 @@
     1793684532806,
     1793684543307,
     1793684548443,
-    1793684551263
+    1793684551263,
+    1793684553881
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49338,6 +49339,11 @@
       "t": 1793684551263,
       "rateLimited": false,
       "commentId": "18126206740931167"
+    },
+    {
+      "t": 1793684553881,
+      "rateLimited": false,
+      "commentId": "17935542183145873"
     }
   ],
   "takipTemizlik": {
@@ -52552,6 +52558,6 @@
     "18116702615101613": 1793684449608,
     "18106304552645753": 1793684479839,
     "18169962643412642": 1793684521626,
-    "17935542183145873": 1793684535309
+    "17935542183145873": 1793684553882
   }
 }
