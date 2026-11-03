@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17905938786605769",
-      "mediaId": "17917953960526009",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T23:52:54.703Z",
-      "postTitle": "Atatürk boyama ",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
-      "failedAt": "2026-11-03T00:04:06.077Z"
-    },
-    {
       "commentId": "18125265859714870",
       "mediaId": "18070694351764976",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kısa paragraf gunluk",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T00:13:49.020Z"
+    },
+    {
+      "commentId": "18087068531322196",
+      "mediaId": "18344181106260823",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T00:12:42.645Z",
+      "postTitle": "Geometrik",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T00:13:53.692Z"
     }
   ],
   "retryQueue": [
@@ -44300,7 +44300,7 @@
     }
   },
   "totalSentCount": 71233,
-  "totalFailedCount": 5008,
+  "totalFailedCount": 5009,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45113,7 +45113,8 @@
     1793664703530,
     1793664706538,
     1793664708838,
-    1793664829020
+    1793664829020,
+    1793664833692
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49338,6 +49339,11 @@
       "t": 1793664829020,
       "rateLimited": false,
       "commentId": "18232509691331920"
+    },
+    {
+      "t": 1793664833692,
+      "rateLimited": false,
+      "commentId": "18087068531322196"
     }
   ],
   "takipTemizlik": {
@@ -50661,6 +50667,7 @@
     "17967380883197871": 1793664708838,
     "18076192988569073": 1793664711215,
     "18035272520887170": 1793664823502,
-    "17977731237160824": 1793664831249
+    "17977731237160824": 1793664831249,
+    "18087068531322196": 1793664833692
   }
 }
