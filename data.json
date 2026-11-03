@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18249344926312804",
-      "mediaId": "17977430708932492",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-03T16:13:44.877Z",
-      "postTitle": "Süreç 2.5",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:21:50.299Z"
-    },
-    {
       "commentId": "18099083489451118",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De eigenaar van de thread heeft dit gesprek gearchiveerd of verwijderd, of de thread bestaat niet.",
       "failedAt": "2026-11-03T16:30:45.484Z"
+    },
+    {
+      "commentId": "18374942269214837",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T16:30:38.967Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:30:48.458Z"
     }
   ],
   "retryQueue": [
@@ -44514,7 +44514,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 14899,
+  "totalFailedCount": 14900,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45248,7 +45248,8 @@
     1793723423781,
     1793723434700,
     1793723437863,
-    1793723445484
+    1793723445484,
+    1793723448458
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -48766,6 +48767,11 @@
       "t": 1793723445484,
       "rateLimited": false,
       "commentId": "18441836185179076"
+    },
+    {
+      "t": 1793723448458,
+      "rateLimited": false,
+      "commentId": "18374942269214837"
     }
   ],
   "takipTemizlik": {
@@ -52439,6 +52445,6 @@
     "18109236053260460": 1793723404087,
     "18490765432128282": 1793723419207,
     "18060492875803562": 1793723434700,
-    "18374942269214837": 1793723442168
+    "18374942269214837": 1793723448458
   }
 }
