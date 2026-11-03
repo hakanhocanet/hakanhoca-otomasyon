@@ -1316,7 +1316,14 @@ async function sendPublicReplyPaced(commentId, text) {
 // şekilde tekrar deneniyor, bu yeni sayaca hiç dahil edilmiyor.
 async function attemptSend(commentId, message, record, ekMutator, publicReplyMetni, deneme) {
   const mevcutDeneme = typeof deneme === 'number' ? deneme : 0;
-  const GECICI_HATA_MAX_DENEME = 2;
+  // DÜZELTME (2026-11-03, gece yarısı, canlı kanıt): Bu gecenin aşırı yoğun trafiğinde, Meta'nın
+  // KENDİ geçici hız sınırı ("De snelheidsbegrenzing is overschreden" / "An unknown error has
+  // occurred") öyle sık ve öyle UZUN sürüyor ki, sadece 2 hak (toplam ~2 dakikalık pencere) çoğu
+  // zaman yetmiyordu - son 8 dakikada 31 DM bu yüzden KALICI olarak "vazgeçildi" diye kaybolmuş
+  // (loglardan doğrulandı). Her hak, tekrar deneme kuyruğunun ~1 dakikalık döngüsünde bir şans
+  // demek - 2'den 8'e çıkarmak, Meta'nın bu geçici frenin açılması için ~8 dakikaya kadar zaman
+  // tanıyor, kalıcı kayıp olasılığını ciddi şekilde azaltıyor.
+  const GECICI_HATA_MAX_DENEME = 8;
 
   // Rate-limit dışı bir hatada ortak davranış: hak varsa sessizce kuyruğa geri koy (bir
   // sonraki ~1 dakikalık döngüde tekrar denenecek), hak biterse gerçekten vazgeç.
