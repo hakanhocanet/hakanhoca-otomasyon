@@ -1189,19 +1189,28 @@ async function handleComment(value) {
     if (sent) {
       await logSent(baseRecord, ekMutator);
       console.log(`✅ Butonlu (tıklanabilir linkli) DM gönderildi: @${record.fromUsername}`);
+      // DM GERÇEKTEN şimdi, az önce başarıyla gitti - herkese açık "gönderdim" cevabı da
+      // TAM BU ANDA, DM ile birlikte gönderiliyor.
+      if (publicReplyMetni) {
+        await sendPublicReplyPaced(commentId, publicReplyMetni);
+      }
     }
   }
 
+  // DÜZELTME (2026-11-03, 3. tur): Burada ESKİDEN, attemptSend'in SONUCUNA HİÇ BAKILMADAN
+  // (DM gerçekten gitti mi, Meta'nın kendi limitine çarpıp kuyruğa mı düştü, yoksa tamamen mi
+  // başarısız olup vazgeçildi bakılmadan) herkese açık cevap HER ZAMAN gönderiliyordu - yani DM
+  // kuyruğa düşse ya da hiç gitmese bile "gönderdim" cevabı yine de gidiyordu. Bu, en üstteki
+  // saatlik-limit kontrolünde (saatlikLimitDoluMu, bkz. yukarısı) zaten önlenmiş olan AYNI
+  // dürüstlük sorununun, attemptSend İÇİNDE oluşan diğer gecikme/limit/hata durumları için
+  // önlenmemiş hâliydi. ÇÖZÜM: publicReplyMetni artık buraya değil, DOĞRUDAN attemptSend'e
+  // veriliyor - tıpkı kuyruktan gelen çağrılarda zaten yapıldığı gibi. attemptSend KENDİSİ,
+  // SADECE DM gerçekten başarıyla gittiğinde herkese açık cevabı tetikliyor; DM kuyruğa
+  // düşerse publicReplyMetni kuyruk öğesiyle BİRLİKTE taşınıp DM gerçekten gittiği an
+  // (ileride) gönderiliyor; DM tamamen başarısız olup vazgeçilirse hiç gönderilmiyor.
   if (!sent) {
     const message = buildMessage(postConfig, config);
-    await attemptSend(commentId, message, baseRecord, ekMutator);
-  }
-
-  // Herkese açık yorum cevabı da gönder (varsa) - metin yukarıda zaten seçildi, sayaç da
-  // yukarıdaki DM kaydıyla birlikte kalıcı olarak ilerletildi. DM ŞİMDİ gönderilmeye
-  // çalışıldığı (sıraya alınmadığı) için bu cevap da hemen, DM ile aynı anda gidiyor.
-  if (publicReplyMetni) {
-    await sendPublicReplyPaced(commentId, publicReplyMetni);
+    await attemptSend(commentId, message, baseRecord, ekMutator, publicReplyMetni);
   }
 }
 
