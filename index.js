@@ -1606,16 +1606,17 @@ async function sonGonderiIdleriniGetir(limit) {
   return (result.data || []).map((p) => p.id);
 }
 
-async function tumGonderileriTara() {
+async function tumGonderileriTara(sadeceSonNGonderi = true) {
   const config = await readConfig();
-  let hedefMediaIdleri;
-  try {
-    const sonGonderiler = await sonGonderiIdleriniGetir(TARAMA_SON_KAC_GONDERI);
-    const sonGonderiSeti = new Set(sonGonderiler);
-    hedefMediaIdleri = Object.keys(config.posts || {}).filter((id) => sonGonderiSeti.has(id));
-  } catch (err) {
-    console.log(`\u26a0\ufe0f Son gonderi listesi alinamadi, tum yapilandirilmis gonderiler taranacak: ${err.message}`);
-    hedefMediaIdleri = Object.keys(config.posts || {});
+  let hedefMediaIdleri = Object.keys(config.posts || {});
+  if (sadeceSonNGonderi) {
+    try {
+      const sonGonderiler = await sonGonderiIdleriniGetir(TARAMA_SON_KAC_GONDERI);
+      const sonGonderiSeti = new Set(sonGonderiler);
+      hedefMediaIdleri = hedefMediaIdleri.filter((id) => sonGonderiSeti.has(id));
+    } catch (err) {
+      console.log(`\u26a0\ufe0f Son gonderi listesi alinamadi, tum yapilandirilmis gonderiler taranacak: ${err.message}`);
+    }
   }
   const sonuclar = {};
   for (const mediaId of hedefMediaIdleri) {
@@ -1848,7 +1849,7 @@ app.post('/admin/api/posts/:mediaId/tara', async (req, res) => {
 // Otomasyonu tanımlı TÜM gönderileri tek seferde tarar (panelden "Tümünü Tara" butonu).
 app.post('/admin/api/posts/tara-tumu', async (req, res) => {
   try {
-    const sonuclar = await tumGonderileriTara();
+    const sonuclar = await tumGonderileriTara(false);
     const bulunan = Object.values(sonuclar).reduce((a, s) => a + s.bulunan, 0);
     const islenen = Object.values(sonuclar).reduce((a, s) => a + s.islenen, 0);
     res.json({ ok: true, bulunan, islenen, sonuclar });
