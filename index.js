@@ -1451,6 +1451,12 @@ async function tekrarDenemeDongusuCalistir() {
     data.retryQueue = [];
   });
   if (queue.length === 0) return;
+
+  // DUZELTME (2026-11-03, "bozuk gorunumlu link" sikayeti): kuyruktan giden mesajlar da
+  // artik once butonlu mesaji deniyor (anlik giden mesajlarla ayni mantik), sadece o
+  // basarisiz olursa duz metne (link mesajin icinde) donuluyor.
+  const config = await readConfig();
+
   for (let i = 0; i < queue.length; i++) {
     // Bu döngü sırasında da saatlik güvenli sınıra ulaşılmış olabilir (örn. kuyrukta çok
     // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
@@ -1477,7 +1483,23 @@ async function tekrarDenemeDongusuCalistir() {
     // NOT: ekMutator burada yine verilmiyor (orijinal yorum anında zaten uygulandı - bkz.
     // handleComment/addToRetryQueue), ama item.publicReplyMetni ve item.deneme veriliyor ki
     // hem herkese açık cevap doğru anda gitsin, hem de geçici-hata deneme sayacı korunsun.
-    await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni, item.deneme);
+    const postConfig = item.record && item.record.mediaId ? config.posts[item.record.mediaId] : null;
+    let butonlaGitti = false;
+    if (postConfig && postConfig.link) {
+      butonlaGitti = await trySendButtonMessage(
+        item.commentId,
+        buildButtonText(postConfig),
+        postConfig.link,
+        postConfig.buttonTitle || "PDF'e Ulas"
+      );
+      if (butonlaGitti) {
+        await logSent(item.record, undefined);
+        if (item.publicReplyMetni) await sendPublicReply(item.commentId, item.publicReplyMetni);
+      }
+    }
+    if (!butonlaGitti) {
+      await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni, item.deneme);
+    }
     await new Promise((r) => setTimeout(r, 2000));
   }
 }
