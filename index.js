@@ -1513,7 +1513,7 @@ async function taramaYap(mediaId, postConfig) {
   // handleComment() çağrıldığında zaten kendi GÜNCEL/senkron kontrolünü ayrıca yapıyor,
   // bu sadece Instagram'dan GEREKSİZ yere tekrar tekrar aynı yorum için handleComment
   // çağırmamak için ucuz bir ön-filtre.
-  const data = loadData();
+  const data = await readData();
   const islenenler = data.islenenYorumIdleri || {};
 
   try {
