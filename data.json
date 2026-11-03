@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18023230730943999",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:32:32.073Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:43:31.608Z"
-    },
-    {
       "commentId": "18353179993281870",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:52:13.605Z"
+    },
+    {
+      "commentId": "17965195224239743",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF 4. Sınıf",
+      "timestamp": "2026-11-03T16:51:56.687Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:52:16.865Z"
     }
   ],
   "retryQueue": [
@@ -44674,7 +44674,7 @@
     }
   },
   "totalSentCount": 71820,
-  "totalFailedCount": 15139,
+  "totalFailedCount": 15140,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45463,7 +45463,8 @@
     1793724717722,
     1793724720409,
     1793724730366,
-    1793724733605
+    1793724733605,
+    1793724736865
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49440,6 +49441,11 @@
       "t": 1793724733605,
       "rateLimited": false,
       "commentId": "18135065218707987"
+    },
+    {
+      "t": 1793724736865,
+      "rateLimited": false,
+      "commentId": "17965195224239743"
     }
   ],
   "takipTemizlik": {
@@ -53207,6 +53213,6 @@
     "17980244261918850": 1793724706367,
     "18081550379392356": 1793724714542,
     "18039707414894030": 1793724711848,
-    "17965195224239743": 1793724724382
+    "17965195224239743": 1793724736865
   }
 }
