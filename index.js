@@ -1201,7 +1201,7 @@ async function handleComment(value) {
   // yukarıdaki DM kaydıyla birlikte kalıcı olarak ilerletildi. DM ŞİMDİ gönderilmeye
   // çalışıldığı (sıraya alınmadığı) için bu cevap da hemen, DM ile aynı anda gidiyor.
   if (publicReplyMetni) {
-    await sendPublicReply(commentId, publicReplyMetni);
+    await sendPublicReplyPaced(commentId, publicReplyMetni);
   }
 }
 
@@ -1259,6 +1259,27 @@ async function sendPublicReply(commentId, text, deneme = 0) {
   }
 }
 
+// DÜZELTME (2026-11-03, 2. tur): Yukarıdaki 3 adımlı tekrar deneme (2sn/6sn/15sn) hız
+// sınırına ÇARPTIKTAN SONRA devreye giriyordu - ama kullanıcı yoğun trafikte limitin HİÇ
+// çarpılmamasını istiyor ("önceden herkese cevap veriyorduk hızlı hızlı bunda limit okyut").
+// Bu yüzden DM tarafındaki kuyruk mantığıyla aynı fikirde (promise-chain mutex), herkese açık
+// cevapları da art arda patlatmak yerine ARALIKLI/YAVAŞÇA göndermek için bir "pacer" eklendi:
+// her çağrı, öncekinin bitişinden HERKESE_ACIK_CEVAP_MIN_ARALIK_MS kadar sonra sıraya giriyor.
+// Böylece limite hiç yaklaşılmadan, doğal bir hızda gönderim yapılıyor; limite yine de
+// çarpılırsa yukarıdaki sendPublicReply'ın kendi iç tekrar deneme mantığı hâlâ devrede.
+let herkeseAcikCevapKuyrugu = Promise.resolve();
+const HERKESE_ACIK_CEVAP_MIN_ARALIK_MS = 1000;
+async function sendPublicReplyPaced(commentId, text) {
+  const calistir = async () => {
+    await sendPublicReply(commentId, text);
+    await new Promise((r) => setTimeout(r, HERKESE_ACIK_CEVAP_MIN_ARALIK_MS));
+  };
+  const sonraki = herkeseAcikCevapKuyrugu.then(calistir);
+  // Önceki cevap hata fırlatsa bile kuyruk TIKANMASIN - bir sonraki cevap yine de gidebilsin.
+  herkeseAcikCevapKuyrugu = sonraki.catch(() => {});
+  return sonraki;
+}
+
 // Yoruma özel mesaj (DM) gönder - Instagram Login / graph.instagram.com üzerinden
 //
 // "publicReplyMetni" parametresi SADECE kuyruktan (tekrar deneme döngüsünden) gelen
@@ -1314,7 +1335,7 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
       // DM GERÇEKTEN şimdi gitti - kuyruktan geliyorsa (publicReplyMetni doluysa), herkese
       // açık "gönderdim" cevabı da TAM BU ANDA, DM ile birlikte gönderiliyor.
       if (publicReplyMetni) {
-        await sendPublicReply(commentId, publicReplyMetni);
+        await sendPublicReplyPaced(commentId, publicReplyMetni);
       }
     } else {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
@@ -1530,7 +1551,7 @@ async function tekrarDenemeDongusuCalistir() {
       );
       if (butonlaGitti) {
         await logSent(item.record, undefined);
-        if (item.publicReplyMetni) await sendPublicReply(item.commentId, item.publicReplyMetni);
+        if (item.publicReplyMetni) await sendPublicReplyPaced(item.commentId, item.publicReplyMetni);
       }
     }
     if (!butonlaGitti) {
