@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17954219625288786",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF 4. Sınıf",
-      "timestamp": "2026-11-03T05:09:59.656Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T05:38:48.499Z"
-    },
-    {
       "commentId": "18137719951561352",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:46:35 PST.",
       "failedAt": "2026-11-03T05:46:36.798Z"
+    },
+    {
+      "commentId": "17875466664639305",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf 4. Sınıf",
+      "timestamp": "2026-11-03T05:37:33.786Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:46:32 PST.",
+      "failedAt": "2026-11-03T05:46:39.050Z"
     }
   ],
   "retryQueue": [
@@ -44560,7 +44560,7 @@
     }
   },
   "totalSentCount": 71460,
-  "totalFailedCount": 8569,
+  "totalFailedCount": 8570,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45372,7 +45372,8 @@
     1793684786273,
     1793684789059,
     1793684791495,
-    1793684796798
+    1793684796798,
+    1793684799050
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49534,6 +49535,11 @@
       "t": 1793684796798,
       "rateLimited": false,
       "commentId": "18162848968501877"
+    },
+    {
+      "t": 1793684799050,
+      "rateLimited": false,
+      "commentId": "17875466664639305"
     }
   ],
   "takipTemizlik": {
@@ -52733,7 +52739,7 @@
     "18079742669720991": 1793684745503,
     "17952165096309627": 1793684756200,
     "18113972759132803": 1793684789059,
-    "17875466664639305": 1793684793988,
+    "17875466664639305": 1793684799050,
     "18080148965410772": 1793684357401,
     "17987514831079523": 1793684362630,
     "17976195591160032": 1793684365075,
