@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18078997868735451",
-      "mediaId": "18120892015985623",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdfv",
-      "timestamp": "2026-11-03T03:35:58.814Z",
-      "postTitle": "Kızılay",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
-      "failedAt": "2026-11-03T04:20:22.368Z"
-    },
-    {
       "commentId": "18122049640962318",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T04:29:14.522Z"
+    },
+    {
+      "commentId": "18372958888208337",
+      "mediaId": "18120892015985623",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Öğretmenim pdf rica edebilirmiyim",
+      "timestamp": "2026-11-03T03:30:23.379Z",
+      "postTitle": "Kızılay",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T04:29:17.412Z"
     }
   ],
   "retryQueue": [
@@ -44551,7 +44551,7 @@
     }
   },
   "totalSentCount": 71369,
-  "totalFailedCount": 7767,
+  "totalFailedCount": 7768,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45342,7 +45342,8 @@
     1793680131603,
     1793680147996,
     1793680151931,
-    1793680154522
+    1793680154522,
+    1793680157412
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49414,6 +49415,11 @@
       "t": 1793680154522,
       "rateLimited": false,
       "commentId": "18135135511672091"
+    },
+    {
+      "t": 1793680157412,
+      "rateLimited": false,
+      "commentId": "18372958888208337"
     }
   ],
   "takipTemizlik": {
@@ -51900,7 +51906,7 @@
     "18137550979749875": 1793678588346,
     "18098628056558308": 1793678599404,
     "18126942584311443": 1793678838924,
-    "18372958888208337": 1793678919134,
+    "18372958888208337": 1793680157412,
     "18081875945541127": 1793679004269,
     "18126588208902811": 1793676689902,
     "17915640567288463": 1793679261920,
