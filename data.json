@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17874163206640440",
-      "mediaId": "18099371921345004",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T21:28:01.524Z",
-      "postTitle": "Atatürk 10 kasim",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T21:33:02.637Z"
-    },
-    {
       "commentId": "18193104436410831",
       "mediaId": "18099371921345004",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Atatürk 10 kasim",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T21:40:19.957Z"
+    },
+    {
+      "commentId": "18155141281540946",
+      "mediaId": "18099371921345004",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf lütfen",
+      "timestamp": "2026-11-03T21:40:16.155Z",
+      "postTitle": "Atatürk 10 kasim",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "failedAt": "2026-11-03T21:40:22.179Z"
     }
   ],
   "retryQueue": [
@@ -11132,7 +11132,7 @@
     }
   },
   "totalSentCount": 72545,
-  "totalFailedCount": 17580,
+  "totalFailedCount": 17581,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11996,7 +11996,8 @@
     1793742002571,
     1793742011033,
     1793742013346,
-    1793742019957
+    1793742019957,
+    1793742022179
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16378,6 +16379,11 @@
       "t": 1793742019957,
       "rateLimited": false,
       "commentId": "17918135202530081"
+    },
+    {
+      "t": 1793742022179,
+      "rateLimited": false,
+      "commentId": "18155141281540946"
     }
   ],
   "takipTemizlik": {
@@ -22252,6 +22258,6 @@
     "18159685579516359": 1793741995411,
     "18078885173412689": 1793742002572,
     "18161686894505668": 1793742013346,
-    "18155141281540946": 1793742017567
+    "18155141281540946": 1793742022180
   }
 }
