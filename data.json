@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18104695427329555",
-      "mediaId": "17917953960526009",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf @ilkemutluer",
-      "timestamp": "2026-11-02T23:53:45.650Z",
-      "postTitle": "Atatürk boyama ",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-02T23:55:02.811Z"
-    },
-    {
       "commentId": "18098774489210988",
       "mediaId": "17917953960526009",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sıvıları olcme",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T00:04:03.251Z"
+    },
+    {
+      "commentId": "17905938786605769",
+      "mediaId": "17917953960526009",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-02T23:52:54.703Z",
+      "postTitle": "Atatürk boyama ",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T00:04:06.077Z"
     }
   ],
   "retryQueue": [
@@ -44443,7 +44443,7 @@
     }
   },
   "totalSentCount": 71231,
-  "totalFailedCount": 4908,
+  "totalFailedCount": 4909,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45259,7 +45259,8 @@
     1793664223700,
     1793664229419,
     1793664237159,
-    1793664243251
+    1793664243251,
+    1793664246077
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49472,6 +49473,11 @@
       "t": 1793664243251,
       "rateLimited": false,
       "commentId": "18140144233713730"
+    },
+    {
+      "t": 1793664246077,
+      "rateLimited": false,
+      "commentId": "17905938786605769"
     }
   ],
   "takipTemizlik": {
