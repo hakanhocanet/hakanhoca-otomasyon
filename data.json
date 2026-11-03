@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18079085282409443",
-      "mediaId": "17977430708932492",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF gelmedi tekrar gönderebilir misiniz",
-      "timestamp": "2026-11-03T01:35:26.831Z",
-      "postTitle": "Süreç 2.5",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T01:45:00.669Z"
-    },
-    {
       "commentId": "18078158708741501",
       "mediaId": "18348496705255003",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 2.5",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T01:52:51.945Z"
+    },
+    {
+      "commentId": "18057779936583698",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T01:52:01.760Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T01:52:54.672Z"
     }
   ],
   "retryQueue": [
@@ -44403,7 +44403,7 @@
     }
   },
   "totalSentCount": 71263,
-  "totalFailedCount": 6101,
+  "totalFailedCount": 6102,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45190,7 +45190,8 @@
     1793670764025,
     1793670766550,
     1793670769431,
-    1793670771945
+    1793670771945,
+    1793670774672
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49293,6 +49294,11 @@
       "t": 1793670771945,
       "rateLimited": false,
       "commentId": "18079889978416763"
+    },
+    {
+      "t": 1793670774672,
+      "rateLimited": false,
+      "commentId": "18057779936583698"
     }
   ],
   "takipTemizlik": {
@@ -51208,7 +51214,7 @@
     "18098066348542296": 1793670730872,
     "18015145490989821": 1793670764025,
     "17988006284886471": 1793670769431,
-    "18057779936583698": 1793670751653,
+    "18057779936583698": 1793670774672,
     "17953269999335935": 1793670754000,
     "18118093733091060": 1793670756371,
     "18108384767209357": 1793670758986,
