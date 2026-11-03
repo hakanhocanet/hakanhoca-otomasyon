@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18201634720375930",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T01:52:51.340Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T03:30:41.022Z"
-    },
-    {
       "commentId": "18137550979749875",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T03:39:55.303Z"
+    },
+    {
+      "commentId": "17909893770589739",
+      "mediaId": "17882891364536305",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T02:22:50.303Z",
+      "postTitle": "Okuma anlama hayvan",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T03:39:58.680Z"
     }
   ],
   "retryQueue": [],
@@ -44311,7 +44311,7 @@
     }
   },
   "totalSentCount": 71326,
-  "totalFailedCount": 7263,
+  "totalFailedCount": 7264,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45094,7 +45094,8 @@
     1793677179709,
     1793677190426,
     1793677193019,
-    1793677195303
+    1793677195303,
+    1793677198680
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49135,6 +49136,11 @@
       "t": 1793677195303,
       "rateLimited": false,
       "commentId": "18242622607315965"
+    },
+    {
+      "t": 1793677198680,
+      "rateLimited": false,
+      "commentId": "17909893770589739"
     }
   ],
   "takipTemizlik": {
