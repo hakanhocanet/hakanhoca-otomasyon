@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18143312443720346",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf 3 sınıf",
-      "timestamp": "2026-11-03T16:43:13.993Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:48:57.826Z"
-    },
-    {
       "commentId": "18109376708208018",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:57:38.205Z"
+    },
+    {
+      "commentId": "18109376708208018",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF lütfen",
+      "timestamp": "2026-11-03T16:41:16.774Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:57:44.461Z"
     }
   ],
   "retryQueue": [
@@ -44930,7 +44930,7 @@
     }
   },
   "totalSentCount": 71825,
-  "totalFailedCount": 15198,
+  "totalFailedCount": 15199,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44993,7 +44993,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793721163407,
     1793721171859,
     1793721182604,
     1793721188154,
@@ -45721,7 +45720,8 @@
     1793725052275,
     1793725055398,
     1793725058205,
-    1793725061268
+    1793725061268,
+    1793725064461
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49751,6 +49751,11 @@
       "t": 1793725058205,
       "rateLimited": false,
       "commentId": "18115617628857670"
+    },
+    {
+      "t": 1793725064461,
+      "rateLimited": false,
+      "commentId": "18109376708208018"
     }
   ],
   "takipTemizlik": {
@@ -53471,7 +53476,7 @@
     "17978649000152847": 1793724846269,
     "18136216090709295": 1793724922154,
     "18114156818141314": 1793724531092,
-    "18109376708208018": 1793724542872,
+    "18109376708208018": 1793725064461,
     "17994514449103059": 1793724556292,
     "18079316411755351": 1793724578757,
     "17908285776573688": 1793724595691,
