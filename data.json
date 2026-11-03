@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18060492875803562",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:30:25.293Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:34:44.063Z"
-    },
-    {
       "commentId": "18094118621693672",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:43:48.953Z"
+    },
+    {
+      "commentId": "18131444068836589",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T16:34:01.179Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:43:51.845Z"
     }
   ],
   "retryQueue": [
@@ -44626,7 +44626,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15043,
+  "totalFailedCount": 15044,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45411,7 +45411,8 @@
     1793724211608,
     1793724217283,
     1793724225966,
-    1793724228953
+    1793724228953,
+    1793724231845
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49634,6 +49635,11 @@
       "t": 1793724228953,
       "rateLimited": false,
       "commentId": "18113558015162933"
+    },
+    {
+      "t": 1793724231845,
+      "rateLimited": false,
+      "commentId": "18131444068836589"
     }
   ],
   "takipTemizlik": {
@@ -53321,7 +53327,7 @@
     "18136883536659094": 1793723872805,
     "18095849141159875": 1793724147732,
     "18645744088005321": 1793724193485,
-    "18131444068836589": 1793723934871,
+    "18131444068836589": 1793724231845,
     "18094545653483623": 1793724202408,
     "18076057106760587": 1793723950961,
     "18343869499275113": 1793723973361,
