@@ -30,10 +30,19 @@ const IG_GRAPH_BASE = 'https://graph.instagram.com/v23.0';
 // Sunucu çalışırken otomatik yenilendikçe bu değişken güncellenir.
 let igAccessToken = process.env.IG_ACCESS_TOKEN;
 
-// Token'ı kalıcı olarak Render'ın ortam değişkenine de yazmak için (opsiyonel ama önerilir).
-// Bu ikisi ayarlanmazsa, yenileme yine çalışır ama sadece sunucu yeniden başlamadığı sürece geçerli olur.
-const RENDER_API_KEY = process.env.RENDER_API_KEY;
-const RENDER_SERVICE_ID = process.env.RENDER_SERVICE_ID;
+// GOOGLE CLOUD RUN TAŞIMASI: Token artık Render'ın API'si yerine GitHub'daki config.json'a
+// (config.igAccessToken) kalıcı olarak yazılıyor - bkz. refreshAccessToken() ve
+// ilkAcilistaGithubdanSenkronizeEt(). Bu sayede konteyner Cloud Run'da sıfırdan açılsa
+// (env değişkenleri deploy anında sabitlenmiş olsa) bile en güncel token GitHub'dan okunuyor.
+
+// Cloud Scheduler'ın (Render'da setInterval ile yapılan arka plan görevlerinin yerine geçen
+// dış tetikleyici) /internal/cron/* uç noktalarını admin şifresi olmadan, ama yetkisiz
+// erişime kapalı şekilde çağırabilmesi için paylaşılan gizli anahtar.
+const CRON_SECRET = process.env.CRON_SECRET;
+// Yerel/eski "her zaman açık sunucu" davranışını (setInterval ile arka plan görevleri) sadece
+// açıkça istenirse etkinleştirir. Cloud Run'da bu ayarlanmaz - görevler Cloud Scheduler'dan
+// gelen gerçek HTTP istekleriyle /internal/cron/* üzerinden tetiklenir (bkz. ilgili bölüm).
+const ENABLE_LOCAL_TIMERS = process.env.ENABLE_LOCAL_TIMERS === 'true';
 
 // GitHub'a otomatik kaydetme (panel değişiklikleri kalıcı olsun diye - restart sonrası kaybolmasın)
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -193,6 +202,7 @@ function loadData() {
       mesajGonderimZamanlari: [], postSendCounts: {}, eslesmeyenYorumlar: [],
       totalRateLimitDeferCount: 0,
       basariliZamanlari: [], basarisizZamanlariDetay: [],
+      takipTemizlik: { kuyruk: [] },
     };
   }
   const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
@@ -204,6 +214,7 @@ function loadData() {
   if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
   if (!data.basariliZamanlari) data.basariliZamanlari = [];
   if (!data.basarisizZamanlariDetay) data.basarisizZamanlariDetay = [];
+  if (!data.takipTemizlik) data.takipTemizlik = { kuyruk: [] };
   if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent ? data.sent.length : 0;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed ? data.failed.length : 0;
@@ -269,6 +280,7 @@ async function fetchGithubData() {
   if (!data.eslesmeyenYorumlar) data.eslesmeyenYorumlar = [];
   if (!data.basariliZamanlari) data.basariliZamanlari = [];
   if (!data.basarisizZamanlariDetay) data.basarisizZamanlariDetay = [];
+  if (!data.takipTemizlik) data.takipTemizlik = { kuyruk: [] };
   if (typeof data.totalRateLimitDeferCount !== 'number') data.totalRateLimitDeferCount = 0;
   if (typeof data.totalSentCount !== 'number') data.totalSentCount = data.sent.length;
   if (typeof data.totalFailedCount !== 'number') data.totalFailedCount = data.failed.length;
@@ -389,11 +401,13 @@ function loadConfig() {
       publicReplyTemplates: [...DEFAULT_PUBLIC_REPLY_TEMPLATES],
       defaultMessageTemplate: DEFAULT_MESSAGE_TEMPLATE,
       blacklistedUsers: [], automationPaused: false,
+      igAccessToken: null,
     };
   }
   const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
   if (!config.pendingTemplates) config.pendingTemplates = {};
   if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
+  if (typeof config.igAccessToken !== 'string') config.igAccessToken = null;
   if (!Array.isArray(config.publicReplyTemplates) || config.publicReplyTemplates.length === 0) {
     config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
   }
@@ -420,6 +434,7 @@ async function fetchGithubConfig() {
   if (!config.posts) config.posts = {};
   if (!config.pendingTemplates) config.pendingTemplates = {};
   if (!config.tokenRefreshedAt) config.tokenRefreshedAt = null;
+  if (typeof config.igAccessToken !== 'string') config.igAccessToken = null;
   if (!Array.isArray(config.publicReplyTemplates) || config.publicReplyTemplates.length === 0) {
     config.publicReplyTemplates = [...DEFAULT_PUBLIC_REPLY_TEMPLATES];
   }
@@ -632,7 +647,7 @@ async function refreshAccessToken() {
 
       const gunSayisi = Math.round((result.expires_in || 0) / 86400);
       console.log(`✅ Instagram access token yenilendi. Yeni geçerlilik: ~${gunSayisi} gün.`);
-      await persistTokenToRender(igAccessToken);
+      await persistTokenToGithub(igAccessToken);
     } else {
       console.error('⚠️ Token yenileme başarısız oldu:', result.error ? result.error.message : result);
     }
@@ -641,35 +656,19 @@ async function refreshAccessToken() {
   }
 }
 
-// Yenilenen token'ı Render'ın ortam değişkenine kalıcı olarak yazar.
-// Bu sayede sunucu yeniden başlasa (deploy, restart vb.) bile en güncel token kullanılır.
-// RENDER_API_KEY ve RENDER_SERVICE_ID ayarlanmadıysa bu adım sessizce atlanır
-// (token yine de bellekte güncel kalır, sadece bir sonraki tam restart'ta eskisine döner).
-async function persistTokenToRender(token) {
-  if (!RENDER_API_KEY || !RENDER_SERVICE_ID) {
-    console.log('RENDER_API_KEY / RENDER_SERVICE_ID ayarlanmamış, token sadece bellekte güncellendi.');
-    return;
-  }
+// Yenilenen token'ı GitHub'daki config.json'a (config.igAccessToken) kalıcı olarak yazar.
+// Bu sayede konteyner yeniden başlasa (Cloud Run'da cold start, ya da herhangi bir deploy/
+// restart) bile en güncel token GitHub'dan okunur - env değişkenine (deploy anında
+// sabitlenmiş) güvenilmez. Google Cloud Run taşımasından önce bu fonksiyon Render'ın kendi
+// API'sine (api.render.com) yazıyordu; o entegrasyon Render'a özeldi ve kaldırıldı.
+async function persistTokenToGithub(token) {
   try {
-    const res = await fetchWithTimeout(
-      `https://api.render.com/v1/services/${RENDER_SERVICE_ID}/env-vars/IG_ACCESS_TOKEN`,
-      {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${RENDER_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ value: token }),
-      }
-    );
-    if (res.ok) {
-      console.log('✅ Yeni token Render ortam değişkenine kalıcı olarak kaydedildi.');
-    } else {
-      const errText = await res.text();
-      console.error('⚠️ Render ortam değişkeni güncellenemedi:', res.status, errText);
-    }
+    await mutateConfig((config) => {
+      config.igAccessToken = token;
+    });
+    console.log('✅ Yeni token GitHub\'daki config.json\'a ("' + GITHUB_DATA_BRANCH + '" branch\'i) kalıcı olarak kaydedildi.');
   } catch (err) {
-    console.error('⚠️ Render API bağlantı hatası:', err.message);
+    console.error('⚠️ Yeni token GitHub\'a kaydedilemedi (token yine de bellekte güncel kaldı, ama bir sonraki cold start\'ta eskisine dönebilir):', err.message);
   }
 }
 
@@ -694,7 +693,14 @@ function refreshAccessTokenIfDue() {
 // gerçekten 45 gün dolmuşsa istek atılıyor). Sonra her 24 saatte bir tekrar kontrol et
 // (24 saat = 86.400.000 ms, 32-bit zamanlayıcı sınırının çok altında, bu yüzden güvenli).
 refreshAccessTokenIfDue();
-setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
+// GOOGLE CLOUD RUN TAŞIMASI: Bu setInterval, Cloud Run'ın ücretsiz (varsayılan) modunda
+// istek gelmediği sürece CPU donduğu için güvenilir çalışmaz. Cloud Run'da bu görev artık
+// Cloud Scheduler'dan POST /internal/cron/gunluk ile tetikleniyor (bkz. ilgili bölüm).
+// ENABLE_LOCAL_TIMERS=true ayarlanırsa (örn. eski Render benzeri her-zaman-açık bir hostta
+// çalıştırılırsa) eski davranış aynen korunur.
+if (ENABLE_LOCAL_TIMERS) {
+  setInterval(refreshAccessTokenIfDue, 24 * 60 * 60 * 1000);
+}
 
 // ================== TAKİPÇİ SAYISI GÜNLÜK TAKİBİ ==================
 // Instagram'ın resmi API'si (Instagram Login dahil) tek tek "kim takip ediyor,
@@ -733,7 +739,11 @@ async function takipciSayisiniGetirVeKaydet() {
 
 // Uygulama açıldığında bir kez, sonra her 24 saatte bir tekrar kaydet.
 takipciSayisiniGetirVeKaydet();
-setInterval(takipciSayisiniGetirVeKaydet, 24 * 60 * 60 * 1000);
+// GOOGLE CLOUD RUN TAŞIMASI: bkz. yukarıdaki refreshAccessTokenIfDue setInterval'ındaki not -
+// aynı sebeple bu da Cloud Scheduler'dan POST /internal/cron/gunluk ile tetikleniyor.
+if (ENABLE_LOCAL_TIMERS) {
+  setInterval(takipciSayisiniGetirVeKaydet, 24 * 60 * 60 * 1000);
+}
 
 // ================== WEBHOOK (Instagram tarafı) ==================
 
@@ -916,6 +926,24 @@ function kaydetBasarisizZamani(data, rateLimited, commentId) {
   data.basarisizZamanlariDetay = data.basarisizZamanlariDetay.filter((x) => simdi - x.t < 65 * 60 * 1000);
 }
 
+// ================== GERİYE DÖNÜK TARAMA İÇİN KALICI "İŞLENDİ" İŞARETİ ==================
+// data.sent/data.failed listeleri BANDWIDTH tasarrufu için adede göre sınırlı (son 250/100) -
+// yoğun bir gönderide bu sınır aşılırsa eski bir yorum listeden düşer ve periyodik/manuel
+// tarama (taramaYap) onu "henüz işlenmemiş" sanıp TEKRAR DM atmaya çalışabilirdi. Bunun
+// önüne geçmek için, bir yorum DM hattından EN AZ BİR KEZ geçtiğinde (gönderildi, kuyruğa
+// alındı veya kalıcı olarak vazgeçildi) commentId'si burada KALICI olarak işaretleniyor -
+// adede göre değil, SÜREYE göre (9 gün - Meta'nın 7 günlük Private Reply penceresinden
+// biraz fazla) temizleniyor, böylece dosya şişmeden sınırsız hacimde güvenli çalışır.
+function kaydetYorumIslendi(data, commentId) {
+  if (!commentId) return;
+  if (!data.islenenYorumIdleri) data.islenenYorumIdleri = {};
+  data.islenenYorumIdleri[commentId] = Date.now();
+  const sinir = Date.now() - 9 * 24 * 60 * 60 * 1000;
+  for (const id of Object.keys(data.islenenYorumIdleri)) {
+    if (data.islenenYorumIdleri[id] < sinir) delete data.islenenYorumIdleri[id];
+  }
+}
+
 // ================== YORUM/ANAHTAR KELİME KARŞILAŞTIRMA ÖNCESİ TEMİZLİK ==================
 // ŞİKAYET: "PDF" yazıp hemen ardına emoji ekleyen bazı kullanıcılara mesaj gitmiyor. Eşleştirme
 // zaten esnek (yorumun İÇİNDE anahtar kelime geçiyor mu diye bakıyor, tam eşleşme aramıyor) -
@@ -934,6 +962,23 @@ function metniTemizle(str) {
     .replace(/\s+/g, ' ')
     .trim()
     .toLowerCase();
+}
+
+// ================== E\u015E ANLAMLI / ALTERNAT\u0130F KEL\u0130ME E\u015ELE\u015ET\u0130RME ==================
+// \u0130STEK: baz\u0131 kullan\u0131c\u0131lar panelde kay\u0131tl\u0131 anahtar kelime (\u00F6rn. "PDF") yerine "kal\u0131p
+// alabilir miyim" veya "\u015Fablon" gibi do\u011Fal, alternatif ifadeler yaz\u0131yor - bunlar da
+// otomasyonu tetiklemeli. Bunun i\u00E7in her otomasyona (postConfig veya pendingTemplate)
+// opsiyonel bir "synonyms" dizisi eklendi (panelden, virg\u00FClle ayr\u0131lm\u0131\u015F olarak girilir).
+// Bu fonksiyon, gelen (zaten metniTemizle'den ge\u00E7mi\u015F) yorumun; ana anahtar kelime VEYA
+// bu e\u015F anlaml\u0131lardan HERHANG\u0130 B\u0130R\u0130N\u0130N i\u00E7inde ge\u00E7ip ge\u00E7medi\u011Fine bakar - ana kelimeyle
+// ayn\u0131 mant\u0131kla (tam e\u015Fle\u015Fme de\u011Fil, metnin \u0130\u00C7\u0130NDE ge\u00E7mesi yeterli). Hem canl\u0131 webhook
+// yolunda (handleComment) hem de geriye d\u00F6n\u00FCk taramada (taramaYap) AYNI fonksiyon
+// kullan\u0131l\u0131yor ki iki yol asla birbirinden farkl\u0131 davranmas\u0131n.
+function yorumPostConfigIleEslesiyorMu(temizlenmisYorumMetni, postConfig) {
+  if (!postConfig) return false;
+  const anahtarlar = [postConfig.keyword, ...(Array.isArray(postConfig.synonyms) ? postConfig.synonyms : [])]
+    .filter((k) => k && String(k).trim());
+  return anahtarlar.some((k) => temizlenmisYorumMetni.includes(metniTemizle(k)));
 }
 
 // Bir gönderide otomasyon TANIMLI DEĞİLKEN gelen yorumları "Kaçırılan Fırsatlar" olarak kaydeder
@@ -1026,7 +1071,7 @@ async function handleComment(value) {
       const pending = config.pendingTemplates || {};
       for (const pendingId of Object.keys(pending)) {
         const template = pending[pendingId];
-        if (template.keyword && commentText.includes(metniTemizle(template.keyword))) {
+        if (template.keyword && yorumPostConfigIleEslesiyorMu(commentText, template)) {
           baglanan = { ...template };
           config.posts[mediaId] = baglanan;
           delete config.pendingTemplates[pendingId];
@@ -1049,16 +1094,16 @@ async function handleComment(value) {
     return;
   }
 
-  const keyword = metniTemizle(postConfig.keyword);
-  if (!commentText.includes(keyword)) {
-    // ÖNEMLİ: Bu gönderi için otomasyon VAR ama bu yorumdaki anahtar kelime eşleşmedi.
-    // "PDF yazıp hemen ardına emoji koyan bazı kişilere mesaj gitmiyor" şikayetini
-    // araştırabilmek için burayı Render loglarına yazıyoruz - normalde eşleşme metnin
-    // İÇİNDE geçmesi yeterli olacak kadar esnek (tam eşleşme aramıyor), bu yüzden bir
-    // eşleşmeme genelde ya panelde kayıtlı anahtar kelimede fark edilmeyen bir boşluk/
-    // emoji/farklı harf olduğunu ya da yorumun gerçekten alakasız olduğunu gösterir.
-    // Loglardaki "Beklenen" ve "Gelen yorum" değerlerini karşılaştırarak ayırt edebiliriz.
-    console.log(`ℹ️ Otomasyonlu gönderiye yorum geldi ama anahtar kelime eşleşmedi. Beklenen: "${keyword}" | Gelen yorum (temizlenmiş): "${commentText}" | Kullanıcı: @${fromUsername}`);
+  if (!yorumPostConfigIleEslesiyorMu(commentText, postConfig)) {
+    // ÖNEMLİ: Bu gönderi için otomasyon VAR ama bu yorum ne anahtar kelimeyle NE DE
+    // tanımlı eş anlamlı/alternatif kelimelerden biriyle eşleşti. "PDF yazıp hemen ardına
+    // emoji koyan bazı kişilere mesaj gitmiyor" şikayetini araştırabilmek için burayı
+    // Render loglarına yazıyoruz - normalde eşleşme metnin İÇİNDE geçmesi yeterli olacak
+    // kadar esnek (tam eşleşme aramıyor), bu yüzden bir eşleşmeme genelde ya panelde
+    // kayıtlı anahtar kelimede/eş anlamlılarda fark edilmeyen bir boşluk/emoji/farklı harf
+    // olduğunu ya da yorumun gerçekten alakasız olduğunu gösterir.
+    const beklenenler = [postConfig.keyword, ...(postConfig.synonyms || [])].filter(Boolean).join('" / "');
+    console.log(`ℹ️ Otomasyonlu gönderiye yorum geldi ama anahtar kelime(ler) eşleşmedi. Beklenen: "${beklenenler}" | Gelen yorum (temizlenmiş): "${commentText}" | Kullanıcı: @${fromUsername}`);
     return; // ilgisiz yorum, sessizce geç
   }
 
@@ -1310,6 +1355,9 @@ async function logSent(record, ekMutator) {
     kaydetGonderimZamani(data);
     // Saatlik kırılım (account-health) için AYRI, sınırsız (sadece zamana göre temizlenen) kayıt.
     kaydetBasariliZamani(data, record.commentId);
+    // Geriye dönük tarama (taramaYap) bu yorumu bir daha "kaçırılmış" sanıp tekrar
+    // işlemeye çalışmasın diye kalıcı olarak işaretleniyor.
+    kaydetYorumIslendi(data, record.commentId);
 
     // Gönderi bazlı istatistik (İstatistikler sayfası): bu gönderiden toplam kaç DM gitti.
     if (record.mediaId) {
@@ -1338,6 +1386,12 @@ async function logFailed(record, ekMutator) {
     kaydetGonderimZamani(data);
     // Saatlik kırılım (account-health) için AYRI, sınırsız (sadece zamana göre temizlenen) kayıt.
     kaydetBasarisizZamani(data, record.rateLimited, record.commentId);
+    // Bu yorum için (başarısız da olsa) bir DM denemesi yapıldı - geriye dönük tarama
+    // aynı yorumu bir daha denemeye çalışmasın diye kalıcı olarak işaretleniyor. NOT:
+    // rate-limit/geçici-hata nedeniyle tekrar kuyruğa alınan durumlarda da işaretleniyor
+    // (zaten addToRetryQueue bunu AYRICA yapıyor) - bu, "kuyrukta bekleyen" bir yorumun
+    // tarama tarafından yanlışlıkla ikinci kez kuyruğa eklenmesini de önlüyor.
+    kaydetYorumIslendi(data, record.commentId);
     if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
@@ -1360,6 +1414,9 @@ async function addToRetryQueue(commentId, message, record, sebep, ekMutator, pub
     if (sebep === 'rate_limit') {
       data.totalRateLimitDeferCount = (data.totalRateLimitDeferCount || 0) + 1;
     }
+    // Bu yorum artık kuyrukta bekliyor - geriye dönük tarama (taramaYap) onu tekrar
+    // "kaçırılmış" sanıp ikinci bir kuyruk kaydı AÇMASIN diye kalıcı olarak işaretleniyor.
+    kaydetYorumIslendi(data, commentId);
     if (typeof ekMutator === 'function') ekMutator(data);
   });
 }
@@ -1380,7 +1437,11 @@ async function addToRetryQueue(commentId, message, record, sebep, ekMutator, pub
 // GERÇEKTEN bekleyen bir şey varsa gidiliyor - tıpkı eskisi gibi, sadece çok daha sık kontrol
 // edilerek.
 const TEKRAR_DENEME_ARALIGI_MS = 60 * 1000; // 1 dakika (eskiden 30 dakikaydı)
-setInterval(async () => {
+
+// GOOGLE CLOUD RUN TAŞIMASI: döngü gövdesi, hem eski setInterval hem de yeni Cloud Scheduler
+// tetiklemeli POST /internal/cron/retry-queue endpoint'i tarafından çağrılabilsin diye
+// adlandırılmış bir fonksiyona çıkarıldı. Mantık birebir aynı kaldı.
+async function tekrarDenemeDongusuCalistir() {
   const yerelOnKontrol = loadData();
   if (!yerelOnKontrol.retryQueue || yerelOnKontrol.retryQueue.length === 0) return;
 
@@ -1419,7 +1480,121 @@ setInterval(async () => {
     await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni, item.deneme);
     await new Promise((r) => setTimeout(r, 2000));
   }
-}, TEKRAR_DENEME_ARALIGI_MS);
+}
+// GOOGLE CLOUD RUN TAŞIMASI: bkz. refreshAccessTokenIfDue setInterval'ındaki not - bu görev
+// artık Cloud Scheduler'dan her 1 dakikada bir POST /internal/cron/retry-queue ile tetikleniyor.
+if (ENABLE_LOCAL_TIMERS) {
+  setInterval(tekrarDenemeDongusuCalistir, TEKRAR_DENEME_ARALIGI_MS);
+}
+
+// ================== GERİYE DÖNÜK TARAMA (webhook'un kaçırdığı yorumları yakalama) ==================
+// İSTEK: canlı webhook bazen bir yorumu hiç bildirmeyebilir (Render'ın ücretsiz planında bir
+// deploy/yeniden başlama anına denk gelen webhook sessizce kaybolabilir - bkz. ferhat.kucuk.7
+// vakası) VEYA otomasyon kurulmadan ÖNCE yazılmış eski yorumlar hiç işlenmemiş olabilir. Bu
+// fonksiyon, bir gönderinin Instagram'daki GERÇEK yorumlarını (Graph API'den) çekip, hâlâ
+// kalıcı olarak "işlendi" işaretlenmemiş (bkz. kaydetYorumIslendi) ve anahtar kelime/eş anlamlı
+// eşleşmesi olan yorumları bulur, bunları CANLI webhook'tan geliyormuş gibi AYNEN handleComment()
+// üzerinden işler - böylece kara liste, duraklatma, saatlik güvenli limit/kuyruk gibi TÜM
+// güvenlik kontrolleri hiçbir kod tekrarı olmadan birebir uygulanır ("log sinirina dikkat
+// ederek yollar" isteği tam olarak bu sayede karşılanıyor - saatlik limit dolu ise mesaj
+// burada da normal kuyruğa düşer, sırasını bekler).
+//
+// META'NIN 7 GÜNLÜK PENCERESİ: Private Reply bir yorumun oluşturulmasından sonraki 7 gün
+// içinde çalışır - daha eski bir yoruma DM denemek Meta tarafından zaten reddedilir, bu
+// yüzden burada baştan atlanıp gereksiz bir API çağrısı/yanlış "başarısız" kaydı önleniyor.
+const TARAMA_META_PENCERE_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function taramaYap(mediaId, postConfig) {
+  let bulunan = 0;
+  let islenen = 0;
+  let after = '';
+  const simdi = Date.now();
+  // Hangi yorumların zaten işlendiği yerel diskten (hızlı, GitHub'a gitmeden) okunuyor -
+  // handleComment() çağrıldığında zaten kendi GÜNCEL/senkron kontrolünü ayrıca yapıyor,
+  // bu sadece Instagram'dan GEREKSİZ yere tekrar tekrar aynı yorum için handleComment
+  // çağırmamak için ucuz bir ön-filtre.
+  const data = loadData();
+  const islenenler = data.islenenYorumIdleri || {};
+
+  try {
+    for (let sayfa = 0; sayfa < 20; sayfa++) { // güvenlik için en fazla 20 sayfa (~1000 yorum)
+      const afterParam = after ? `&after=${encodeURIComponent(after)}` : '';
+      const response = await fetchWithTimeout(
+        `${IG_GRAPH_BASE}/${mediaId}/comments?fields=id,text,timestamp,username&limit=50${afterParam}&access_token=${igAccessToken}`
+      );
+      const result = await response.json();
+      if (result.error) {
+        console.log(`⚠️ Tarama: ${mediaId} gönderisinin yorumları alınamadı: ${result.error.message}`);
+        break;
+      }
+
+      const yorumlar = result.data || [];
+      for (const yorum of yorumlar) {
+        if (!yorum.id || !yorum.text) continue;
+        if (islenenler[yorum.id]) continue; // zaten işlendi (gönderildi/kuyrukta/vazgeçildi)
+
+        const yorumYasiMs = yorum.timestamp ? simdi - new Date(yorum.timestamp).getTime() : 0;
+        if (yorumYasiMs > TARAMA_META_PENCERE_MS) continue; // Meta'nın 7 günlük penceresi geçmiş
+
+        const temizYorum = metniTemizle(yorum.text);
+        if (!yorumPostConfigIleEslesiyorMu(temizYorum, postConfig)) continue;
+
+        bulunan++;
+        // Webhook payload'uyla BİREBİR aynı şekle sokulmuş halde handleComment()'e veriliyor.
+        await handleComment({
+          id: yorum.id,
+          text: yorum.text,
+          media: { id: mediaId },
+          from: { username: yorum.username || 'bilinmiyor' },
+        });
+        islenen++;
+      }
+
+      if (result.paging && result.paging.cursors && result.paging.cursors.after && result.paging.next) {
+        after = result.paging.cursors.after;
+      } else {
+        break;
+      }
+    }
+  } catch (err) {
+    console.log(`⚠️ Tarama hatası (${mediaId}): ${err.message}`);
+  }
+
+  return { bulunan, islenen };
+}
+
+// Otomasyonu tanımlı olan TÜM gönderileri sırayla tarar (periyodik görev + panelden
+// "Tümünü Tara" için). Gönderiler arasına küçük bir bekleme konuyor ki Instagram'ın
+// Graph API'sini art arda, hızlıca döverek gereksiz bir hız sınırına takılmayalım.
+async function tumGonderileriTara() {
+  const config = loadConfig();
+  const mediaIdleri = Object.keys(config.posts || {});
+  const sonuclar = {};
+  for (const mediaId of mediaIdleri) {
+    sonuclar[mediaId] = await taramaYap(mediaId, config.posts[mediaId]);
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  return sonuclar;
+}
+
+// Her 30 dakikada bir otomatik tarama - "yarım saat"lık istek tam olarak bu.
+const TARAMA_ARALIGI_MS = 30 * 60 * 1000;
+function tumGonderileriTaraVeLogla() {
+  tumGonderileriTara()
+    .then((sonuclar) => {
+      const toplamBulunan = Object.values(sonuclar).reduce((a, s) => a + s.bulunan, 0);
+      const toplamIslenen = Object.values(sonuclar).reduce((a, s) => a + s.islenen, 0);
+      if (toplamBulunan > 0) {
+        console.log(`🔎 Periyodik tarama tamamlandı: ${toplamBulunan} kaçırılmış yorum bulundu, ${toplamIslenen} tanesi işlendi (gönderildi/kuyruğa alındı).`);
+      }
+    })
+    .catch((err) => console.log(`⚠️ Periyodik tarama başarısız: ${err.message}`));
+}
+// GOOGLE CLOUD RUN TAŞIMASI: bkz. refreshAccessTokenIfDue setInterval'ındaki not - bu görev
+// artık Cloud Scheduler'dan her 30 dakikada bir POST /internal/cron/tara ile tetikleniyor.
+if (ENABLE_LOCAL_TIMERS) {
+  setInterval(tumGonderileriTaraVeLogla, TARAMA_ARALIGI_MS);
+}
 
 // ================== ADMIN PANEL (telefon tarafı) ==================
 
@@ -1437,6 +1612,112 @@ function checkAuth(req, res, next) {
 }
 
 app.use('/admin', checkAuth);
+
+// ================== GECİCİ KURTARMA UÇ NOKTASI (2026-11-03 gece, token oturumu düşmesi) ==================
+// O gece access token'ın oturumu düşünce (bkz. Hesap Durumu'ndaki "Session has expired" hatası),
+// GECICI_HATA_MAX_DENEME (2) hakkını tüketip kalıcı olarak "vazgeçildi" diye loglanan DM'ler oldu -
+// bu kişilere hiç mesaj gitmedi. Token artık düzeldiği için bu uç nokta, son 24 saat içinde
+// "vazgeçildi" diye kalıcı olarak işaretlenmiş (ama o sırada/sonrasında başarıyla GÖNDERİLDİĞİ de
+// kayıtlı OLMAYAN) yorumları bulup, var olan güvenli tekrar deneme kuyruğuna (addToRetryQueue) geri
+// koyuyor - yani saatlik limit/FIFO/2 saniyelik aralık gibi TÜM güvenlik kuralları aynen geçerli,
+// sadece normalde kaybolacak bu kayıtlara ikinci bir şans veriliyor. Panel şifresiyle korunuyor
+// (app.use('/admin', checkAuth) zaten üstte uygulandı), elle (curl ile) bir kere tetiklenmesi
+// için yazıldı - otomatik/tekrarlayan bir görev değil.
+app.post('/admin/api/retry-failed-today', async (req, res) => {
+  try {
+    const data = await readData();
+    const config = await readConfig();
+    const simdi = Date.now();
+    const gunSiniri = simdi - 24 * 60 * 60 * 1000; // son 24 saat
+
+    const basariylaGidenYorumIdleri = new Set((data.sent || []).map((s) => s.commentId).filter(Boolean));
+    const gorulenler = new Set();
+    const adaylar = [];
+    for (const f of (data.failed || [])) {
+      if (!f.commentId) continue;
+      if (!String(f.reason || '').includes('vazgeçildi')) continue; // sadece KALICI olarak pes edilenler
+      const zaman = new Date(f.failedAt || f.timestamp).getTime();
+      if (!zaman || zaman < gunSiniri) continue;
+      if (basariylaGidenYorumIdleri.has(f.commentId)) continue; // bu arada zaten başarıyla gitmiş
+      if (gorulenler.has(f.commentId)) continue; // aynı yorumun birden fazla "vazgeçildi" kaydı olabilir
+      gorulenler.add(f.commentId);
+      adaylar.push(f);
+    }
+
+    let kuyruğaEklenen = 0;
+    let atlanan = 0;
+    for (const f of adaylar) {
+      const postConfig = f.mediaId ? config.posts[f.mediaId] : null;
+      if (!postConfig) { atlanan++; continue; } // bu gönderi artık panelden kaldırılmışsa atla
+      const message = buildMessage(postConfig, config);
+      let publicReplyMetni = null;
+      let ekMutator = null;
+      if (postConfig.publicReplies && postConfig.publicReplies.length > 0) {
+        publicReplyMetni = secNextPublicReplyMetni(f.mediaId, postConfig.publicReplies);
+        const cevapSayisi = postConfig.publicReplies.length;
+        ekMutator = (dataIci) => ilerletReplyCounter(dataIci, f.mediaId, cevapSayisi);
+      }
+      const record = {
+        commentId: f.commentId, mediaId: f.mediaId, fromUsername: f.fromUsername,
+        commentText: f.commentText || '', timestamp: f.timestamp, postTitle: postConfig.title || '',
+      };
+      await addToRetryQueue(f.commentId, message, record, undefined, ekMutator, publicReplyMetni, 0);
+      kuyruğaEklenen++;
+    }
+
+    res.json({ ok: true, bulunanAday: adaylar.length, kuyruğaEklenen, atlananGönderiTanımsız: atlanan });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ================== CLOUD SCHEDULER UÇ NOKTALARI (Google Cloud Run taşıması) ==================
+// Render'da arka plan görevleri sunucu her zaman açık kaldığı için setInterval ile çalışıyordu.
+// Cloud Run'ın ücretsiz modunda istek gelmediği sürece CPU donduğundan setInterval güvenilir
+// değil - bu yüzden Google Cloud Scheduler, dışarıdan gerçek bir HTTP isteği göndererek bu
+// görevleri tetikliyor. Admin şifresiyle korumuyoruz (Scheduler'ın admin şifresini bilmesine
+// gerek yok) - onun yerine paylaşılan bir gizli anahtar (CRON_SECRET) kontrol ediliyor.
+function checkCronSecret(req, res, next) {
+  if (!CRON_SECRET || req.headers['x-cron-secret'] !== CRON_SECRET) {
+    return res.sendStatus(403);
+  }
+  next();
+}
+
+// Günlük görevler (eskiden 24 saatte bir setInterval ile ayrı ayrı çalışan iki görev, Cloud
+// Scheduler'ın ücretsiz 3-iş kotasını aşmamak için tek uç noktada birleştirildi).
+app.post('/internal/cron/gunluk', checkCronSecret, async (req, res) => {
+  try {
+    refreshAccessTokenIfDue();
+    await takipciSayisiniGetirVeKaydet();
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('⚠️ /internal/cron/gunluk hatası:', err.message);
+    res.sendStatus(500);
+  }
+});
+
+// Bekleyen DM kuyruğunu boşaltma (eskiden her 1 dakikada bir setInterval).
+app.post('/internal/cron/retry-queue', checkCronSecret, async (req, res) => {
+  try {
+    await tekrarDenemeDongusuCalistir();
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('⚠️ /internal/cron/retry-queue hatası:', err.message);
+    res.sendStatus(500);
+  }
+});
+
+// Kaçırılan yorumları geriye dönük tarama (eskiden her 30 dakikada bir setInterval).
+app.post('/internal/cron/tara', checkCronSecret, async (req, res) => {
+  try {
+    const sonuclar = await tumGonderileriTara();
+    res.status(200).json(sonuclar);
+  } catch (err) {
+    console.error('⚠️ /internal/cron/tara hatası:', err.message);
+    res.sendStatus(500);
+  }
+});
 
 // Panel sayfasını göster
 app.get('/admin', (req, res) => {
@@ -1471,7 +1752,7 @@ app.get('/admin/api/posts', async (req, res) => {
 
 // Bir gönderi için otomasyon kaydet/güncelle
 app.post('/admin/api/posts', async (req, res) => {
-  const { mediaId, title, keyword, link, replyMessage, publicReplies } = req.body;
+  const { mediaId, title, keyword, link, replyMessage, publicReplies, synonyms } = req.body;
   if (!mediaId || !keyword || !link) {
     return res.status(400).json({ error: 'mediaId, keyword ve link zorunlu' });
   }
@@ -1481,6 +1762,9 @@ app.post('/admin/api/posts', async (req, res) => {
     link,
     replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
     publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
+    // Eş anlamlı/alternatif kelimeler (örn. "PDF" yerine "kalıp alabilir miyim", "şablon") -
+    // bkz. yorumPostConfigIleEslesiyorMu. Panelden virgülle ayrılmış dizi olarak gelir.
+    synonyms: Array.isArray(synonyms) ? synonyms.filter((s) => s && s.trim()) : [],
   };
   await mutateConfig((config) => {
     config.posts[mediaId] = newAutomation;
@@ -1494,6 +1778,35 @@ app.delete('/admin/api/posts/:mediaId', async (req, res) => {
     delete config.posts[req.params.mediaId];
   });
   res.json({ ok: true });
+});
+
+// Tek bir gönderi için ELLE geriye dönük tarama (panelden "🔎 Kaçırılanları Tara" butonu).
+// Her zaman GitHub'daki EN GÜNCEL otomasyon ayarıyla (örn. az önce kaydedilmiş eş anlamlı
+// kelimelerle) taranır.
+app.post('/admin/api/posts/:mediaId/tara', async (req, res) => {
+  try {
+    const config = await readConfig();
+    const postConfig = config.posts[req.params.mediaId];
+    if (!postConfig) {
+      return res.status(404).json({ error: 'Bu gönderi için otomasyon tanımlı değil' });
+    }
+    const sonuc = await taramaYap(req.params.mediaId, postConfig);
+    res.json({ ok: true, ...sonuc });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Otomasyonu tanımlı TÜM gönderileri tek seferde tarar (panelden "Tümünü Tara" butonu).
+app.post('/admin/api/posts/tara-tumu', async (req, res) => {
+  try {
+    const sonuclar = await tumGonderileriTara();
+    const bulunan = Object.values(sonuclar).reduce((a, s) => a + s.bulunan, 0);
+    const islenen = Object.values(sonuclar).reduce((a, s) => a + s.islenen, 0);
+    res.json({ ok: true, bulunan, islenen, sonuclar });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ================== İSTATİSTİKLER (gönderi bazlı beğeni/yorum + kaç DM gitti) ==================
@@ -1672,6 +1985,103 @@ app.delete('/admin/api/blacklist/:username', async (req, res) => {
   res.json({ ok: true });
 });
 
+// ================== TAKİP TEMİZLİĞİ (manuel unfollow / bekleyen istek iptali kuyruğu) ==================
+// İSTEK: Instagram'ın resmi Graph API'si takip etme/takibi bırakma işlemini HİÇ desteklemiyor
+// (Meta bunu kasıtlı olarak kapatmış - bkz. sohbetteki açıklama), bu yüzden bu iş TAMAMEN ELLE
+// yapılıyor. Burada yaptığımız sadece: "Bilgilerini İndir" verisinden çıkarılan iki listeyi
+// (seni takip etmeyenler + bekleyen/onaylanmamış takip istekleri) panelde SIRALI bir kuyruk
+// olarak tutmak, her birine tek tıkla gidilebilmesini sağlamak (profiline git -> elle "Takibi
+// Bırak"/"İsteği İptal Et" -> panelde "Yaptım" de) ve ilerlemeyi (bugün kaç tane yapıldı)
+// kalıcı olarak (GitHub'daki data.json'da) saklamak - böylece iş günlere/haftalara yayılsa da
+// nerede kaldığı kaybolmaz. Öncelik sırası SABİT: önce "takip_etmiyor" (seni takip etmeyenler),
+// sonra "bekleyen_istek" (iptal edilecek bekleyen istekler) - kullanıcının belirttiği sıra.
+function takipTemizlikOncelik(tur) {
+  return tur === 'takip_etmiyor' ? 0 : 1;
+}
+
+// Kuyruğun GÜNCEL özetini + sıradaki (henüz "yapıldı"/"atlandı" işaretlenmemiş) ilk N kişiyi döner.
+app.get('/admin/api/takip-temizlik', async (req, res) => {
+  const data = await readData();
+  const kuyruk = (data.takipTemizlik && data.takipTemizlik.kuyruk) || [];
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+  const simdi = Date.now();
+  const bugunAnahtari = istanbulGunAnahtari(new Date().toISOString());
+
+  const bekleyenler = kuyruk
+    .filter((k) => k.durum === 'bekliyor')
+    .sort((a, b) => takipTemizlikOncelik(a.tur) - takipTemizlikOncelik(b.tur));
+
+  const bugunYapilan = kuyruk.filter((k) => {
+    return (k.durum === 'yapildi' || k.durum === 'atlandi') && k.tamamlanmaTarihi
+      && istanbulGunAnahtari(k.tamamlanmaTarihi) === bugunAnahtari;
+  }).length;
+
+  res.json({
+    siradaki: bekleyenler.slice(0, limit).map((k) => ({ kullaniciAdi: k.kullaniciAdi, tur: k.tur })),
+    ozet: {
+      toplamBekleyen: bekleyenler.length,
+      bekleyenTakipEtmiyor: bekleyenler.filter((k) => k.tur === 'takip_etmiyor').length,
+      bekleyenIstek: bekleyenler.filter((k) => k.tur === 'bekleyen_istek').length,
+      toplamYapildi: kuyruk.filter((k) => k.durum === 'yapildi').length,
+      toplamAtlandi: kuyruk.filter((k) => k.durum === 'atlandi').length,
+      bugunYapilan,
+    },
+  });
+});
+
+// Yeni bir liste (CSV'den çıkarılmış kullanıcı adları) kuyruğa EKLER/GÜNCELLER - zaten kuyrukta
+// olan (herhangi bir durumda - bekliyor/yapıldı/atlandı) bir kullanıcı adı varsa tekrar eklenmez,
+// böylece panelden "yenile" diye tekrar yüklenen bir CSV, zaten işlenmiş kişileri bozmaz.
+app.post('/admin/api/takip-temizlik/yukle', async (req, res) => {
+  const { tur, kullaniciAdlari } = req.body;
+  if (!['takip_etmiyor', 'bekleyen_istek'].includes(tur)) {
+    return res.status(400).json({ error: 'Geçersiz tür' });
+  }
+  if (!Array.isArray(kullaniciAdlari)) {
+    return res.status(400).json({ error: 'kullaniciAdlari bir dizi olmalı' });
+  }
+  let eklenen = 0;
+  await mutateData((data) => {
+    if (!data.takipTemizlik) data.takipTemizlik = { kuyruk: [] };
+    const mevcutAdlar = new Set(data.takipTemizlik.kuyruk.map((k) => k.kullaniciAdi.toLowerCase()));
+    const simdiIso = new Date().toISOString();
+    for (const ad of kullaniciAdlari) {
+      const temiz = String(ad || '').trim().toLowerCase();
+      if (!temiz || mevcutAdlar.has(temiz)) continue;
+      mevcutAdlar.add(temiz);
+      data.takipTemizlik.kuyruk.push({
+        kullaniciAdi: temiz, tur, durum: 'bekliyor',
+        eklenmeTarihi: simdiIso, tamamlanmaTarihi: null,
+      });
+      eklenen++;
+    }
+  });
+  res.json({ ok: true, eklenen, atlanan: kullaniciAdlari.length - eklenen });
+});
+
+// Kuyruktaki bir kişiyi "yapıldı" (elle takibi bıraktım/isteği iptal ettim) ya da "atlandı"
+// (bu kişiyi kasıtlı olarak tutuyorum, kuyruktan çıkar ama işlem yapma) olarak işaretler.
+app.post('/admin/api/takip-temizlik/isaretle', async (req, res) => {
+  const { kullaniciAdi, tur, aksiyon } = req.body;
+  if (!kullaniciAdi || !['yapildi', 'atlandi'].includes(aksiyon)) {
+    return res.status(400).json({ error: 'kullaniciAdi ve geçerli bir aksiyon (yapildi/atlandi) zorunlu' });
+  }
+  const temiz = String(kullaniciAdi).trim().toLowerCase();
+  let bulunduMu = false;
+  await mutateData((data) => {
+    if (!data.takipTemizlik) data.takipTemizlik = { kuyruk: [] };
+    const kayit = data.takipTemizlik.kuyruk.find((k) => {
+      return k.kullaniciAdi === temiz && k.durum === 'bekliyor' && (!tur || k.tur === tur);
+    });
+    if (!kayit) return;
+    bulunduMu = true;
+    kayit.durum = aksiyon;
+    kayit.tamamlanmaTarihi = new Date().toISOString();
+  });
+  if (!bulunduMu) return res.status(404).json({ error: 'Kuyrukta bekleyen böyle bir kayıt bulunamadı' });
+  res.json({ ok: true });
+});
+
 // ================== PLANLANAN OTOMASYONLAR (henüz paylaşılmamış gönderiler için) ==================
 // Bir gönderiyi paylaşmadan önce otomasyonunu "taslak" olarak kaydedebilirsin.
 // Gönderi paylaşılıp o anahtar kelimeyle ilk yorum geldiğinde, sistem bu taslağı otomatik
@@ -1683,7 +2093,7 @@ app.get('/admin/api/pending', async (req, res) => {
 });
 
 app.post('/admin/api/pending', async (req, res) => {
-  const { title, keyword, link, replyMessage, publicReplies } = req.body;
+  const { title, keyword, link, replyMessage, publicReplies, synonyms } = req.body;
   if (!keyword || !link) {
     return res.status(400).json({ error: 'Anahtar kelime ve link zorunlu' });
   }
@@ -1694,6 +2104,7 @@ app.post('/admin/api/pending', async (req, res) => {
     link,
     replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
     publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
+    synonyms: Array.isArray(synonyms) ? synonyms.filter((s) => s && s.trim()) : [],
   };
   await mutateConfig((config) => {
     config.pendingTemplates[id] = newTemplate;
@@ -1707,7 +2118,7 @@ app.post('/admin/api/pending', async (req, res) => {
 // konumunu DEĞİŞTİRMEZ. handleComment() içindeki eşleştirme ve panelde "N. sırada"
 // etiketi bu sıraya göre çalıştığı için, düzenleme kuyruktaki yeri asla bozmaz.
 app.put('/admin/api/pending/:id', async (req, res) => {
-  const { title, keyword, link, replyMessage, publicReplies } = req.body;
+  const { title, keyword, link, replyMessage, publicReplies, synonyms } = req.body;
   if (!keyword || !link) {
     return res.status(400).json({ error: 'Anahtar kelime ve link zorunlu' });
   }
@@ -1722,6 +2133,7 @@ app.put('/admin/api/pending/:id', async (req, res) => {
       link,
       replyMessage: replyMessage || `Merhaba 👋 Materyali ücretsiz olarak buradan indirebilirsin: ${link}`,
       publicReplies: Array.isArray(publicReplies) ? publicReplies.filter((r) => r && r.trim()) : [],
+      synonyms: Array.isArray(synonyms) ? synonyms.filter((s) => s && s.trim()) : [],
     };
   });
   if (!bulunduMu) {
@@ -2081,6 +2493,15 @@ async function ilkAcilistaGithubdanSenkronizeEt() {
     if (remoteConfig) {
       saveConfigLocal(remoteConfig.config);
       console.log('✅ config.json açılışta GitHub\'dan ("' + GITHUB_DATA_BRANCH + '" branch\'i) yerel diske senkronize edildi.');
+      // GOOGLE CLOUD RUN TAŞIMASI: env değişkenindeki IG_ACCESS_TOKEN sadece "ilk tohum" -
+      // GitHub'da daha güncel bir token kaydedilmişse (daha önce refreshAccessToken ile
+      // yenilenmiş ve persistTokenToGithub ile kaydedilmişse) o öncelikli olarak kullanılır.
+      // Bu, Cloud Run'ın her "cold start"ta env değişkenlerini deploy anındaki sabit haline
+      // döndürmesi karşısında token'ın sessizce eskimesini önler.
+      if (remoteConfig.config.igAccessToken) {
+        igAccessToken = remoteConfig.config.igAccessToken;
+        console.log('✅ Access token GitHub\'daki config.json\'dan (en güncel yenilenmiş hali) yüklendi.');
+      }
     } else {
       console.log('ℹ️ GitHub\'da henüz bir config.json yok (muhtemelen ilk kurulum) - yerel varsayılanlar kullanılacak.');
     }
