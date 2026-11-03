@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18440901901196429",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:39:43.425Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:39:49.221Z"
-    },
-    {
       "commentId": "18151223953564021",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:49:02.872Z"
+    },
+    {
+      "commentId": "18569676082073743",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T16:48:44.878Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:49:06.142Z"
     }
   ],
   "retryQueue": [
@@ -44818,7 +44818,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15100,
+  "totalFailedCount": 15101,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45601,7 +45601,8 @@
     1793724522608,
     1793724531092,
     1793724537826,
-    1793724542872
+    1793724542872,
+    1793724546142
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -50104,6 +50105,11 @@
       "t": 1793724542872,
       "rateLimited": false,
       "commentId": "18109376708208018"
+    },
+    {
+      "t": 1793724546142,
+      "rateLimited": false,
+      "commentId": "18569676082073743"
     }
   ],
   "takipTemizlik": {
@@ -53857,6 +53863,6 @@
     "18019447547979894": 1793724500194,
     "17911081983577488": 1793724508576,
     "17892048099618563": 1793724522608,
-    "18569676082073743": 1793724534442
+    "18569676082073743": 1793724546143
   }
 }
