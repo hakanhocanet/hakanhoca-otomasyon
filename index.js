@@ -341,9 +341,16 @@ async function mutateData(mutatorFn) {
   mutateDataKuyrugu = sonraki.catch(() => {});
   return sonraki;
 }
+// DUZELTME (2026-11-03, gece yarisi, 2. canli kanit): "GECICI_HATA_MAX_DENEME 2->8" duzeltmesi
+// canliya ciktiktan sonra, bu kez FARKLI bir sessiz kayip yolu bulundu: son 1 saatte TAM 33 kez
+// data.json 5 denemenin hepsinde cakisip TAMAMEN GitHub'a yazilamadan vazgecilmis ("...cok fazla
+// cakisma, son deneme yerel diske kaydedildi" - ama bir sonraki yazma GitHub'i temel aldigi icin
+// bu yerel kayit kalici olarak kayboluyor). Bu, o anki DM'in KENDISINI degil ama o yazmanin
+// icerdigi kaydi (orn. retryQueue'ya eklenme, sayac ilerlemesi) kaybedebilir. 5 deneme (en fazla
+// ~7.5sn bekleme) bu geceki yogunlukta yetersiz kaliyordu. 10'a cikarildi.
 async function mutateDataGercek(mutatorFn) {
   const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
-  const MAX_DENEME = 5;
+  const MAX_DENEME = 10;
   // bkz. asagidaki continue oncesi eklenen bekleme - GitHub'in replikasyon gecikmesine zaman tanir.
 
   for (let deneme = 1; deneme <= MAX_DENEME; deneme++) {
