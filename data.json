@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18108164852344563",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:36:27.002Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:47:14.227Z"
-    },
-    {
       "commentId": "17915450838519967",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:55:53.995Z"
+    },
+    {
+      "commentId": "18129579478839440",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf alabilir miyim",
+      "timestamp": "2026-11-03T16:55:53.227Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:56:09.260Z"
     }
   ],
   "retryQueue": [
@@ -44738,7 +44738,7 @@
     }
   },
   "totalSentCount": 71822,
-  "totalFailedCount": 15180,
+  "totalFailedCount": 15181,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44801,10 +44801,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793721056842,
-    1793721062678,
-    1793721065689,
-    1793721068886,
     1793721072622,
     1793721075766,
     1793721078807,
@@ -45536,7 +45532,8 @@
     1793724939884,
     1793724942580,
     1793724950900,
-    1793724953995
+    1793724953995,
+    1793724969260
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49631,6 +49628,11 @@
       "t": 1793724953995,
       "rateLimited": false,
       "commentId": "18041703338646887"
+    },
+    {
+      "t": 1793724969260,
+      "rateLimited": false,
+      "commentId": "18129579478839440"
     }
   ],
   "takipTemizlik": {
@@ -53421,7 +53423,7 @@
     "17940737316380507": 1793724933499,
     "18121283992754445": 1793724950900,
     "18041703338646887": 1793724953996,
-    "18129579478839440": 1793724960409,
+    "18129579478839440": 1793724969260,
     "18107505698118357": 1793724963453
   }
 }
