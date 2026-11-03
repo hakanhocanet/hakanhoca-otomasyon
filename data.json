@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18124529513512252",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T05:38:27.264Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:38:27 PST.",
-      "failedAt": "2026-11-03T05:40:03.451Z"
-    },
-    {
       "commentId": "18001621989032510",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Yazim",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:48:12 PST.",
       "failedAt": "2026-11-03T05:48:15.765Z"
+    },
+    {
+      "commentId": "18110976262937883",
+      "mediaId": "18120892015985623",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T04:05:54.825Z",
+      "postTitle": "Kızılay",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T05:48:19.033Z"
     }
   ],
   "retryQueue": [],
@@ -44417,7 +44417,7 @@
     }
   },
   "totalSentCount": 71464,
-  "totalFailedCount": 8586,
+  "totalFailedCount": 8587,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45230,7 +45230,8 @@
     1793684880212,
     1793684883646,
     1793684887150,
-    1793684895765
+    1793684895765,
+    1793684899033
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49391,6 +49392,11 @@
       "t": 1793684895765,
       "rateLimited": false,
       "commentId": "17977817037069738"
+    },
+    {
+      "t": 1793684899033,
+      "rateLimited": false,
+      "commentId": "18110976262937883"
     }
   ],
   "takipTemizlik": {
