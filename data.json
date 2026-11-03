@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18137725792743346",
-      "mediaId": "18142251151525380",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-02T23:39:52.241Z",
-      "postTitle": "Buluslar",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
-      "failedAt": "2026-11-03T00:08:43.942Z"
-    },
-    {
       "commentId": "17886018897623001",
       "mediaId": "18142251151525380",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Atatürk boyama ",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T00:19:12.976Z"
+    },
+    {
+      "commentId": "18109073030214297",
+      "mediaId": "18135637522734895",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T00:18:32.961Z",
+      "postTitle": "Kıtalar",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T00:19:18.306Z"
     }
   ],
   "retryQueue": [
@@ -44542,7 +44542,7 @@
     }
   },
   "totalSentCount": 71236,
-  "totalFailedCount": 5065,
+  "totalFailedCount": 5066,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45368,7 +45368,8 @@
     1793665147667,
     1793665150356,
     1793665152976,
-    1793665155724
+    1793665155724,
+    1793665158306
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49633,6 +49634,11 @@
       "t": 1793665152976,
       "rateLimited": false,
       "commentId": "18097542218436207"
+    },
+    {
+      "t": 1793665158306,
+      "rateLimited": false,
+      "commentId": "18109073030214297"
     }
   ],
   "takipTemizlik": {
@@ -50990,7 +50996,7 @@
     "18152390632478715": 1793665117235,
     "18587274310070193": 1793665125479,
     "17885813460627999": 1793665122759,
-    "18109073030214297": 1793665127988,
+    "18109073030214297": 1793665158306,
     "17964232299244825": 1793665130640,
     "18495868246109312": 1793665135995
   }
