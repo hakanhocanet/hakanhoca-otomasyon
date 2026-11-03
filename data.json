@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17946542961366877",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T02:07:20.262Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T02:22:22.227Z"
-    },
-    {
       "commentId": "18415314760090686",
       "mediaId": "17882891364536305",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Okuma anlama hayvan",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T02:30:54.933Z"
+    },
+    {
+      "commentId": "18001019529032472",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf lütfen",
+      "timestamp": "2026-11-03T01:48:59.359Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T02:30:57.938Z"
     }
   ],
   "retryQueue": [
@@ -44312,7 +44312,7 @@
     }
   },
   "totalSentCount": 71283,
-  "totalFailedCount": 6531,
+  "totalFailedCount": 6532,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44374,7 +44374,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793669157317,
     1793669160334,
     1793669163115,
     1793669165438,
@@ -45144,7 +45143,8 @@
     1793673025271,
     1793673035004,
     1793673049671,
-    1793673054933
+    1793673054933,
+    1793673057938
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -45732,11 +45732,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793669157317,
-      "rateLimited": false,
-      "commentId": "17912066091310475"
-    },
     {
       "t": 1793669160334,
       "rateLimited": false,
@@ -49461,6 +49456,11 @@
       "t": 1793673054933,
       "rateLimited": false,
       "commentId": "18115117826598425"
+    },
+    {
+      "t": 1793673057938,
+      "rateLimited": false,
+      "commentId": "18001019529032472"
     }
   ],
   "takipTemizlik": {
