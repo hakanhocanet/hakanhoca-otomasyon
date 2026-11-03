@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17914731483285223",
-      "mediaId": "18079904099456913",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T03:15:02.857Z",
-      "postTitle": "Cep kitabı",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T03:15:51.907Z"
-    },
-    {
       "commentId": "18449421619133743",
       "mediaId": "18079904099456913",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Cep kitabı",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T03:26:08.902Z"
+    },
+    {
+      "commentId": "18481093639114051",
+      "mediaId": "18074452643581110",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T03:24:53.566Z",
+      "postTitle": "Uzay ",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "failedAt": "2026-11-03T03:26:11.546Z"
     }
   ],
   "retryQueue": [],
@@ -44308,7 +44308,7 @@
     }
   },
   "totalSentCount": 71319,
-  "totalFailedCount": 7112,
+  "totalFailedCount": 7113,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45104,7 +45104,8 @@
     1793676360530,
     1793676363297,
     1793676366240,
-    1793676368902
+    1793676368902,
+    1793676371546
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49217,6 +49218,11 @@
       "t": 1793676368902,
       "rateLimited": false,
       "commentId": "18137729686655465"
+    },
+    {
+      "t": 1793676371546,
+      "rateLimited": false,
+      "commentId": "18481093639114051"
     }
   ],
   "takipTemizlik": {
@@ -51666,7 +51672,7 @@
     "18114498812272564": 1793676340341,
     "18644414176019847": 1793676343224,
     "18136228282708920": 1793676345942,
-    "18481093639114051": 1793676324560,
+    "18481093639114051": 1793676371546,
     "18116091449630831": 1793676326997,
     "18027924380698961": 1793676329604,
     "18195800170392932": 1793676332109
