@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18038277926903117",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T01:53:12.034Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T05:34:08.116Z"
-    },
-    {
       "commentId": "18120491755968568",
       "mediaId": "18120892015985623",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:42:43 PST.",
       "failedAt": "2026-11-03T05:42:50.547Z"
+    },
+    {
+      "commentId": "18038281166657112",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T05:42:36.089Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:42:36 PST.",
+      "failedAt": "2026-11-03T05:42:55.612Z"
     }
   ],
   "retryQueue": [
@@ -44477,7 +44477,7 @@
     }
   },
   "totalSentCount": 71457,
-  "totalFailedCount": 8517,
+  "totalFailedCount": 8518,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44540,8 +44540,6 @@
     "2026-11-03": 86031
   },
   "mesajGonderimZamanlari": [
-    1793680671389,
-    1793680674165,
     1793680676559,
     1793680679215,
     1793680682346,
@@ -45279,7 +45277,8 @@
     1793684559802,
     1793684562422,
     1793684567868,
-    1793684570547
+    1793684570547,
+    1793684575612
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46063,16 +46062,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793680671389,
-      "rateLimited": false,
-      "commentId": "18028701884702760"
-    },
-    {
-      "t": 1793680674165,
-      "rateLimited": false,
-      "commentId": "17997037562841168"
-    },
     {
       "t": 1793680676559,
       "rateLimited": false,
@@ -49392,6 +49381,11 @@
       "t": 1793684570547,
       "rateLimited": false,
       "commentId": "18131892545505342"
+    },
+    {
+      "t": 1793684575612,
+      "rateLimited": false,
+      "commentId": "18038281166657112"
     }
   ],
   "takipTemizlik": {
@@ -52607,6 +52601,6 @@
     "18106304552645753": 1793684479839,
     "18169962643412642": 1793684521626,
     "17935542183145873": 1793684553882,
-    "18038281166657112": 1793684565141
+    "18038281166657112": 1793684575612
   }
 }
