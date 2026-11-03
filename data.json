@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17912827608483359",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf 4",
-      "timestamp": "2026-11-03T16:54:21.570Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T17:03:28.483Z"
-    },
-    {
       "commentId": "18107505698118357",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T17:12:53.524Z"
+    },
+    {
+      "commentId": "17912827608483359",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf 4",
+      "timestamp": "2026-11-03T16:54:21.570Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T17:12:58.930Z"
     }
   ],
   "retryQueue": [
@@ -44562,7 +44562,7 @@
     }
   },
   "totalSentCount": 71832,
-  "totalFailedCount": 15352,
+  "totalFailedCount": 15353,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45355,7 +45355,8 @@
     1793725955240,
     1793725962669,
     1793725969026,
-    1793725973524
+    1793725973524,
+    1793725978930
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49557,6 +49558,11 @@
       "t": 1793725973525,
       "rateLimited": false,
       "commentId": "18025903514921650"
+    },
+    {
+      "t": 1793725978930,
+      "rateLimited": false,
+      "commentId": "17912827608483359"
     }
   ],
   "takipTemizlik": {
@@ -53338,7 +53344,7 @@
     "18082160750362432": 1793725660387,
     "17906374596351515": 1793725577360,
     "18384864640233078": 1793725927390,
-    "17912827608483359": 1793725648893,
+    "17912827608483359": 1793725978930,
     "18131905510685663": 1793725679681,
     "17919072978462284": 1793725700530,
     "18146301292580050": 1793725724002,
