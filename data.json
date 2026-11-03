@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17952417675315258",
-      "mediaId": "18074452643581110",
-      "fromUsername": "bilinmiyor",
-      "commentText": "@ahmet.orhan727  PDF lütfen gelmemiş",
-      "timestamp": "2026-11-03T03:27:14.604Z",
-      "postTitle": "Uzay ",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T03:28:05.689Z"
-    },
-    {
       "commentId": "18132322888753968",
       "mediaId": "18074452643581110",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T03:37:14.350Z"
+    },
+    {
+      "commentId": "18174078892460261",
+      "mediaId": "17882891364536305",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T02:27:09.628Z",
+      "postTitle": "Okuma anlama hayvan",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): The rate limit has exceeded. Please retry again after some time",
+      "failedAt": "2026-11-03T03:37:19.969Z"
     }
   ],
   "retryQueue": [
@@ -44360,7 +44360,7 @@
     }
   },
   "totalSentCount": 71325,
-  "totalFailedCount": 7232,
+  "totalFailedCount": 7233,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45145,7 +45145,8 @@
     1793677023550,
     1793677026116,
     1793677031232,
-    1793677034350
+    1793677034350,
+    1793677039969
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49197,6 +49198,11 @@
       "t": 1793677034350,
       "rateLimited": false,
       "commentId": "18078997868735451"
+    },
+    {
+      "t": 1793677039969,
+      "rateLimited": false,
+      "commentId": "18174078892460261"
     }
   ],
   "takipTemizlik": {
