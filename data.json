@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17974429779149604",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T16:27:35.913Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De eigenaar van de thread heeft dit gesprek gearchiveerd of verwijderd, of de thread bestaat niet.",
-      "failedAt": "2026-11-03T16:36:18.985Z"
-    },
-    {
       "commentId": "18100347371557515",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:45:15.045Z"
+    },
+    {
+      "commentId": "18106536272312300",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T16:45:09.665Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:45:20.758Z"
     }
   ],
   "retryQueue": [
@@ -44818,7 +44818,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15061,
+  "totalFailedCount": 15062,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44881,7 +44881,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793720418641,
     1793720422130,
     1793720426537,
     1793720429128,
@@ -45606,7 +45605,8 @@
     1793724294294,
     1793724300339,
     1793724306051,
-    1793724315046
+    1793724315046,
+    1793724320758
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49919,6 +49919,11 @@
       "t": 1793724315046,
       "rateLimited": false,
       "commentId": "17921690268240317"
+    },
+    {
+      "t": 1793724320758,
+      "rateLimited": false,
+      "commentId": "18106536272312300"
     }
   ],
   "takipTemizlik": {
@@ -53654,6 +53659,6 @@
     "18120469259008084": 1793724257943,
     "18124287796933908": 1793724290296,
     "18340530814277799": 1793724306051,
-    "18106536272312300": 1793724317891
+    "18106536272312300": 1793724320758
   }
 }
