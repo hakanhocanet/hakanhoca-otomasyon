@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17964919164248655",
-      "mediaId": "17910245412477131",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T00:30:43.893Z",
-      "postTitle": "Süreç değerlendirme 4 3",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T00:31:25.234Z"
-    },
-    {
       "commentId": "17870844468641109",
       "mediaId": "17910245412477131",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Atatürk boyama ",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "failedAt": "2026-11-03T00:39:53.048Z"
+    },
+    {
+      "commentId": "17886274770689262",
+      "mediaId": "17910245412477131",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T00:32:27.219Z",
+      "postTitle": "Süreç değerlendirme 4 3",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T00:40:00.823Z"
     }
   ],
   "retryQueue": [
@@ -44447,7 +44447,7 @@
     }
   },
   "totalSentCount": 71242,
-  "totalFailedCount": 5302,
+  "totalFailedCount": 5303,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45274,7 +45274,8 @@
     1793666374980,
     1793666377137,
     1793666382770,
-    1793666393048
+    1793666393048,
+    1793666400823
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49570,6 +49571,11 @@
       "t": 1793666393048,
       "rateLimited": false,
       "commentId": "18096654776690044"
+    },
+    {
+      "t": 1793666400823,
+      "rateLimited": false,
+      "commentId": "17886274770689262"
     }
   ],
   "takipTemizlik": {
@@ -51011,7 +51017,7 @@
     "18122650999938093": 1793666175918,
     "17901675486673062": 1793666228971,
     "18093268679701528": 1793665960534,
-    "17886274770689262": 1793666379650,
+    "17886274770689262": 1793666400823,
     "18108554737945344": 1793665998606,
     "18195853531393489": 1793666001155,
     "18099890480403422": 1793666008947,
