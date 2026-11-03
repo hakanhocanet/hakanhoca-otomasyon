@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18035070284854499",
-      "mediaId": "18131322805816168",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T01:23:46.562Z",
-      "postTitle": "Sürec 4.4",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T05:40:14.829Z"
-    },
-    {
       "commentId": "18085009286368701",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Dünya harika",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T05:48:25.156Z"
+    },
+    {
+      "commentId": "18138057499642591",
+      "mediaId": "18114175117874436",
+      "fromUsername": "cansuuakturk1",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T05:24:54.589Z",
+      "postTitle": "Zıt ",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Monday, 02-Nov-26 21:48:19 PST.",
+      "failedAt": "2026-11-03T05:48:30.421Z"
     }
   ],
   "retryQueue": [
@@ -44450,7 +44450,7 @@
     }
   },
   "totalSentCount": 71464,
-  "totalFailedCount": 8588,
+  "totalFailedCount": 8589,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45265,7 +45265,8 @@
     1793684887150,
     1793684895765,
     1793684899033,
-    1793684905156
+    1793684905156,
+    1793684910422
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49436,6 +49437,11 @@
       "t": 1793684905156,
       "rateLimited": false,
       "commentId": "17884754430526611"
+    },
+    {
+      "t": 1793684910422,
+      "rateLimited": false,
+      "commentId": "18138057499642591"
     }
   ],
   "takipTemizlik": {
@@ -52655,6 +52661,6 @@
     "18133111849818020": 1793684775594,
     "18644446495046484": 1793684732223,
     "17952170946056452": 1793684720480,
-    "18138057499642591": 1793684907853
+    "18138057499642591": 1793684910422
   }
 }
