@@ -394,7 +394,7 @@ async function mutateDataGercek(mutatorFn) {
         try { çakışmaGövdesi = await putRes.text(); } catch (_) {}
         console.log(`data.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}, sha=${sha ? sha.slice(0, 8) : 'YOK!'}), HTTP ${putRes.status} | yanıt: ${çakışmaGövdesi.slice(0, 300)} | en güncel hal tekrar çekilip deneniyor...`);
         if (deneme < MAX_DENEME) {
-          const bekleme = deneme * 300 + Math.floor(Math.random() * 250);
+          const bekleme = deneme * 500 + Math.floor(Math.random() * 300);
           await new Promise((r) => setTimeout(r, bekleme));
         }
         continue;
