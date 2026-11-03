@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17911413816588658",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "2.pdf",
-      "timestamp": "2026-11-03T16:38:07.430Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:38:18.373Z"
-    },
-    {
       "commentId": "17991835014065122",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T16:47:30.004Z"
+    },
+    {
+      "commentId": "17960169054254027",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T16:40:35.071Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:47:33.256Z"
     }
   ],
   "retryQueue": [
@@ -44610,7 +44610,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15083,
+  "totalFailedCount": 15084,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44673,7 +44673,6 @@
     "2026-11-03": 87379
   },
   "mesajGonderimZamanlari": [
-    1793720551510,
     1793720556578,
     1793720562351,
     1793720568727,
@@ -45392,7 +45391,8 @@
     1793724430146,
     1793724434227,
     1793724440688,
-    1793724450004
+    1793724450004,
+    1793724453256
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49815,6 +49815,11 @@
       "t": 1793724450004,
       "rateLimited": false,
       "commentId": "18146277919599548"
+    },
+    {
+      "t": 1793724453256,
+      "rateLimited": false,
+      "commentId": "17960169054254027"
     }
   ],
   "takipTemizlik": {
@@ -53531,7 +53536,7 @@
     "18080398214547199": 1793724360475,
     "18174016927459733": 1793724400188,
     "18106688129250273": 1793724419423,
-    "17960169054254027": 1793724040905,
+    "17960169054254027": 1793724453256,
     "17978649000152847": 1793724053134,
     "18136216090709295": 1793724063253,
     "18114156818141314": 1793724072985,
