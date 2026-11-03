@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18183536083439476",
-      "mediaId": "18099371921345004",
-      "fromUsername": "bilinmiyor",
-      "commentText": "@sultan03yilmaz PDF",
-      "timestamp": "2026-11-03T21:27:13.639Z",
-      "postTitle": "Atatürk 10 kasim",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T21:27:18.853Z"
-    },
-    {
       "commentId": "18083192063367987",
       "mediaId": "18099371921345004",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Atatürk 10 kasim",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T21:37:05.840Z"
+    },
+    {
+      "commentId": "17974627230169815",
+      "mediaId": "18099371921345004",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T21:27:33.737Z",
+      "postTitle": "Atatürk 10 kasim",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T21:37:08.052Z"
     }
   ],
   "retryQueue": [
@@ -11225,7 +11225,7 @@
     }
   },
   "totalSentCount": 72542,
-  "totalFailedCount": 17536,
+  "totalFailedCount": 17537,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12086,7 +12086,8 @@
     1793741813524,
     1793741818027,
     1793741820194,
-    1793741825840
+    1793741825840,
+    1793741828052
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16499,6 +16500,11 @@
       "t": 1793741825840,
       "rateLimited": false,
       "commentId": "18061355231578697"
+    },
+    {
+      "t": 1793741828052,
+      "rateLimited": false,
+      "commentId": "17974627230169815"
     }
   ],
   "takipTemizlik": {
@@ -22298,7 +22304,7 @@
     "18643609309047021": 1793741779468,
     "18183536083439476": 1793741795252,
     "18083192063367987": 1793741813524,
-    "17974627230169815": 1793741552814,
+    "17974627230169815": 1793741828052,
     "18037166405896472": 1793741562316,
     "18644709043013024": 1793741573305,
     "17874163206640440": 1793741582638,
