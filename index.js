@@ -885,7 +885,7 @@ async function trySendButtonMessage(commentId, buttonText, link, buttonTitle) {
 // olması gerekmiyor, çünkü Meta'nın gerçek sınırının (750) altında (700) durarak zaten
 // bir güvenlik payı bırakıyoruz.
 async function saatlikLimitDoluMu() {
-  const data = loadData();
+  const data = await readData();
   const simdi = Date.now();
   const zamanlar = (data.mesajGonderimZamanlari || []).filter((t) => simdi - t < 60 * 60 * 1000);
   return zamanlar.length >= GUVENLI_SAATLIK_LIMIT;
