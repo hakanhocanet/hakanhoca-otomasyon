@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18084782846705539",
-      "mediaId": "18348496705255003",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-03T01:54:03.172Z",
-      "postTitle": "Deneme sınavı 1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T02:01:31.777Z"
-    },
-    {
       "commentId": "18115889600127458",
       "mediaId": "18348496705255003",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Deneme sınavı 1",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "failedAt": "2026-11-03T02:10:18.835Z"
+    },
+    {
+      "commentId": "18026036267867789",
+      "mediaId": "18348496705255003",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T02:09:28.770Z",
+      "postTitle": "Deneme sınavı 1",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "failedAt": "2026-11-03T02:10:26.524Z"
     }
   ],
   "retryQueue": [
@@ -44918,7 +44918,7 @@
     }
   },
   "totalSentCount": 71272,
-  "totalFailedCount": 6297,
+  "totalFailedCount": 6298,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -44980,8 +44980,6 @@
     "2026-11-02": 85736
   },
   "mesajGonderimZamanlari": [
-    1793667920695,
-    1793667923052,
     1793667928751,
     1793667931582,
     1793667939358,
@@ -45694,7 +45692,8 @@
     1793671798060,
     1793671803251,
     1793671813880,
-    1793671818835
+    1793671818835,
+    1793671826524
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -46282,16 +46281,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793667920695,
-      "rateLimited": false,
-      "commentId": "18110938415094242"
-    },
-    {
-      "t": 1793667923052,
-      "rateLimited": false,
-      "commentId": "18114243263142995"
-    },
     {
       "t": 1793667928751,
       "rateLimited": false,
@@ -49746,6 +49735,11 @@
       "t": 1793671818835,
       "rateLimited": false,
       "commentId": "18105305222296119"
+    },
+    {
+      "t": 1793671826524,
+      "rateLimited": false,
+      "commentId": "18026036267867789"
     }
   ],
   "takipTemizlik": {
@@ -51757,7 +51751,7 @@
     "17926651416201739": 1793671795164,
     "17963030073248113": 1793671798060,
     "18352059685267747": 1793671803251,
-    "18026036267867789": 1793671800589,
+    "18026036267867789": 1793671826524,
     "18138980809651295": 1793671806093,
     "18081303428724762": 1793671808594,
     "18119102876052976": 1793671816278,
