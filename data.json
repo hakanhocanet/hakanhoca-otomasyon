@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18115460012162616",
-      "mediaId": "18149052754483391",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T20:13:46.629Z",
-      "postTitle": "Atatürk hayatı ",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T20:26:11.946Z"
-    },
-    {
       "commentId": "17926890171427240",
       "mediaId": "18149052754483391",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Atatürk hayatı ",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
       "failedAt": "2026-11-03T20:36:41.955Z"
+    },
+    {
+      "commentId": "18212375689367620",
+      "mediaId": "18149052754483391",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-03T20:13:07.144Z",
+      "postTitle": "Atatürk hayatı ",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T20:36:44.177Z"
     }
   ],
   "retryQueue": [
@@ -10970,7 +10970,7 @@
     }
   },
   "totalSentCount": 72438,
-  "totalFailedCount": 16910,
+  "totalFailedCount": 16911,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11834,7 +11834,8 @@
     1793738188610,
     1793738191039,
     1793738193677,
-    1793738201955
+    1793738201955,
+    1793738204177
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16206,6 +16207,11 @@
       "t": 1793738201955,
       "rateLimited": false,
       "commentId": "18115460012162616"
+    },
+    {
+      "t": 1793738204177,
+      "rateLimited": false,
+      "commentId": "18212375689367620"
     }
   ],
   "takipTemizlik": {
@@ -21336,7 +21342,7 @@
     "18098550227429744": 1793736784493,
     "18125804725906976": 1793736006508,
     "18113549171229462": 1793736571907,
-    "18212375689367620": 1793737779235,
+    "18212375689367620": 1793738204177,
     "17910507297665088": 1793736017686,
     "18106810961372397": 1793737829330,
     "17952727446053453": 1793736104767,
