@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18127285984808227",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T16:30:55.102Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T16:35:16.791Z"
-    },
-    {
       "commentId": "18153343648547771",
       "mediaId": "18121202050997933",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Sınav online",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
       "failedAt": "2026-11-03T16:44:14.623Z"
+    },
+    {
+      "commentId": "18120469259008084",
+      "mediaId": "18121202050997933",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF hocam",
+      "timestamp": "2026-11-03T16:44:01.822Z",
+      "postTitle": "Sınav online",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T16:44:17.943Z"
     }
   ],
   "retryQueue": [
@@ -44674,7 +44674,7 @@
     }
   },
   "totalSentCount": 71818,
-  "totalFailedCount": 15049,
+  "totalFailedCount": 15050,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45461,7 +45461,8 @@
     1793724241076,
     1793724246286,
     1793724252235,
-    1793724254623
+    1793724254623,
+    1793724257943
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49714,6 +49715,11 @@
       "t": 1793724254624,
       "rateLimited": false,
       "commentId": "18076057106760587"
+    },
+    {
+      "t": 1793724257943,
+      "rateLimited": false,
+      "commentId": "18120469259008084"
     }
   ],
   "takipTemizlik": {
@@ -53445,6 +53451,7 @@
     "18371711485244979": 1793724190169,
     "18143312443720346": 1793724208517,
     "18152984059556407": 1793724225967,
-    "18037043687850427": 1793724237927
+    "18037043687850427": 1793724237927,
+    "18120469259008084": 1793724257943
   }
 }
