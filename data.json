@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18128447483510953",
-      "mediaId": "18092741474471820",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-03T00:39:12.019Z",
-      "postTitle": "Küçük canlilar",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): An unknown error has occurred.",
-      "failedAt": "2026-11-03T00:40:09.004Z"
-    },
-    {
       "commentId": "18115786700030997",
       "mediaId": "18092741474471820",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Küçük canlilar",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "failedAt": "2026-11-03T00:48:47.762Z"
+    },
+    {
+      "commentId": "18099890480403422",
+      "mediaId": "18092741474471820",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T00:32:51.890Z",
+      "postTitle": "Küçük canlilar",
+      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: An unknown error has occurred.",
+      "failedAt": "2026-11-03T00:48:50.895Z"
     }
   ],
   "retryQueue": [
@@ -44367,7 +44367,7 @@
     }
   },
   "totalSentCount": 71245,
-  "totalFailedCount": 5404,
+  "totalFailedCount": 5405,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45190,7 +45190,8 @@
     1793666906634,
     1793666909030,
     1793666912129,
-    1793666927762
+    1793666927762,
+    1793666930895
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49458,6 +49459,11 @@
       "t": 1793666927762,
       "rateLimited": false,
       "commentId": "17932729773167707"
+    },
+    {
+      "t": 1793666930898,
+      "rateLimited": false,
+      "commentId": "18099890480403422"
     }
   ],
   "takipTemizlik": {
