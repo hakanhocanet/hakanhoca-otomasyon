@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18015637469759003",
-      "mediaId": "18120892015985623",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF😍",
-      "timestamp": "2026-11-03T04:05:59.185Z",
-      "postTitle": "Kızılay",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-03T04:07:35.936Z"
-    },
-    {
       "commentId": "18041775905837278",
       "mediaId": "17954152596319607",
       "fromUsername": "sunay1441",
@@ -3251,6 +3241,16 @@
       "postTitle": "Kızılay",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: The rate limit has exceeded. Please retry again after some time",
       "failedAt": "2026-11-03T04:20:22.368Z"
+    },
+    {
+      "commentId": "18122049640962318",
+      "mediaId": "18120892015985623",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T04:00:29.889Z",
+      "postTitle": "Kızılay",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/2): An unknown error has occurred.",
+      "failedAt": "2026-11-03T04:20:24.798Z"
     }
   ],
   "retryQueue": [],
@@ -44338,7 +44338,7 @@
     }
   },
   "totalSentCount": 71365,
-  "totalFailedCount": 7668,
+  "totalFailedCount": 7669,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45126,7 +45126,8 @@
     1793679607122,
     1793679610168,
     1793679613203,
-    1793679622368
+    1793679622368,
+    1793679624798
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -49171,6 +49172,11 @@
       "t": 1793679622368,
       "rateLimited": false,
       "commentId": "18078997868735451"
+    },
+    {
+      "t": 1793679624798,
+      "rateLimited": false,
+      "commentId": "18122049640962318"
     }
   ],
   "takipTemizlik": {
@@ -51839,7 +51845,7 @@
     "18118461170180639": 1793679339112,
     "18179502403453732": 1793679431223,
     "18415349587088213": 1793679517525,
-    "18122049640962318": 1793679565871,
+    "18122049640962318": 1793679624798,
     "18130070716845246": 1793678608178,
     "18111189764621022": 1793678622387,
     "18100021751404155": 1793678627328,
