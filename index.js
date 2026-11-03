@@ -344,6 +344,7 @@ async function mutateData(mutatorFn) {
 async function mutateDataGercek(mutatorFn) {
   const hasGithub = !!(GITHUB_TOKEN && GITHUB_REPO);
   const MAX_DENEME = 5;
+  // bkz. asagidaki continue oncesi eklenen bekleme - GitHub'in replikasyon gecikmesine zaman tanir.
 
   for (let deneme = 1; deneme <= MAX_DENEME; deneme++) {
     let data = null;
@@ -392,6 +393,10 @@ async function mutateDataGercek(mutatorFn) {
         let çakışmaGövdesi = '';
         try { çakışmaGövdesi = await putRes.text(); } catch (_) {}
         console.log(`data.json GitHub üzerinde çakıştı (deneme ${deneme}/${MAX_DENEME}, sha=${sha ? sha.slice(0, 8) : 'YOK!'}), HTTP ${putRes.status} | yanıt: ${çakışmaGövdesi.slice(0, 300)} | en güncel hal tekrar çekilip deneniyor...`);
+        if (deneme < MAX_DENEME) {
+          const bekleme = deneme * 300 + Math.floor(Math.random() * 250);
+          await new Promise((r) => setTimeout(r, bekleme));
+        }
         continue;
       }
       const errText = await putRes.text();
