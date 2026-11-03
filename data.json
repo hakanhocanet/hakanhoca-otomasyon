@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18154160107491550",
-      "mediaId": "18121202050997933",
-      "fromUsername": "bilinmiyor",
-      "commentText": "pdf",
-      "timestamp": "2026-11-03T05:01:20.867Z",
-      "postTitle": "Sınav online",
-      "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 04:02:50 PST.",
-      "failedAt": "2026-11-03T12:03:23.564Z"
-    },
-    {
       "commentId": "17867698884679575",
       "mediaId": "18099351929376060",
       "fromUsername": "duduyavuz",
@@ -3251,6 +3241,16 @@
       "postTitle": "Akran",
       "reason": "Geçici hata, 2 ek denemeden sonra vazgeçildi: Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 04:13:05 PST.",
       "failedAt": "2026-11-03T12:13:07.678Z"
+    },
+    {
+      "commentId": "18260622952308071",
+      "mediaId": "18112673143887230",
+      "fromUsername": "ebru_ozdmr18",
+      "commentText": "PDF",
+      "timestamp": "2026-11-03T12:13:01.856Z",
+      "postTitle": "Süreç 3.7",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/2): Error validating access token: Session has expired on Monday, 02-Nov-26 21:38:20 PST. The current time is Tuesday, 03-Nov-26 04:13:02 PST.",
+      "failedAt": "2026-11-03T12:13:10.846Z"
     }
   ],
   "retryQueue": [
@@ -44450,7 +44450,7 @@
     }
   },
   "totalSentCount": 71492,
-  "totalFailedCount": 12893,
+  "totalFailedCount": 12894,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -45295,7 +45295,8 @@
     1793707960373,
     1793707976079,
     1793707981086,
-    1793707987678
+    1793707987678,
+    1793707990846
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -50081,6 +50082,11 @@
       "t": 1793707987680,
       "rateLimited": false,
       "commentId": "17899633851610647"
+    },
+    {
+      "t": 1793707990846,
+      "rateLimited": false,
+      "commentId": "18260622952308071"
     }
   ],
   "takipTemizlik": {
