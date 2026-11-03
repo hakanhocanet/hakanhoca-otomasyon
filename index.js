@@ -317,6 +317,23 @@ async function fetchGithubData() {
 // işlemi GitHub'a gidiyor, bir sonraki işlem öncekinin tamamen bitmesini bekliyor. Böylece bu
 // SÜRECİN kendi kendine çakışması artık İMKANSIZ hale geliyor (dışarıdan, örn. bir deploy sırasında
 // eski/yeni kopyanın çakışması gibi NADİR durumlar için retry mekanizması zaten duruyor, o kalıyor).
+const DAILYSTATS_GUN_SINIRI = 60;
+const DAILYSTATS_KULLANICI_SINIRI = 120;
+function dailyStatsKisalt(data) {
+  if (!data || !data.dailyStats) return;
+  const gunler = Object.keys(data.dailyStats).sort();
+  if (gunler.length > DAILYSTATS_GUN_SINIRI) {
+    const atilacaklar = gunler.slice(0, gunler.length - DAILYSTATS_GUN_SINIRI);
+    for (const g of atilacaklar) delete data.dailyStats[g];
+  }
+  for (const gun of Object.keys(data.dailyStats)) {
+    const giris = data.dailyStats[gun];
+    if (giris && Array.isArray(giris.users) && giris.users.length > DAILYSTATS_KULLANICI_SINIRI) {
+      giris.users.splice(0, giris.users.length - DAILYSTATS_KULLANICI_SINIRI);
+    }
+  }
+}
+
 let mutateDataKuyrugu = Promise.resolve();
 async function mutateData(mutatorFn) {
   const sonraki = mutateDataKuyrugu.then(() => mutateDataGercek(mutatorFn));
@@ -345,6 +362,7 @@ async function mutateDataGercek(mutatorFn) {
     }
     if (!data) data = loadData();
 
+    dailyStatsKisalt(data);
     mutatorFn(data);
     saveData(data);
 
@@ -1333,7 +1351,7 @@ async function logSent(record, ekMutator) {
     if (!data.dailyStats) data.dailyStats = {};
     if (!data.dailyStats[gun]) {
       const gunler = Object.keys(data.dailyStats);
-      if (gunler.length >= 180) delete data.dailyStats[gunler[0]]; // en eski günü at, yer aç
+      if (gunler.length >= DAILYSTATS_GUN_SINIRI) delete data.dailyStats[gunler[0]]; // en eski günü at, yer aç
       data.dailyStats[gun] = { count: 0, users: [] };
     }
     data.dailyStats[gun].count += 1;
@@ -1345,8 +1363,8 @@ async function logSent(record, ekMutator) {
     // yoğun bir günde "kimler yazdı" listesindeki en SON 300 kişiden öncekiler listelenmeyebilir.
     if (record.fromUsername && !data.dailyStats[gun].users.includes(record.fromUsername)) {
       data.dailyStats[gun].users.push(record.fromUsername);
-      if (data.dailyStats[gun].users.length > 300) {
-        data.dailyStats[gun].users.splice(0, data.dailyStats[gun].users.length - 300);
+      if (data.dailyStats[gun].users.length > DAILYSTATS_KULLANICI_SINIRI) {
+        data.dailyStats[gun].users.splice(0, data.dailyStats[gun].users.length - DAILYSTATS_KULLANICI_SINIRI);
       }
     }
 
