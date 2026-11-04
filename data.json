@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17930366106182739",
-      "mediaId": "18118816282814418",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf👏",
-      "timestamp": "2026-11-04T11:32:48.815Z",
-      "postTitle": "Problem",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T11:33:13.764Z"
-    },
-    {
       "commentId": "18181958290453458",
       "mediaId": "18118816282814418",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T11:41:33.967Z"
+    },
+    {
+      "commentId": "18027157091866971",
+      "mediaId": "18118816282814418",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T11:41:14.120Z",
+      "postTitle": "Problem",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T11:41:38.527Z"
     }
   ],
   "retryQueue": [
@@ -12779,7 +12779,7 @@
     }
   },
   "totalSentCount": 73606,
-  "totalFailedCount": 26230,
+  "totalFailedCount": 26231,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12843,7 +12843,6 @@
     "2026-11-04": 88213
   },
   "mesajGonderimZamanlari": [
-    1793788596089,
     1793788599075,
     1793788603702,
     1793788615244,
@@ -13426,7 +13425,8 @@
     1793792474693,
     1793792476916,
     1793792491625,
-    1793792493967
+    1793792493967,
+    1793792498527
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16746,6 +16746,11 @@
       "t": 1793792493967,
       "rateLimited": true,
       "commentId": "18002426018827602"
+    },
+    {
+      "t": 1793792498529,
+      "rateLimited": true,
+      "commentId": "18027157091866971"
     }
   ],
   "takipTemizlik": {
@@ -28086,7 +28091,7 @@
     "17989372968096604": 1793792476919,
     "18106014812326812": 1793792461904,
     "18002426018827602": 1793792493967,
-    "18027157091866971": 1793792484118,
+    "18027157091866971": 1793792498529,
     "17915645061281264": 1793792486567,
     "18483546919112956": 1793792488901
   }
