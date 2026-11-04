@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18196253506400193",
-      "mediaId": "17932716492162565",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T16:48:56.967Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T16:49:04.534Z"
-    },
-    {
       "commentId": "17984213678901680",
       "mediaId": "17932716492162565",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T17:00:18.722Z"
+    },
+    {
+      "commentId": "18286422574290383",
+      "mediaId": "17932716492162565",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T17:00:18.164Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T17:00:25.658Z"
     }
   ],
   "retryQueue": [
@@ -12475,7 +12475,7 @@
     }
   },
   "totalSentCount": 74151,
-  "totalFailedCount": 28847,
+  "totalFailedCount": 28848,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12539,7 +12539,6 @@
     "2026-11-04": 88622
   },
   "mesajGonderimZamanlari": [
-    1793807720836,
     1793807730200,
     1793807735271,
     1793807737742,
@@ -13166,7 +13165,8 @@
     1793811601191,
     1793811603849,
     1793811616264,
-    1793811618723
+    1793811618723,
+    1793811625658
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16695,6 +16695,11 @@
       "t": 1793811618723,
       "rateLimited": true,
       "commentId": "17874501240601550"
+    },
+    {
+      "t": 1793811625661,
+      "rateLimited": true,
+      "commentId": "18286422574290383"
     }
   ],
   "takipTemizlik": {
@@ -30288,6 +30293,6 @@
     "18164108965498081": 1793811593144,
     "18093098891228546": 1793811603852,
     "18377980648215018": 1793811616264,
-    "18286422574290383": 1793811622845
+    "18286422574290383": 1793811625661
   }
 }
