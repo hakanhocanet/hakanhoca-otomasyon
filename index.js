@@ -1560,8 +1560,9 @@ async function tekrarDenemeDongusuCalistir() {
   const _oncekiVeri = await readData();
   const _simdiZaman = Date.now();
   const _pencereMs = 10 * 60 * 1000;
-  const _basariliSonDk = (_oncekiVeri.basariliZamanlari || []).filter((x) => _simdiZaman - x.t < _pencereMs).length;
-  const _basarisizSonDk = (_oncekiVeri.basarisizZamanlariDetay || []).filter((x) => _simdiZaman - x.t < _pencereMs).length;
+  function _dedupSayisi(liste) { return new Set(liste.map((x) => x.commentId != null ? x.commentId : Symbol())).size; }
+  const _basariliSonDk = _dedupSayisi((_oncekiVeri.basariliZamanlari || []).filter((x) => _simdiZaman - x.t < _pencereMs));
+  const _basarisizSonDk = _dedupSayisi((_oncekiVeri.basarisizZamanlariDetay || []).filter((x) => _simdiZaman - x.t < _pencereMs));
   const _toplamSonDk = _basariliSonDk + _basarisizSonDk;
   const _basariOraniSonDk = _toplamSonDk >= 5 ? (_basariliSonDk / _toplamSonDk) : 1;
   const GONDERIM_ARALIGI_MS = _basariOraniSonDk < 0.2 ? 20000 : (_basariOraniSonDk < 0.5 ? 8000 : 2000);
