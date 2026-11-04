@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18116642057031399",
-      "mediaId": "17932716492162565",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T16:48:42.785Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T16:48:54.841Z"
-    },
-    {
       "commentId": "18196253506400193",
       "mediaId": "17932716492162565",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T17:00:16.264Z"
+    },
+    {
+      "commentId": "17874501240601550",
+      "mediaId": "17932716492162565",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T16:01:56.165Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T17:00:18.722Z"
     }
   ],
   "retryQueue": [
@@ -12459,7 +12459,7 @@
     }
   },
   "totalSentCount": 74151,
-  "totalFailedCount": 28846,
+  "totalFailedCount": 28847,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -13149,7 +13149,8 @@
     1793811593111,
     1793811601191,
     1793811603849,
-    1793811616264
+    1793811616264,
+    1793811618723
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16673,6 +16674,11 @@
       "t": 1793811616264,
       "rateLimited": true,
       "commentId": "18377980648215018"
+    },
+    {
+      "t": 1793811618723,
+      "rateLimited": true,
+      "commentId": "17874501240601550"
     }
   ],
   "takipTemizlik": {
@@ -29883,7 +29889,7 @@
     "18137809045629812": 1793811564349,
     "17953904793321810": 1793811582204,
     "18096704900671481": 1793811601191,
-    "17874501240601550": 1793811613471,
+    "17874501240601550": 1793811618723,
     "17901711576434965": 1793808160621,
     "18135396148782902": 1793808166394,
     "18154786498547269": 1793808169040,
