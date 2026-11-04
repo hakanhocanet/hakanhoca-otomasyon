@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18116705183583823",
-      "mediaId": "17926496853428907",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf 🙌",
-      "timestamp": "2026-11-04T05:26:40.669Z",
-      "postTitle": "Problem seri1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-04T05:27:07.043Z"
-    },
-    {
       "commentId": "18034826477895980",
       "mediaId": "17926496853428907",
       "fromUsername": "bilinmiyor",
@@ -3332,6 +3322,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T05:37:15.610Z"
+    },
+    {
+      "commentId": "18081817829750869",
+      "mediaId": "17926496853428907",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T05:37:13.738Z",
+      "postTitle": "Problem seri1",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T05:37:20.342Z"
     }
   ],
   "retryQueue": [
@@ -11080,7 +11081,7 @@
     }
   },
   "totalSentCount": 72974,
-  "totalFailedCount": 22960,
+  "totalFailedCount": 22961,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11928,7 +11929,8 @@
     1793770622637,
     1793770627940,
     1793770630807,
-    1793770635610
+    1793770635610,
+    1793770640342
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16269,6 +16271,11 @@
       "t": 1793770635610,
       "rateLimited": true,
       "commentId": "17997011865109512"
+    },
+    {
+      "t": 1793770640342,
+      "rateLimited": true,
+      "commentId": "18081817829750869"
     }
   ],
   "takipTemizlik": {
@@ -25130,6 +25137,6 @@
     "18154410847530104": 1793770622637,
     "18429770014145438": 1793770627940,
     "18226501672341769": 1793770630807,
-    "18081817829750869": 1793770637987
+    "18081817829750869": 1793770640342
   }
 }
