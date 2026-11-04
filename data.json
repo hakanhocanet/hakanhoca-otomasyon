@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17873048133647975",
-      "mediaId": "17989861746080586",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T19:12:45.785Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T19:13:22.557Z"
-    },
-    {
       "commentId": "18133455103776771",
       "mediaId": "17989861746080586",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T19:24:41.297Z"
+    },
+    {
+      "commentId": "17927362782204245",
+      "mediaId": "17989861746080586",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf👏",
+      "timestamp": "2026-11-04T19:24:23.328Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T19:24:43.657Z"
     }
   ],
   "retryQueue": [
@@ -11819,7 +11819,7 @@
     }
   },
   "totalSentCount": 74436,
-  "totalFailedCount": 30099,
+  "totalFailedCount": 30100,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11883,7 +11883,6 @@
     "2026-11-04": 88622
   },
   "mesajGonderimZamanlari": [
-    1793816381524,
     1793816387549,
     1793816390361,
     1793816393297,
@@ -12581,7 +12580,8 @@
     1793820260851,
     1793820264193,
     1793820266751,
-    1793820281298
+    1793820281298,
+    1793820283657
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16449,6 +16449,11 @@
       "t": 1793820281300,
       "rateLimited": true,
       "commentId": "17914400088306727"
+    },
+    {
+      "t": 1793820283657,
+      "rateLimited": true,
+      "commentId": "17927362782204245"
     }
   ],
   "takipTemizlik": {
@@ -31241,7 +31246,7 @@
     "17915729148282257": 1793820260857,
     "17963332017251350": 1793820266755,
     "17914400088306727": 1793820281300,
-    "17927362782204245": 1793820271664,
+    "17927362782204245": 1793820283659,
     "18026000192922522": 1793820278251
   }
 }
