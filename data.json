@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17971450811960650",
-      "mediaId": "18118816282814418",
-      "fromUsername": "bilinmiyor",
-      "commentText": "👏pdf",
-      "timestamp": "2026-11-04T11:35:03.413Z",
-      "postTitle": "Problem",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T13:28:32.340Z"
-    },
-    {
       "commentId": "18129766483857604",
       "mediaId": "18103347032645511",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T13:41:24.829Z"
+    },
+    {
+      "commentId": "18201119569380216",
+      "mediaId": "18103347032645511",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T13:41:20.698Z",
+      "postTitle": "Öğretmen",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T13:41:33.867Z"
     }
   ],
   "retryQueue": [
@@ -20411,7 +20411,7 @@
     }
   },
   "totalSentCount": 73791,
-  "totalFailedCount": 27115,
+  "totalFailedCount": 27116,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -20475,7 +20475,6 @@
     "2026-11-04": 88213
   },
   "mesajGonderimZamanlari": [
-    1793795785139,
     1793795798575,
     1793795800908,
     1793795817408,
@@ -21164,7 +21163,8 @@
     1793799669921,
     1793799673181,
     1793799678739,
-    1793799684829
+    1793799684829,
+    1793799693867
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -25005,6 +25005,11 @@
       "t": 1793799684829,
       "rateLimited": true,
       "commentId": "17975568986948954"
+    },
+    {
+      "t": 1793799693867,
+      "rateLimited": true,
+      "commentId": "18201119569380216"
     }
   ],
   "takipTemizlik": {
@@ -37013,6 +37018,6 @@
     "18115279472630228": 1793799673181,
     "18084543395709213": 1793799678739,
     "17975568986948954": 1793799684829,
-    "18201119569380216": 1793799687996
+    "18201119569380216": 1793799693867
   }
 }
