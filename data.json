@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18129737659881927",
-      "mediaId": "17926496853428907",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T05:14:00.433Z",
-      "postTitle": "Problem seri1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-04T05:15:01.938Z"
-    },
-    {
       "commentId": "18099762896391023",
       "mediaId": "18099351929376060",
       "fromUsername": "stemx38",
@@ -3301,6 +3291,17 @@
       "postTitle": "Problem seri1",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "failedAt": "2026-11-04T05:22:55.604Z"
+    },
+    {
+      "commentId": "18120824269748960",
+      "mediaId": "17932505136165666",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF alabilir miyim?",
+      "timestamp": "2026-11-04T04:44:50.585Z",
+      "postTitle": "Mektuplar",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T05:23:01.883Z"
     }
   ],
   "retryQueue": [
@@ -11881,7 +11882,7 @@
     }
   },
   "totalSentCount": 72953,
-  "totalFailedCount": 22811,
+  "totalFailedCount": 22812,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12732,7 +12733,8 @@
     1793769769035,
     1793769771020,
     1793769773090,
-    1793769775605
+    1793769775605,
+    1793769781883
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -17093,6 +17095,11 @@
       "t": 1793769775605,
       "rateLimited": false,
       "commentId": "18080416865399131"
+    },
+    {
+      "t": 1793769781883,
+      "rateLimited": true,
+      "commentId": "18120824269748960"
     }
   ],
   "takipTemizlik": {
@@ -25560,7 +25567,7 @@
     "17909430627576073": 1793768462979,
     "18120377476983861": 1793768598247,
     "18142876579610553": 1793768694452,
-    "18120824269748960": 1793769777601,
+    "18120824269748960": 1793769781884,
     "18000093278824434": 1793768745275,
     "18492687580107172": 1793768758203,
     "17935936887403997": 1793768803452,
