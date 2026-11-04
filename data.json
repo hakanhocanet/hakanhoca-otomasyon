@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18449885215121699",
-      "mediaId": "18107376239570012",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf lütfen",
-      "timestamp": "2026-11-04T09:27:21.584Z",
-      "postTitle": "Atatürkü anma günü",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T10:52:41.899Z"
-    },
-    {
       "commentId": "17921314428240193",
       "mediaId": "18112673143887230",
       "fromUsername": "bilinmiyor",
@@ -3350,6 +3339,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T11:08:41.695Z"
+    },
+    {
+      "commentId": "18191879485415516",
+      "mediaId": "18118816282814418",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T11:08:10.737Z",
+      "postTitle": "Problem",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T11:08:44.903Z"
     }
   ],
   "retryQueue": [
@@ -11818,7 +11818,7 @@
     }
   },
   "totalSentCount": 73578,
-  "totalFailedCount": 25942,
+  "totalFailedCount": 25943,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12415,7 +12415,8 @@
     1793790503153,
     1793790512495,
     1793790514900,
-    1793790521695
+    1793790521695,
+    1793790524903
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -15446,6 +15447,11 @@
       "t": 1793790521695,
       "rateLimited": true,
       "commentId": "18350025451255464"
+    },
+    {
+      "t": 1793790524903,
+      "rateLimited": true,
+      "commentId": "18191879485415516"
     }
   ],
   "takipTemizlik": {
@@ -26547,7 +26553,7 @@
     "18157460755520408": 1793790498289,
     "18116095004040414": 1793790514900,
     "18350025451255464": 1793790521695,
-    "18191879485415516": 1793790509896,
+    "18191879485415516": 1793790524903,
     "17976003999153209": 1793790517793
   }
 }
