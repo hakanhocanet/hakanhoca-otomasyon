@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18128561071915722",
-      "mediaId": "18154659655536615",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T02:04:15.817Z",
-      "postTitle": "Süreç 27",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): An unknown error has occurred.",
-      "failedAt": "2026-11-04T02:04:32.760Z"
-    },
-    {
       "commentId": "18131244613757095",
       "mediaId": "18154659655536615",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "Süreç 27",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): An unknown error has occurred.",
       "failedAt": "2026-11-04T02:12:37.615Z"
+    },
+    {
+      "commentId": "18601037509067215",
+      "mediaId": "18154659655536615",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T02:08:03.291Z",
+      "postTitle": "Süreç 27",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 2/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "failedAt": "2026-11-04T02:12:40.175Z"
     }
   ],
   "retryQueue": [
@@ -10946,7 +10946,7 @@
     }
   },
   "totalSentCount": 72807,
-  "totalFailedCount": 20632,
+  "totalFailedCount": 20633,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11010,7 +11010,6 @@
     "2026-11-04": 87964
   },
   "mesajGonderimZamanlari": [
-    1793754458819,
     1793754461703,
     1793754465991,
     1793754475473,
@@ -11809,7 +11808,8 @@
     1793758338437,
     1793758343419,
     1793758355046,
-    1793758357615
+    1793758357615,
+    1793758360175
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16182,6 +16182,11 @@
       "t": 1793758357615,
       "rateLimited": false,
       "commentId": "18127468900858202"
+    },
+    {
+      "t": 1793758360175,
+      "rateLimited": false,
+      "commentId": "18601037509067215"
     }
   ],
   "takipTemizlik": {
@@ -23533,7 +23538,7 @@
     "18063131747791343": 1793758081173,
     "17951271936305624": 1793758085827,
     "18089853521278053": 1793758098786,
-    "18601037509067215": 1793758347877,
+    "18601037509067215": 1793758360175,
     "18126940994477470": 1793758110364,
     "18114122810181132": 1793758122574,
     "17999867450825975": 1793758127276,
