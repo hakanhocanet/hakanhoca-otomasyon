@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18132998374770162",
-      "mediaId": "17902876377378256",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T07:10:49.816Z",
-      "postTitle": "Seri3",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T07:11:14.827Z"
-    },
-    {
       "commentId": "18058617824572584",
       "mediaId": "18107376239570012",
       "fromUsername": "gulayonal3",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T07:20:14.082Z"
+    },
+    {
+      "commentId": "17964574515233145",
+      "mediaId": "17902876377378256",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T07:20:05.270Z",
+      "postTitle": "Seri3",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T07:20:16.423Z"
     }
   ],
   "retryQueue": [
@@ -11323,7 +11323,7 @@
     }
   },
   "totalSentCount": 73131,
-  "totalFailedCount": 24063,
+  "totalFailedCount": 24064,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12187,7 +12187,8 @@
     1793776797979,
     1793776803319,
     1793776806046,
-    1793776814082
+    1793776814082,
+    1793776816423
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16571,6 +16572,11 @@
       "t": 1793776814082,
       "rateLimited": true,
       "commentId": "17907923529571174"
+    },
+    {
+      "t": 1793776816423,
+      "rateLimited": true,
+      "commentId": "17964574515233145"
     }
   ],
   "takipTemizlik": {
@@ -26087,6 +26093,6 @@
     "18029795981860474": 1793776797979,
     "17953720128325439": 1793776803321,
     "17907923529571174": 1793776814085,
-    "17964574515233145": 1793776811729
+    "17964574515233145": 1793776816423
   }
 }
