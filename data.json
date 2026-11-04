@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17975991918158385",
-      "mediaId": "17926496853428907",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T05:01:45.143Z",
-      "postTitle": "Problem seri1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): An unknown error has occurred.",
-      "failedAt": "2026-11-04T05:02:24.914Z"
-    },
-    {
       "commentId": "18158066725517503",
       "mediaId": "17926496853428907",
       "fromUsername": "bilinmiyor",
@@ -3278,6 +3268,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T05:10:48.642Z"
+    },
+    {
+      "commentId": "18024524555715376",
+      "mediaId": "17926496853428907",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T05:03:04.916Z",
+      "postTitle": "Problem seri1",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T05:10:59.678Z"
     }
   ],
   "retryQueue": [
@@ -10994,7 +10995,7 @@
     }
   },
   "totalSentCount": 72945,
-  "totalFailedCount": 22661,
+  "totalFailedCount": 22662,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11850,7 +11851,8 @@
     1793769036270,
     1793769046354,
     1793769048642,
-    1793769051624
+    1793769051624,
+    1793769059678
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16227,6 +16229,11 @@
       "t": 1793769048642,
       "rateLimited": true,
       "commentId": "18232653940329849"
+    },
+    {
+      "t": 1793769059678,
+      "rateLimited": true,
+      "commentId": "18024524555715376"
     }
   ],
   "takipTemizlik": {
@@ -24856,7 +24863,7 @@
     "18358772581175601": 1793769003159,
     "17913468291310944": 1793769019497,
     "17922879582450572": 1793768596204,
-    "18024524555715376": 1793769055329,
+    "18024524555715376": 1793769059678,
     "18399762409203545": 1793768624380,
     "18095570888657397": 1793768626712,
     "18171178552476258": 1793768631419,
