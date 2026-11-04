@@ -1337,11 +1337,11 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
   async function gecikHataIsle(hataMesaji) {
     if (mevcutDeneme < GECICI_HATA_MAX_DENEME) {
       await addToRetryQueue(commentId, message, record, 'gecici_hata', ekMutator, publicReplyMetni, mevcutDeneme + 1);
-      await logFailed({ ...record, reason: `Geçici hata, otomatik olarak tekrar denenecek (deneme ${mevcutDeneme + 1}/${GECICI_HATA_MAX_DENEME}): ${hataMesaji}` });
+      await logFailed({ ...record, reason: `Geçici hata, otomatik olarak tekrar denenecek (deneme ${mevcutDeneme + 1}/${GECICI_HATA_MAX_DENEME}): ${hataMesaji}` }, undefined, mevcutDeneme === 0);
     } else {
       // Gerçekten vazgeçildi - DM hiç gitmedi, bu yüzden herkese açık "gönderdim" cevabı da
       // KASITLI OLARAK gönderilmiyor (göndermek yanlış olurdu).
-      await logFailed({ ...record, reason: `Geçici hata, ${GECICI_HATA_MAX_DENEME} ek denemeden sonra vazgeçildi: ${hataMesaji}` }, ekMutator);
+      await logFailed({ ...record, reason: `Geçici hata, ${GECICI_HATA_MAX_DENEME} ek denemeden sonra vazgeçildi: ${hataMesaji}` }, ekMutator, mevcutDeneme === 0);
     }
   }
 
@@ -1390,7 +1390,7 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
         // "gönderdim" cevabı bu turda da gönderilmiyor, bir sonraki denemeye kalıyor.
         // "mevcutDeneme" olduğu gibi korunuyor - rate-limit tekrarları geçici-hata hakkını tüketmez.
         await addToRetryQueue(commentId, message, record, undefined, ekMutator, publicReplyMetni, mevcutDeneme);
-        await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true });
+        await logFailed({ ...record, reason: `Limit doldu, tekrar denenecek: ${errorMsg}`, rateLimited: true }, undefined, mevcutDeneme === 0);
       } else {
         await gecikHataIsle(errorMsg);
       }
@@ -1467,7 +1467,7 @@ async function logSent(record, ekMutator) {
   });
 }
 
-async function logFailed(record, ekMutator) {
+async function logFailed(record, ekMutator, ilkDenemeMi) {
   await mutateData((data) => {
     // "failedAt": record.timestamp İLK yorumun geldiği an (retry'lerde de hep aynı kalır,
     // değişmez) - asıl BAŞARISIZ OLMA anını (ki saatlik sayaca TAM OLARAK bu an ekleniyor)
@@ -1479,7 +1479,7 @@ async function logFailed(record, ekMutator) {
     data.totalFailedCount = (data.totalFailedCount || 0) + 1;
     // Başarısız da olsa Meta'ya gerçek bir /messages çağrısı atılmıştır, bu yüzden
     // hız sınırı sayacına o da dahil ediliyor.
-    kaydetGonderimZamani(data);
+    if (ilkDenemeMi !== false) kaydetGonderimZamani(data);
     // Saatlik kırılım (account-health) için AYRI, sınırsız (sadece zamana göre temizlenen) kayıt.
     kaydetBasarisizZamani(data, record.rateLimited, record.commentId);
     // Bu yorum için (başarısız da olsa) bir DM denemesi yapıldı - geriye dönük tarama
@@ -2137,6 +2137,11 @@ app.post('/admin/api/account-health/pause', async (req, res) => {
   res.json({ ok: true, otomasyonDuraklatildiMi: !!paused });
 });
 
+// Saatlik sayac sifirlama endpointi (sadece bizim guvenlik kapimizi acar).
+app.post(`/admin/api/account-health/reset-counter`, async (req, res) => {
+  await mutateData((data) => { data.mesajGonderimZamanlari = []; });
+  res.json({ ok: true, mesaj: `Saatlik sayac sifirlandi.` });
+});
 // ---- Kara liste (istenmeyen/spam kullanıcı adlarına otomasyon hiç çalışmaz) ----
 app.post('/admin/api/blacklist', async (req, res) => {
   const temiz = String((req.body && req.body.username) || '').trim().replace(/^@/, '').toLowerCase();
