@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18100244996361975",
-      "mediaId": "18118816282814418",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf 🙏🙏",
-      "timestamp": "2026-11-04T11:31:25.320Z",
-      "postTitle": "Problem",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T11:32:07.424Z"
-    },
-    {
       "commentId": "17971556726962503",
       "mediaId": "18118816282814418",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T11:40:31.511Z"
+    },
+    {
+      "commentId": "17953741188271902",
+      "mediaId": "18118816282814418",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T11:39:59.967Z",
+      "postTitle": "Problem",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T11:40:33.691Z"
     }
   ],
   "retryQueue": [
@@ -12571,7 +12571,7 @@
     }
   },
   "totalSentCount": 73605,
-  "totalFailedCount": 26218,
+  "totalFailedCount": 26219,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12635,7 +12635,6 @@
     "2026-11-04": 88213
   },
   "mesajGonderimZamanlari": [
-    1793788533511,
     1793788536796,
     1793788551077,
     1793788556723,
@@ -13212,7 +13211,8 @@
     1793792414696,
     1793792426187,
     1793792428927,
-    1793792431511
+    1793792431511,
+    1793792433691
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16539,6 +16539,11 @@
       "t": 1793792431513,
       "rateLimited": true,
       "commentId": "18450643261134732"
+    },
+    {
+      "t": 1793792433694,
+      "rateLimited": true,
+      "commentId": "17953741188271902"
     }
   ],
   "takipTemizlik": {
@@ -27870,7 +27875,7 @@
     "18116185544015367": 1793792414699,
     "18120308074764477": 1793792428929,
     "18450643261134732": 1793792431513,
-    "17953741188271902": 1793792417913,
+    "17953741188271902": 1793792433694,
     "17953565787273294": 1793792423684
   }
 }
