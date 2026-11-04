@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18087183791651776",
-      "mediaId": "17902876377378256",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T06:52:56.803Z",
-      "postTitle": "Seri3",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T07:02:11.784Z"
-    },
-    {
       "commentId": "18098830601406472",
       "mediaId": "17932505136165666",
       "fromUsername": "bilinmiyor",
@@ -3350,6 +3339,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T07:11:21.922Z"
+    },
+    {
+      "commentId": "17947369725086162",
+      "mediaId": "17902876377378256",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T07:11:00.233Z",
+      "postTitle": "Seri3",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T07:11:24.540Z"
     }
   ],
   "retryQueue": [
@@ -11802,7 +11802,7 @@
     }
   },
   "totalSentCount": 73118,
-  "totalFailedCount": 23967,
+  "totalFailedCount": 23968,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12665,7 +12665,8 @@
     1793776274827,
     1793776277070,
     1793776279524,
-    1793776281922
+    1793776281922,
+    1793776284540
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -17044,6 +17045,11 @@
       "t": 1793776281922,
       "rateLimited": true,
       "commentId": "18643398982006595"
+    },
+    {
+      "t": 1793776284540,
+      "rateLimited": true,
+      "commentId": "17947369725086162"
     }
   ],
   "takipTemizlik": {
@@ -26482,6 +26488,6 @@
     "18132998374770162": 1793776274827,
     "18058617824572584": 1793776277072,
     "18643398982006595": 1793776281924,
-    "17947369725086162": 1793776272516
+    "17947369725086162": 1793776284543
   }
 }
