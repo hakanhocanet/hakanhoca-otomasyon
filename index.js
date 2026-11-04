@@ -1569,7 +1569,14 @@ async function tekrarDenemeDongusuCalistir() {
     console.log(`🐢 Son 10 dakikada basari orani dusuk (%${Math.round(_basariOraniSonDk*100)}), gonderim temposu ${GONDERIM_ARALIGI_MS}ms'ye yavaslatildi.`);
   }
 
+  const MAX_ISLENECEK_BU_TURDA = 80;
   for (let i = 0; i < queue.length; i++) {
+    if (i >= MAX_ISLENECEK_BU_TURDA) {
+      const kalanlar = queue.slice(i);
+      await mutateData((data) => { data.retryQueue = [...kalanlar, ...data.retryQueue]; });
+      console.log(`Bu turda ${MAX_ISLENECEK_BU_TURDA} mesaj sinirina ulasildi, ${kalanlar.length} mesaj bir sonraki turda islenecek.`);
+      break;
+    }
     // Bu döngü sırasında da saatlik güvenli sınıra ulaşılmış olabilir (örn. kuyrukta çok
     // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
     // koyup bu turu burada kesiyoruz, bir sonraki ~1 dakikalık döngüde devam edilir.
