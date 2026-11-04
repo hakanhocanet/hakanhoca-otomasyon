@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17894159157617124",
-      "mediaId": "18103347032645511",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T13:30:22.281Z",
-      "postTitle": "Öğretmen",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T13:30:30.256Z"
-    },
-    {
       "commentId": "18064390337797097",
       "mediaId": "18103347032645511",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T13:42:58.945Z"
+    },
+    {
+      "commentId": "18060208016557928",
+      "mediaId": "18103347032645511",
+      "fromUsername": "bilinmiyor",
+      "commentText": "@betulll.demiir PDF",
+      "timestamp": "2026-11-04T13:42:43.378Z",
+      "postTitle": "Öğretmen",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T13:43:01.562Z"
     }
   ],
   "retryQueue": [
@@ -20619,7 +20619,7 @@
     }
   },
   "totalSentCount": 73792,
-  "totalFailedCount": 27129,
+  "totalFailedCount": 27130,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -21375,7 +21375,8 @@
     1793799758494,
     1793799761244,
     1793799775586,
-    1793799778945
+    1793799778945,
+    1793799781562
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -25212,6 +25213,11 @@
       "t": 1793799778945,
       "rateLimited": true,
       "commentId": "18050417780827637"
+    },
+    {
+      "t": 1793799781562,
+      "rateLimited": true,
+      "commentId": "18060208016557928"
     }
   ],
   "takipTemizlik": {
@@ -37232,6 +37238,6 @@
     "17963070845996963": 1793799758494,
     "18188110354422745": 1793799761244,
     "18050417780827637": 1793799778945,
-    "18060208016557928": 1793799772240
+    "18060208016557928": 1793799781562
   }
 }
