@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18000159755825960",
-      "mediaId": "17926496853428907",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T05:01:38.384Z",
-      "postTitle": "Problem seri1",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): An unknown error has occurred.",
-      "failedAt": "2026-11-04T05:02:21.623Z"
-    },
-    {
       "commentId": "17975991918158385",
       "mediaId": "17926496853428907",
       "fromUsername": "bilinmiyor",
@@ -3277,6 +3267,17 @@
       "postTitle": "Problem seri1",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "failedAt": "2026-11-04T05:10:36.270Z"
+    },
+    {
+      "commentId": "18232653940329849",
+      "mediaId": "18099351929376060",
+      "fromUsername": "kbragrgl",
+      "commentText": "@nurdedekorkmaz77  PDF",
+      "timestamp": "2026-11-04T05:06:44.018Z",
+      "postTitle": "İzinde",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T05:10:48.642Z"
     }
   ],
   "retryQueue": [
@@ -10961,7 +10962,7 @@
     }
   },
   "totalSentCount": 72944,
-  "totalFailedCount": 22660,
+  "totalFailedCount": 22661,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11815,7 +11816,8 @@
     1793769026416,
     1793769034121,
     1793769036270,
-    1793769046354
+    1793769046354,
+    1793769048642
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16183,6 +16185,11 @@
       "t": 1793769036270,
       "rateLimited": false,
       "commentId": "17967729627197943"
+    },
+    {
+      "t": 1793769048642,
+      "rateLimited": true,
+      "commentId": "18232653940329849"
     }
   ],
   "takipTemizlik": {
@@ -24848,7 +24855,7 @@
     "18118925753097084": 1793768783255,
     "18144124519524780": 1793768843363,
     "18132979225753531": 1793768850633,
-    "18232653940329849": 1793769044181,
+    "18232653940329849": 1793769048642,
     "17982533907125198": 1793768860164,
     "18011962286776525": 1793768862640,
     "17916471087552640": 1793768868034,
