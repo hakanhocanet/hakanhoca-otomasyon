@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18103991651529777",
-      "mediaId": "17932716492162565",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T15:54:21.803Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T15:54:56.508Z"
-    },
-    {
       "commentId": "18108412819981440",
       "mediaId": "17932716492162565",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T16:04:19.005Z"
+    },
+    {
+      "commentId": "17940340563435594",
+      "mediaId": "17932716492162565",
+      "fromUsername": "bilinmiyor",
+      "commentText": "pdf",
+      "timestamp": "2026-11-04T16:03:50.112Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T16:04:22.018Z"
     }
   ],
   "retryQueue": [
@@ -13147,7 +13147,7 @@
     }
   },
   "totalSentCount": 74047,
-  "totalFailedCount": 28422,
+  "totalFailedCount": 28423,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -13919,7 +13919,8 @@
     1793808232767,
     1793808235340,
     1793808253765,
-    1793808259005
+    1793808259005,
+    1793808262018
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -17856,6 +17857,11 @@
       "t": 1793808259005,
       "rateLimited": true,
       "commentId": "18130165843896691"
+    },
+    {
+      "t": 1793808262018,
+      "rateLimited": true,
+      "commentId": "17940340563435594"
     }
   ],
   "takipTemizlik": {
@@ -31080,7 +31086,7 @@
     "18011062563005518": 1793808229958,
     "18410354086094876": 1793808232767,
     "18150707944560928": 1793808253765,
-    "17940340563435594": 1793808245920,
+    "17940340563435594": 1793808262018,
     "18106327304268281": 1793808248557,
     "18472084720185622": 1793808251397
   }
