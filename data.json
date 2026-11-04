@@ -2253,16 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18020193734957823",
-      "mediaId": "18456617179127149",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T00:35:09.065Z",
-      "postTitle": "HalılR",
-      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 4/8): De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "failedAt": "2026-11-04T00:54:08.662Z"
-    },
-    {
       "commentId": "18230164261330540",
       "mediaId": "18456617179127149",
       "fromUsername": "bilinmiyor",
@@ -3251,6 +3241,16 @@
       "postTitle": "HalılR",
       "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 3/8): An unknown error has occurred.",
       "failedAt": "2026-11-04T01:02:27.551Z"
+    },
+    {
+      "commentId": "17975242287175215",
+      "mediaId": "18456617179127149",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T01:02:02.646Z",
+      "postTitle": "HalılR",
+      "reason": "Geçici hata, otomatik olarak tekrar denenecek (deneme 1/8): An unknown error has occurred.",
+      "failedAt": "2026-11-04T01:02:30.468Z"
     }
   ],
   "retryQueue": [
@@ -19610,7 +19610,7 @@
     }
   },
   "totalSentCount": 72678,
-  "totalFailedCount": 19899,
+  "totalFailedCount": 19900,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -20473,7 +20473,8 @@
     1793754129922,
     1793754131953,
     1793754138670,
-    1793754147552
+    1793754147552,
+    1793754150468
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -24925,6 +24926,11 @@
       "t": 1793754147552,
       "rateLimited": false,
       "commentId": "17994322809052483"
+    },
+    {
+      "t": 1793754150468,
+      "rateLimited": false,
+      "commentId": "17975242287175215"
     }
   ],
   "takipTemizlik": {
@@ -31705,7 +31711,7 @@
     "18095213363674948": 1793754098361,
     "18223830493338106": 1793754120898,
     "17993231430058367": 1793754129922,
-    "17975242287175215": 1793754136265,
+    "17975242287175215": 1793754150468,
     "18076863527585202": 1793754142857
   }
 }
