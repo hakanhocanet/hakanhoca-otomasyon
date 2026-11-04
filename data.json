@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18221307166345295",
-      "mediaId": "18127421684513959",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T17:41:02.654Z",
-      "postTitle": "Problem",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T17:41:20.054Z"
-    },
-    {
       "commentId": "18636471817007338",
       "mediaId": "18127421684513959",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T17:51:56.737Z"
+    },
+    {
+      "commentId": "17913554232514295",
+      "mediaId": "18127421684513959",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF lütfen 🙏",
+      "timestamp": "2026-11-04T17:51:42.242Z",
+      "postTitle": "Problem",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T17:51:59.601Z"
     }
   ],
   "retryQueue": [
@@ -11883,7 +11883,7 @@
     }
   },
   "totalSentCount": 74273,
-  "totalFailedCount": 29260,
+  "totalFailedCount": 29261,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -11947,7 +11947,6 @@
     "2026-11-04": 88622
   },
   "mesajGonderimZamanlari": [
-    1793810818158,
     1793810821212,
     1793810824002,
     1793810826754,
@@ -12622,7 +12621,8 @@
     1793814700212,
     1793814702945,
     1793814714261,
-    1793814716737
+    1793814716737,
+    1793814719601
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -13686,11 +13686,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793810818158,
-      "rateLimited": true,
-      "commentId": "17995426494060473"
-    },
     {
       "t": 1793810824003,
       "rateLimited": true,
@@ -16335,6 +16330,11 @@
       "t": 1793814716740,
       "rateLimited": true,
       "commentId": "18088904762292037"
+    },
+    {
+      "t": 1793814719604,
+      "rateLimited": true,
+      "commentId": "17913554232514295"
     }
   ],
   "takipTemizlik": {
@@ -30326,6 +30326,6 @@
     "17918827881466294": 1793814702947,
     "17995544979100118": 1793814714263,
     "18088904762292037": 1793814716740,
-    "17913554232514295": 1793814711567
+    "17913554232514295": 1793814719642
   }
 }
