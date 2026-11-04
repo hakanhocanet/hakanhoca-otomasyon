@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18014386349968928",
-      "mediaId": "18107376239570012",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf rica etsem",
-      "timestamp": "2026-11-04T09:12:22.303Z",
-      "postTitle": "Atatürkü anma günü",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T17:18:39.270Z"
-    },
-    {
       "commentId": "17994760674103728",
       "mediaId": "18127421684513959",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T17:30:12.353Z"
+    },
+    {
+      "commentId": "17994691248066642",
+      "mediaId": "18127421684513959",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T17:30:00.349Z",
+      "postTitle": "Problem",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T17:30:15.329Z"
     }
   ],
   "retryQueue": [
@@ -12731,7 +12731,7 @@
     }
   },
   "totalSentCount": 74235,
-  "totalFailedCount": 29067,
+  "totalFailedCount": 29068,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -13403,7 +13403,8 @@
     1793813398281,
     1793813400943,
     1793813406925,
-    1793813412353
+    1793813412353,
+    1793813415329
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16778,6 +16779,11 @@
       "t": 1793813412354,
       "rateLimited": true,
       "commentId": "18480600436115077"
+    },
+    {
+      "t": 1793813415330,
+      "rateLimited": true,
+      "commentId": "17994691248066642"
     }
   ],
   "takipTemizlik": {
@@ -30589,6 +30595,6 @@
     "17914368438296434": 1793813392963,
     "18343769746259503": 1793813406926,
     "18137173687784042": 1793813400943,
-    "17994691248066642": 1793813409779
+    "17994691248066642": 1793813415330
   }
 }
