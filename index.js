@@ -1370,7 +1370,16 @@ async function attemptSend(commentId, message, record, ekMutator, publicReplyMet
     } else {
       const errorMsg = result.error ? result.error.message : 'Bilinmeyen hata';
       const errorCode = result.error ? result.error.code : null;
-      if (errorCode === 4 || errorCode === 17 || errorCode === 32) {
+      // DUZELTME (2026-11-04, canli kanit): Meta, kod 4/17/32 DISINDA da gercek hiz
+      // sinirlama hatasi dondurebiliyor - bugun yasanan cok sayida basarisiz denemenin
+      // ornekleme kontrolunde TAMAMI ya Hollandaca "De snelheidsbegrenzing is
+      // overschreden" (= hiz siniri asildi) mesajiydi ya da Meta'nin bilinen genel
+      // rate-limit ortmece mesaji "An unknown error has occurred." - bu ikisi kod
+      // kontrolunden kactigi icin "gecici hata" sayilip SINIRLI (8) deneme hakkina
+      // tabi tutuluyordu; oysa gercek sebep rate-limit oldugu icin SINIRSIZ/sabirli
+      // denenmesi gerekiyordu - bu yanlis siniflandirma kalici DM kaybinin asil nedeniydi.
+      const metaHizSinirlamaMesaji = /snelheidsbegrenzing|overschreden|unknown error has occurred/i.test(errorMsg || '');
+      if (errorCode === 4 || errorCode === 17 || errorCode === 32 || metaHizSinirlamaMesaji) {
         // Bu, BİZİM 740/saat güvenlik tavanımızdan değil, doğrudan Meta'nın kendisinden
         // gelen bir rate-limit hatası - normalde hiç görmememiz gerekir (zaten altında
         // kalıyoruz), görülürse "rateLimited: true" ile işaretleyip Hesap Durumu
@@ -2062,7 +2071,17 @@ app.get('/admin/api/account-health', async (req, res) => {
     return f.rateLimited && f.timestamp && (simdi - new Date(f.timestamp).getTime()) < 24 * 60 * 60 * 1000;
   }).length;
 
-  const sorunVarMi = saatlikGonderim >= GUVENLI_SAATLIK_LIMIT || son24SaatRateLimitHatasi > 0;
+  // DUZELTME (2026-11-04, canli kanit): "saglikli" bayragi SADECE sayac dolu mu / resmi
+  // rate-limit hatasi var mi diye bakiyordu - ama bugun yasanan olayda saatlikGonderim 740'a
+  // dayanmamisti (732) VE o anda rateLimited olarak dogru siniflandirilan hata da 0'di (yukaridaki
+  // yanlis siniflandirma yuzunden), yine de basari orani sadece %9.6 idi (52/732) - panel
+  // "saglikli: true" diyordu ama gercekte DEGILDI. Basari oranini da kontrole katmak bu kor
+  // noktayi kapatiyor - en az 10 gercek deneme varken basari orani %50'nin altindaysa artik
+  // "sorun var" sayiliyor.
+  const saatlikBasariOrani = saatlikGonderim > 0 ? saatlikBasariliGonderim / saatlikGonderim : 1;
+  const basariOraniDusukMu = saatlikGonderim >= 10 && saatlikBasariOrani < 0.5;
+
+  const sorunVarMi = saatlikGonderim >= GUVENLI_SAATLIK_LIMIT || son24SaatRateLimitHatasi > 0 || basariOraniDusukMu;
 
   const bekleyenler = hesaplaBekleyenler(data.retryQueue, simdi);
 
