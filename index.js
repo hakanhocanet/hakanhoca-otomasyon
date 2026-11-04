@@ -2030,7 +2030,7 @@ function hesaplaBekleyenler(retryQueue, simdi) {
         kullanici: (item.record && item.record.fromUsername) || 'bilinmiyor',
         yorum: item.record && item.record.commentText ? item.record.commentText.slice(0, 80) : '',
         dakikaBekliyor,
-        sebep: item.sebep === 'rate_limit' ? 'kota_dolu' : (item.sebep || 'kota_dolu'),
+        sebep: item.sebep === 'rate_limit' ? 'kota_dolu' : (item.sebep || 'gecici_hata'),
         kacIncilDeneme: item.deneme || 0,
       };
     });
