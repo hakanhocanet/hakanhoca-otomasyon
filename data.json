@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18388289257237761",
-      "mediaId": "17989861746080586",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T18:53:28.379Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T18:53:56.313Z"
-    },
-    {
       "commentId": "18147176284582788",
       "mediaId": "17932716492162565",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T19:04:04.291Z"
+    },
+    {
+      "commentId": "18147910207603149",
+      "mediaId": "17989861746080586",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T19:03:43.218Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T19:04:07.363Z"
     }
   ],
   "retryQueue": [
@@ -13435,7 +13435,7 @@
     }
   },
   "totalSentCount": 74406,
-  "totalFailedCount": 29916,
+  "totalFailedCount": 29917,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -14205,7 +14205,8 @@
     1793819023864,
     1793819029775,
     1793819041515,
-    1793819044291
+    1793819044291,
+    1793819047363
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -18097,6 +18098,11 @@
       "t": 1793819044291,
       "rateLimited": true,
       "commentId": "18358838368171487"
+    },
+    {
+      "t": 1793819047363,
+      "rateLimited": true,
+      "commentId": "18147910207603149"
     }
   ],
   "takipTemizlik": {
@@ -32721,7 +32727,7 @@
     "18237391054319683": 1793819023864,
     "18467840797141644": 1793819029775,
     "18358838368171487": 1793819044291,
-    "18147910207603149": 1793819035466,
+    "18147910207603149": 1793819047363,
     "18249545464312386": 1793819038387
   }
 }
