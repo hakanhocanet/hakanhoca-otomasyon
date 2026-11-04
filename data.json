@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17944844505363992",
-      "mediaId": "18644868544060390",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T13:12:30.374Z",
-      "postTitle": "Vitray",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T13:12:40.234Z"
-    },
-    {
       "commentId": "18103552964547402",
       "mediaId": "18644868544060390",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T13:23:28.678Z"
+    },
+    {
+      "commentId": "18015450671977284",
+      "mediaId": "18644868544060390",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T13:23:28.041Z",
+      "postTitle": "Vitray",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T13:23:34.169Z"
     }
   ],
   "retryQueue": [
@@ -12107,7 +12107,7 @@
     }
   },
   "totalSentCount": 73751,
-  "totalFailedCount": 26984,
+  "totalFailedCount": 26985,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12171,7 +12171,6 @@
     "2026-11-04": 88213
   },
   "mesajGonderimZamanlari": [
-    1793794712765,
     1793794722603,
     1793794725472,
     1793794753281,
@@ -12763,7 +12762,8 @@
     1793798592589,
     1793798595147,
     1793798606374,
-    1793798608678
+    1793798608678,
+    1793798614169
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16120,6 +16120,11 @@
       "t": 1793798608678,
       "rateLimited": true,
       "commentId": "17886240213512264"
+    },
+    {
+      "t": 1793798614169,
+      "rateLimited": true,
+      "commentId": "18015450671977284"
     }
   ],
   "takipTemizlik": {
@@ -28000,6 +28005,6 @@
     "17919075732464046": 1793798583832,
     "18115606157274888": 1793798595147,
     "18152442349559022": 1793798606374,
-    "18015450671977284": 1793798611607
+    "18015450671977284": 1793798614169
   }
 }
