@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18119538353079604",
-      "mediaId": "18117016270837219",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T15:23:25.206Z",
-      "postTitle": "Seri2.2",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T15:23:48.510Z"
-    },
-    {
       "commentId": "18180536311451509",
       "mediaId": "18117016270837219",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T15:33:42.856Z"
+    },
+    {
+      "commentId": "18025243589925865",
+      "mediaId": "18117016270837219",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF lütfen",
+      "timestamp": "2026-11-04T15:33:11.528Z",
+      "postTitle": "Seri2.2",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T15:33:45.628Z"
     }
   ],
   "retryQueue": [
@@ -13179,7 +13179,7 @@
     }
   },
   "totalSentCount": 73961,
-  "totalFailedCount": 28166,
+  "totalFailedCount": 28167,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -13953,7 +13953,8 @@
     1793806401281,
     1793806403881,
     1793806406367,
-    1793806422856
+    1793806422856,
+    1793806425628
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -17874,6 +17875,11 @@
       "t": 1793806422856,
       "rateLimited": true,
       "commentId": "18121020724949520"
+    },
+    {
+      "t": 1793806425628,
+      "rateLimited": true,
+      "commentId": "18025243589925865"
     }
   ],
   "takipTemizlik": {
@@ -30818,7 +30824,7 @@
     "17921698887461564": 1793806406367,
     "18003745857042921": 1793806401282,
     "17951893467345804": 1793806403881,
-    "18025243589925865": 1793806411246,
+    "18025243589925865": 1793806425629,
     "18160966843511987": 1793806414348,
     "18137535829644654": 1793806420390
   }
