@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18092992247206594",
-      "mediaId": "18644868544060390",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T12:49:06.879Z",
-      "postTitle": "Vitray",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T12:49:18.117Z"
-    },
-    {
       "commentId": "17951036487321989",
       "mediaId": "17902876377378256",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T12:59:01.965Z"
+    },
+    {
+      "commentId": "18125933575847542",
+      "mediaId": "18644868544060390",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T12:58:56.401Z",
+      "postTitle": "Vitray",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T12:59:07.243Z"
     }
   ],
   "retryQueue": [
@@ -12075,7 +12075,7 @@
     }
   },
   "totalSentCount": 73723,
-  "totalFailedCount": 26752,
+  "totalFailedCount": 26753,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12633,7 +12633,8 @@
     1793797132227,
     1793797134632,
     1793797139162,
-    1793797141965
+    1793797141965,
+    1793797147243
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -15476,6 +15477,11 @@
       "t": 1793797141965,
       "rateLimited": true,
       "commentId": "18638207026042430"
+    },
+    {
+      "t": 1793797147244,
+      "rateLimited": true,
+      "commentId": "18125933575847542"
     }
   ],
   "takipTemizlik": {
@@ -27204,6 +27210,6 @@
     "18445935106182982": 1793797127028,
     "18108127181206298": 1793797134632,
     "18095775314178682": 1793797139162,
-    "18125933575847542": 1793797144588
+    "18125933575847542": 1793797147244
   }
 }
