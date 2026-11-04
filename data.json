@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18109354469187772",
-      "mediaId": "18103347032645511",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF 👏👏👏",
-      "timestamp": "2026-11-04T13:34:18.558Z",
-      "postTitle": "Öğretmen",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T13:34:27.418Z"
-    },
-    {
       "commentId": "17944183071384500",
       "mediaId": "18644868544060390",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T13:46:06.812Z"
+    },
+    {
+      "commentId": "18492181351106969",
+      "mediaId": "18103347032645511",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T13:45:51.365Z",
+      "postTitle": "Öğretmen",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T13:46:09.804Z"
     }
   ],
   "retryQueue": [
@@ -21067,7 +21067,7 @@
     }
   },
   "totalSentCount": 73795,
-  "totalFailedCount": 27157,
+  "totalFailedCount": 27158,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -21131,7 +21131,6 @@
     "2026-11-04": 88213
   },
   "mesajGonderimZamanlari": [
-    1793796068349,
     1793796071015,
     1793796076251,
     1793796079051,
@@ -21821,7 +21820,8 @@
     1793799948112,
     1793799951560,
     1793799957659,
-    1793799966812
+    1793799966812,
+    1793799969804
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -25645,6 +25645,11 @@
       "t": 1793799966812,
       "rateLimited": true,
       "commentId": "18144296050593201"
+    },
+    {
+      "t": 1793799969804,
+      "rateLimited": true,
+      "commentId": "18492181351106969"
     }
   ],
   "takipTemizlik": {
@@ -37691,6 +37696,6 @@
     "17949059868072029": 1793799948113,
     "18095940575171096": 1793799957659,
     "18144296050593201": 1793799966812,
-    "18492181351106969": 1793799964170
+    "18492181351106969": 1793799969805
   }
 }
