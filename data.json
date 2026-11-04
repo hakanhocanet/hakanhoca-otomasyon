@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17963725287218808",
-      "mediaId": "18107376239570012",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T09:11:36.182Z",
-      "postTitle": "Atatürkü anma günü",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T09:11:42.211Z"
-    },
-    {
       "commentId": "18635770786032405",
       "mediaId": "17902876377378256",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T09:23:38.338Z"
+    },
+    {
+      "commentId": "17955813456317903",
+      "mediaId": "18107376239570012",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T09:23:37.473Z",
+      "postTitle": "Atatürkü anma günü",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T09:23:43.831Z"
     }
   ],
   "retryQueue": [
@@ -14779,7 +14779,7 @@
     }
   },
   "totalSentCount": 73382,
-  "totalFailedCount": 25269,
+  "totalFailedCount": 25270,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -15578,7 +15578,8 @@
     1793784210110,
     1793784212894,
     1793784215412,
-    1793784218338
+    1793784218338,
+    1793784223831
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -19617,6 +19618,11 @@
       "t": 1793784218338,
       "rateLimited": true,
       "commentId": "18361220269221664"
+    },
+    {
+      "t": 1793784223831,
+      "rateLimited": true,
+      "commentId": "17955813456317903"
     }
   ],
   "takipTemizlik": {
@@ -30009,6 +30015,6 @@
     "17909667609333675": 1793784210110,
     "17993392416028434": 1793784215413,
     "18198903481383230": 1793784212894,
-    "17955813456317903": 1793784221480
+    "17955813456317903": 1793784223832
   }
 }
