@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18105567905001858",
-      "mediaId": "17926496853428907",
-      "fromUsername": "bilinmiyor",
-      "commentText": "@hancengiz1903 PDF",
-      "timestamp": "2026-11-04T05:39:32.884Z",
-      "postTitle": "Problem seri1",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T05:53:08.376Z"
-    },
-    {
       "commentId": "18154687390532018",
       "mediaId": "17926496853428907",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T06:01:33.781Z"
+    },
+    {
+      "commentId": "18496562209106932",
+      "mediaId": "17926496853428907",
+      "fromUsername": "bilinmiyor",
+      "commentText": "Pdf",
+      "timestamp": "2026-11-04T06:01:18.880Z",
+      "postTitle": "Problem seri1",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T06:01:36.275Z"
     }
   ],
   "retryQueue": [
@@ -11211,7 +11211,7 @@
     }
   },
   "totalSentCount": 73016,
-  "totalFailedCount": 23209,
+  "totalFailedCount": 23210,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12062,7 +12062,8 @@
     1793772079721,
     1793772081844,
     1793772091104,
-    1793772093781
+    1793772093781,
+    1793772096276
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16394,6 +16395,11 @@
       "t": 1793772093781,
       "rateLimited": true,
       "commentId": "17912788230550797"
+    },
+    {
+      "t": 1793772096276,
+      "rateLimited": true,
+      "commentId": "18496562209106932"
     }
   ],
   "takipTemizlik": {
@@ -25389,6 +25395,6 @@
     "18095770571474924": 1793772069597,
     "17910034449590056": 1793772076388,
     "18348880591259080": 1793772081844,
-    "18496562209106932": 1793772088624
+    "18496562209106932": 1793772096276
   }
 }
