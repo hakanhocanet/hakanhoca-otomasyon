@@ -1553,6 +1553,22 @@ async function tekrarDenemeDongusuCalistir() {
   // basarisiz olursa duz metne (link mesajin icinde) donuluyor.
   const config = await readConfig();
 
+  // DUZELTME (2026-11-04, acil - dusuk basari orani): sabit 2 saniye artik yetersiz, Meta bu
+  // hesaba su an cok dusuk basari oraniyla karsilik veriyor. Son 10 dakikadaki gercek basari
+  // oranina gore TEK bir gecikme degeri hesaplaniyor (her oge icin ayri okuma yapip GitHub'i
+  // yormamak icin) - oran dusukse cok daha yavas gonderip Meta'ya nefes payi birakiyoruz.
+  const _oncekiVeri = await readData();
+  const _simdiZaman = Date.now();
+  const _pencereMs = 10 * 60 * 1000;
+  const _basariliSonDk = (_oncekiVeri.basariliZamanlari || []).filter((x) => _simdiZaman - x.t < _pencereMs).length;
+  const _basarisizSonDk = (_oncekiVeri.basarisizZamanlariDetay || []).filter((x) => _simdiZaman - x.t < _pencereMs).length;
+  const _toplamSonDk = _basariliSonDk + _basarisizSonDk;
+  const _basariOraniSonDk = _toplamSonDk >= 5 ? (_basariliSonDk / _toplamSonDk) : 1;
+  const GONDERIM_ARALIGI_MS = _basariOraniSonDk < 0.2 ? 20000 : (_basariOraniSonDk < 0.5 ? 8000 : 2000);
+  if (_toplamSonDk >= 5 && _basariOraniSonDk < 0.5) {
+    console.log(`🐢 Son 10 dakikada basari orani dusuk (%${Math.round(_basariOraniSonDk*100)}), gonderim temposu ${GONDERIM_ARALIGI_MS}ms'ye yavaslatildi.`);
+  }
+
   for (let i = 0; i < queue.length; i++) {
     // Bu döngü sırasında da saatlik güvenli sınıra ulaşılmış olabilir (örn. kuyrukta çok
     // sayıda ertelenmiş mesaj birikmişse) - böyle bir durumda kalanları tekrar kuyruğa
@@ -1596,7 +1612,7 @@ async function tekrarDenemeDongusuCalistir() {
     if (!butonlaGitti) {
       await attemptSend(item.commentId, item.message, item.record, undefined, item.publicReplyMetni, item.deneme);
     }
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, GONDERIM_ARALIGI_MS));
   }
 }
 // GOOGLE CLOUD RUN TAŞIMASI: bkz. refreshAccessTokenIfDue setInterval'ındaki not - bu görev
