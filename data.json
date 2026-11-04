@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18082731728373795",
-      "mediaId": "17989861746080586",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T19:08:46.934Z",
-      "postTitle": "Milli",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T19:09:18.988Z"
-    },
-    {
       "commentId": "18118809859814660",
       "mediaId": "17989861746080586",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T19:21:19.315Z"
+    },
+    {
+      "commentId": "18181338340434300",
+      "mediaId": "17932716492162565",
+      "fromUsername": "bilinmiyor",
+      "commentText": "pdf",
+      "timestamp": "2026-11-04T16:15:16.048Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T19:21:29.263Z"
     }
   ],
   "retryQueue": [
@@ -11291,7 +11291,7 @@
     }
   },
   "totalSentCount": 74433,
-  "totalFailedCount": 30065,
+  "totalFailedCount": 30066,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12047,7 +12047,8 @@
     1793820055649,
     1793820063598,
     1793820069136,
-    1793820079315
+    1793820079315,
+    1793820089263
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -15870,6 +15871,11 @@
       "t": 1793820079315,
       "rateLimited": true,
       "commentId": "18643699534063631"
+    },
+    {
+      "t": 1793820089265,
+      "rateLimited": true,
+      "commentId": "18181338340434300"
     }
   ],
   "takipTemizlik": {
@@ -29182,7 +29188,7 @@
     "18147176284582788": 1793818438952,
     "18080399855416509": 1793818717632,
     "18374173654246722": 1793819041515,
-    "18181338340434300": 1793820072960,
+    "18181338340434300": 1793820089265,
     "18102107228378031": 1793814917478,
     "18115830809580655": 1793814953174,
     "18078177089749217": 1793814987901,
