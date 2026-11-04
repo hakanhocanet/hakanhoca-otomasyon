@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18095164001443690",
-      "mediaId": "17902876377378256",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF lütfen",
-      "timestamp": "2026-11-04T07:17:17.696Z",
-      "postTitle": "Seri3",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T07:17:32.302Z"
-    },
-    {
       "commentId": "18208067317374836",
       "mediaId": "17902876377378256",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T07:27:13.479Z"
+    },
+    {
+      "commentId": "17932388952167524",
+      "mediaId": "17902876377378256",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF lütfen",
+      "timestamp": "2026-11-04T07:27:00.618Z",
+      "postTitle": "Seri3",
+      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T07:27:18.631Z"
     }
   ],
   "retryQueue": [
@@ -12683,7 +12683,7 @@
     }
   },
   "totalSentCount": 73150,
-  "totalFailedCount": 24132,
+  "totalFailedCount": 24133,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12747,8 +12747,6 @@
     "2026-11-04": 88080
   },
   "mesajGonderimZamanlari": [
-    1793773335065,
-    1793773337668,
     1793773342160,
     1793773346493,
     1793773348722,
@@ -13549,7 +13547,8 @@
     1793777218797,
     1793777221341,
     1793777226558,
-    1793777233479
+    1793777233479,
+    1793777238631
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -14489,16 +14488,6 @@
     }
   ],
   "basarisizZamanlariDetay": [
-    {
-      "t": 1793773335065,
-      "rateLimited": true,
-      "commentId": "18135220186737988"
-    },
-    {
-      "t": 1793773337668,
-      "rateLimited": true,
-      "commentId": "18029115800698376"
-    },
     {
       "t": 1793773342160,
       "rateLimited": true,
@@ -17928,6 +17917,11 @@
       "t": 1793777233479,
       "rateLimited": true,
       "commentId": "18220533646345584"
+    },
+    {
+      "t": 1793777238631,
+      "rateLimited": true,
+      "commentId": "17932388952167524"
     }
   ],
   "takipTemizlik": {
@@ -27511,7 +27505,7 @@
     "18082341035347998": 1793777221341,
     "17996826990110297": 1793777213924,
     "18098107292130582": 1793777226558,
-    "17932388952167524": 1793777228756,
+    "17932388952167524": 1793777238631,
     "18065976977796045": 1793777231162
   }
 }
