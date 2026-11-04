@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "17976526935155778",
-      "mediaId": "17932505136165666",
-      "fromUsername": "bilinmiyor",
-      "commentText": "PDF",
-      "timestamp": "2026-11-04T04:48:20.436Z",
-      "postTitle": "Mektuplar",
-      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T05:54:09.421Z"
-    },
-    {
       "commentId": "18107864465360250",
       "mediaId": "17926496853428907",
       "fromUsername": "bilinmiyor",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
       "rateLimited": true,
       "failedAt": "2026-11-04T06:02:49.648Z"
+    },
+    {
+      "commentId": "18202400194386380",
+      "mediaId": "17926496853428907",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T06:02:36.393Z",
+      "postTitle": "Problem seri1",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T06:02:51.848Z"
     }
   ],
   "retryQueue": [
@@ -11451,7 +11451,7 @@
     }
   },
   "totalSentCount": 73018,
-  "totalFailedCount": 23223,
+  "totalFailedCount": 23224,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -12300,7 +12300,8 @@
     1793772152498,
     1793772154553,
     1793772164632,
-    1793772169648
+    1793772169648,
+    1793772171848
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -16630,6 +16631,11 @@
       "t": 1793772169648,
       "rateLimited": true,
       "commentId": "18123827810485022"
+    },
+    {
+      "t": 1793772171848,
+      "rateLimited": true,
+      "commentId": "18202400194386380"
     }
   ],
   "takipTemizlik": {
@@ -25632,6 +25638,6 @@
     "18178497334401557": 1793772137653,
     "18108885926205333": 1793772154553,
     "18116464601113080": 1793772150374,
-    "18202400194386380": 1793772162463
+    "18202400194386380": 1793772171848
   }
 }
