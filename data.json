@@ -2253,17 +2253,6 @@
   ],
   "failed": [
     {
-      "commentId": "18647317840025394",
-      "mediaId": "18127421684513959",
-      "fromUsername": "bilinmiyor",
-      "commentText": "Pdf",
-      "timestamp": "2026-11-04T17:47:16.869Z",
-      "postTitle": "Problem",
-      "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
-      "rateLimited": true,
-      "failedAt": "2026-11-04T18:23:46.145Z"
-    },
-    {
       "commentId": "18645210148061589",
       "mediaId": "18154659655536615",
       "fromUsername": "ozge_ramazan_akgul35",
@@ -3351,6 +3340,17 @@
       "reason": "Limit doldu, tekrar denenecek: An unknown error has occurred.",
       "rateLimited": true,
       "failedAt": "2026-11-04T18:34:24.867Z"
+    },
+    {
+      "commentId": "17920694754453207",
+      "mediaId": "17989861746080586",
+      "fromUsername": "bilinmiyor",
+      "commentText": "PDF",
+      "timestamp": "2026-11-04T18:34:06.666Z",
+      "postTitle": "Milli",
+      "reason": "Limit doldu, tekrar denenecek: De snelheidsbegrenzing is overschreden. Probeer het over enkele ogenblikken opnieuw",
+      "rateLimited": true,
+      "failedAt": "2026-11-04T18:34:27.566Z"
     }
   ],
   "retryQueue": [
@@ -13339,7 +13339,7 @@
     }
   },
   "totalSentCount": 74361,
-  "totalFailedCount": 29647,
+  "totalFailedCount": 29648,
   "followerHistory": {
     "2026-09-06": 53173,
     "2026-09-07": 53400,
@@ -13403,7 +13403,6 @@
     "2026-11-04": 88622
   },
   "mesajGonderimZamanlari": [
-    1793813365422,
     1793813379741,
     1793813383221,
     1793813385877,
@@ -14117,7 +14116,8 @@
     1793817247952,
     1793817250647,
     1793817261842,
-    1793817264867
+    1793817264867,
+    1793817267566
   ],
   "postSendCounts": {
     "17878053039624914": 243,
@@ -18041,6 +18041,11 @@
       "t": 1793817264867,
       "rateLimited": true,
       "commentId": "17960756817014258"
+    },
+    {
+      "t": 1793817267566,
+      "rateLimited": true,
+      "commentId": "17920694754453207"
     }
   ],
   "takipTemizlik": {
@@ -32415,6 +32420,6 @@
     "18194138860398499": 1793817244651,
     "18052929968607851": 1793817247952,
     "17960756817014258": 1793817264867,
-    "17920694754453207": 1793817258764
+    "17920694754453207": 1793817267566
   }
 }
